@@ -1,5 +1,11 @@
 # UI5 Application de.unigoettingen.dashboardapp
 
+Install node.js (e.g. from the web)
+
+Do npm install, then npm install --save-dev @ui5/cli
+
+(Vllt hab ich was vergessen)
+
 npm start and then u good
 
 ## Description
