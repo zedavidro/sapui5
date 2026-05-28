@@ -1,9 +1,8 @@
 <mvc:View
-	controllerName="de.unigoettingen.dashboardapp.controller.App"
-	displayBlock="true"
-	xmlns="sap.m"
-	xmlns:mvc="sap.ui.core.mvc">
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns="sap.m"
+  controllerName="de.unigoettingen.dashboardapp.controller.App">
 
-	<App id="app" />
+  <App id="app"/>
 
 </mvc:View>

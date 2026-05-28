@@ -4,27 +4,93 @@
 	xmlns="sap.m"
 	xmlns:mvc="sap.ui.core.mvc"
 	xmlns:core="sap.ui.core"
+	xmlns:viz="sap.viz.ui5.controls"
+    xmlns:viz.data="sap.viz.ui5.data"
+    xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds"
 	core:require="{
 		formatter: 'de/unigoettingen/dashboardapp/model/formatter'
 	}">
 
 	<Page
-		title="{i18n>appTitle}"
+		title="ERP-HR Dashboard"
 		id="page">
-		<content>
-			<IllustratedMessage
-				title="{i18n>appTitle}"
-				illustrationType="sapIllus-SuccessHighFive"
-				enableVerticalResponsiveness="true"
-				description="{i18n>appDescription}">
-				<additionalContent>
-					<Button
-						id="helloButton"
-						text="{formatter: 'formatter.formatValue', path: 'i18n>btnText'}"
-						press="sayHello" />
-				</additionalContent>
-			</IllustratedMessage>
-		</content>
+	<content>
+		
+
+	  <Select change="onYearChange">
+  	  <items>
+      <core:Item key="2024" text="2024"/>
+      <core:Item key="2025" text="2025"/>
+      <core:Item key="2026" text="2026"/>
+	  <core:Item key="alle" text="alle"/>
+  	  </items>
+	  </Select>
+
+		<!--- KPIs -->
+	  <HBox justifyContent="SpaceAround" class="sapUiSmallMargin">
+
+  		<VBox>
+  <Text text="Kosten"/>
+  <Text text="{
+    path: 'dashboard>/kpis/costs',
+    formatter: '.formatEuro'
+  }"/>
+</VBox>
+
+<VBox>
+  <Text text="Erträge"/>
+  <Text text="{
+    path: 'dashboard>/kpis/revenue',
+    formatter: '.formatEuro'
+  }"/>
+</VBox>
+
+<VBox>
+  <Text text="Ergebnis"/>
+  <Text text="{
+    path: 'dashboard>/kpis/result',
+    formatter: '.formatEuro'
+  }"/>
+</VBox>
+
+</HBox>	
+
+      <viz:VizFrame
+        id="idPieChart"
+        vizType="pie"
+        width="100%"
+        height="400px">
+
+        <viz:dataset>
+          <viz.data:FlattenedDataset data="{/costGroups}">
+            <viz.data:dimensions>
+              <viz.data:DimensionDefinition
+                name="Cost Group"
+                value="{name}" />
+            </viz.data:dimensions>
+
+            <viz.data:measures>
+              <viz.data:MeasureDefinition
+                name="Amount"
+                value="{value}" />
+            </viz.data:measures>
+          </viz.data:FlattenedDataset>
+        </viz:dataset>
+
+        <viz:feeds>
+          <viz.feeds:FeedItem
+            uid="size"
+            type="Measure"
+            values="Amount"/>
+          <viz.feeds:FeedItem
+            uid="color"
+            type="Dimension"
+            values="Cost Group"/>
+        </viz:feeds>
+
+      </viz:VizFrame>
+
+    </content>
 	</Page>
 
 </mvc:View>

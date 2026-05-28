@@ -1,0 +1,158 @@
+{
+  "finanzen": [
+    { "jahr": 2024, "kategorie": "Investitionen & Geräte", "konto": "70900", "bezeichnung": "Sonstige betriebstechnische Anlagen", "wert": 0.0 },
+    { "jahr": 2025, "kategorie": "Investitionen & Geräte", "konto": "70900", "bezeichnung": "Sonstige betriebstechnische Anlagen", "wert": 2450.0 },
+    { "jahr": 2026, "kategorie": "Investitionen & Geräte", "konto": "70900", "bezeichnung": "Sonstige betriebstechnische Anlagen", "wert": 0.0 },
+
+    { "jahr": 2024, "kategorie": "Investitionen & Geräte", "konto": "71000", "bezeichnung": "Spezielle physikalische Geräte", "wert": 6820.5 },
+
+    { "jahr": 2024, "kategorie": "Investitionen & Geräte", "konto": "71100", "bezeichnung": "Instrum. Analytik & präparative Chemie", "wert": 58320.4 },
+    { "jahr": 2026, "kategorie": "Investitionen & Geräte", "konto": "71100", "bezeichnung": "Instrum. Analytik & präparative Chemie", "wert": 21450.0 },
+
+    { "jahr": 2024, "kategorie": "Investitionen & Geräte", "konto": "71500", "bezeichnung": "Optik, Elektronenoptik", "wert": 9380.0 },
+    { "jahr": 2025, "kategorie": "Investitionen & Geräte", "konto": "71500", "bezeichnung": "Optik, Elektronenoptik", "wert": 91820.3 },
+
+    { "jahr": 2025, "kategorie": "Investitionen & Geräte", "konto": "71800", "bezeichnung": "Messgrößen (Druck, Temperatur etc.)", "wert": 92490.1 },
+
+    { "jahr": 2024, "kategorie": "Investitionen & Geräte", "konto": "95100", "bezeichnung": "Geleistete Anzahlungen Anlagen im Bau", "wert": 0.0 },
+
+    { "jahr": 2024, "kategorie": "Erträge & Förderung", "konto": "503400", "bezeichnung": "DFG Erträge laufende Aufwendungen", "wert": -1261050.0 },
+    { "jahr": 2025, "kategorie": "Erträge & Förderung", "konto": "503400", "bezeichnung": "DFG Erträge laufende Aufwendungen", "wert": -310050.0 },
+    { "jahr": 2026, "kategorie": "Erträge & Förderung", "konto": "503400", "bezeichnung": "DFG Erträge laufende Aufwendungen", "wert": -2938230.0 },
+
+    { "jahr": 2024, "kategorie": "Erträge & Förderung", "konto": "518115", "bezeichnung": "Ertragskorrektur DFG Projekte", "wert": 794070.0 },
+    { "jahr": 2025, "kategorie": "Erträge & Förderung", "konto": "518115", "bezeichnung": "Ertragskorrektur DFG Projekte", "wert": -618870.0 },
+
+    { "jahr": 2024, "kategorie": "Sachkosten & Material", "konto": "607300", "bezeichnung": "Verbrauchsmaterial Labor", "wert": 24252.0 },
+    { "jahr": 2025, "kategorie": "Sachkosten & Material", "konto": "607300", "bezeichnung": "Verbrauchsmaterial Labor", "wert": 16480.0 },
+    { "jahr": 2026, "kategorie": "Sachkosten & Material", "konto": "607300", "bezeichnung": "Verbrauchsmaterial Labor", "wert": 31736.0 },
+
+    { "jahr": 2025, "kategorie": "Sachkosten & Material", "konto": "607500", "bezeichnung": "Kleingeräte/Werkzeuge", "wert": 0.0 },
+
+    { "jahr": 2025, "kategorie": "Sachkosten & Material", "konto": "607990", "bezeichnung": "Sonstiges Material", "wert": 52.0 },
+
+    { "jahr": 2024, "kategorie": "Sachkosten & Material", "konto": "612400", "bezeichnung": "Sonstige Fremdleistungen", "wert": 0.0 },
+    { "jahr": 2025, "kategorie": "Sachkosten & Material", "konto": "612400", "bezeichnung": "Sonstige Fremdleistungen", "wert": 0.0 },
+
+    { "jahr": 2025, "kategorie": "Sachkosten & Material", "konto": "617300", "bezeichnung": "Tagungsmaterial", "wert": 2255.0 },
+
+    { "jahr": 2024, "kategorie": "Personalkosten", "konto": "630100", "bezeichnung": "TVL wissenschaftlicher Dienst", "wert": 165395.0 },
+    { "jahr": 2025, "kategorie": "Personalkosten", "konto": "630100", "bezeichnung": "TVL wissenschaftlicher Dienst", "wert": 354503.0 },
+    { "jahr": 2026, "kategorie": "Personalkosten", "konto": "630100", "bezeichnung": "TVL wissenschaftlicher Dienst", "wert": 126390.0 },
+
+    { "jahr": 2024, "kategorie": "Personalkosten", "konto": "630110", "bezeichnung": "TVL Verwaltung", "wert": 44686.0 },
+    { "jahr": 2025, "kategorie": "Personalkosten", "konto": "630110", "bezeichnung": "TVL Verwaltung", "wert": 89398.0 },
+    { "jahr": 2026, "kategorie": "Personalkosten", "konto": "630110", "bezeichnung": "TVL Verwaltung", "wert": 42079.0 },
+
+    { "jahr": 2024, "kategorie": "Personalkosten", "konto": "630200", "bezeichnung": "Sonderzahlungen wiss. Dienst", "wert": 15444.0 },
+    { "jahr": 2025, "kategorie": "Personalkosten", "konto": "630200", "bezeichnung": "Sonderzahlungen wiss. Dienst", "wert": 12761.0 },
+    { "jahr": 2026, "kategorie": "Personalkosten", "konto": "630200", "bezeichnung": "Sonderzahlungen wiss. Dienst", "wert": 0.0 },
+
+    { "jahr": 2024, "kategorie": "Personalkosten", "konto": "630210", "bezeichnung": "Sonderzhlg.Beschäftigte TVL Verwaltungsdienst", "wert": 3447.0 },
+{ "jahr": 2025, "kategorie": "Personalkosten", "konto": "630210", "bezeichnung": "Sonderzhlg.Beschäftigte TVL Verwaltungsdienst", "wert": 6290.0 },
+
+{ "jahr": 2024, "kategorie": "Personalkosten", "konto": "630400", "bezeichnung": "VWL Beschäftigte TVL wissensch. Dienst", "wert": 13.0 },
+{ "jahr": 2025, "kategorie": "Personalkosten", "konto": "630400", "bezeichnung": "VWL Beschäftigte TVL wissensch. Dienst", "wert": 44.0 },
+{ "jahr": 2026, "kategorie": "Personalkosten", "konto": "630400", "bezeichnung": "VWL Beschäftigte TVL wissensch. Dienst", "wert": 26.0 },
+
+{ "jahr": 2025, "kategorie": "Personalkosten", "konto": "630410", "bezeichnung": "VWL Beschäftigte TVL Verwaltungdienst", "wert": 10.0 },
+
+{ "jahr": 2026, "kategorie": "Personalkosten", "konto": "637500", "bezeichnung": "Vergütungen für studentische Hilfskräfte", "wert": 2969.0 },
+
+{ "jahr": 2024, "kategorie": "Personalkosten", "konto": "639900", "bezeichnung": "Sonstige Personalkosten", "wert": 3869.0 },
+
+{ "jahr": 2024, "kategorie": "Personalkosten", "konto": "639960", "bezeichnung": "Preisgelder an Bedienstete", "wert": 220.0 },
+
+    { "jahr": 2024, "kategorie": "Sozialabgaben", "konto": "641100", "bezeichnung": "AG-Anteil SV wiss. Dienst", "wert": 37817.0 },
+    { "jahr": 2025, "kategorie": "Sozialabgaben", "konto": "641100", "bezeichnung": "AG-Anteil SV wiss. Dienst", "wert": 81346.0 },
+    { "jahr": 2026, "kategorie": "Sozialabgaben", "konto": "641100", "bezeichnung": "AG-Anteil SV wiss. Dienst", "wert": 28237.0 },
+
+{ "jahr": 2024, "kategorie": "Sozialabgaben", "konto": "641110", "bezeichnung": "AGanteil Sozialvers. f. Besch.TVL Verw.D", "wert": 10298.0 },
+{ "jahr": 2025, "kategorie": "Sozialabgaben", "konto": "641110", "bezeichnung": "AGanteil Sozialvers. f. Besch.TVL Verw.D", "wert": 21269.0 },
+{ "jahr": 2026, "kategorie": "Sozialabgaben", "konto": "641110", "bezeichnung": "AGanteil Sozialvers. f. Besch.TVL Verw.D", "wert": 9425.0 },
+
+{ "jahr": 2026, "kategorie": "Sozialabgaben", "konto": "641800", "bezeichnung": "AGanteil SV, Lohn-u.Kirchenst.student. Hilfskräfte", "wert": 452.0 },
+
+{ "jahr": 2024, "kategorie": "Sozialabgaben", "konto": "642110", "bezeichnung": "Beiträge Berufsgenossenschaft Besch.TVL", "wert": 207.0 },
+{ "jahr": 2025, "kategorie": "Sozialabgaben", "konto": "642110", "bezeichnung": "Beiträge Berufsgenossenschaft Besch.TVL", "wert": 421.0 },
+{ "jahr": 2026, "kategorie": "Sozialabgaben", "konto": "642110", "bezeichnung": "Beiträge Berufsgenossenschaft Besch.TVL", "wert": 164.0 },
+
+{ "jahr": 2024, "kategorie": "Sozialabgaben", "konto": "642150", "bezeichnung": "Beiträge Berufsgenossenschaft Besch.TVL", "wert": 777.0 },
+{ "jahr": 2025, "kategorie": "Sozialabgaben", "konto": "642150", "bezeichnung": "Beiträge Berufsgenossenschaft Besch.TVL", "wert": 1616.0 },
+{ "jahr": 2026, "kategorie": "Sozialabgaben", "konto": "642150", "bezeichnung": "Beiträge Berufsgenossenschaft Besch.TVL", "wert": 493.0 },
+
+{ "jahr": 2026, "kategorie": "Sozialabgaben", "konto": "642200", "bezeichnung": "Beiträge Berufsgenossenschaft studentische Hilfskräfte", "wert": 12.0 },
+
+{ "jahr": 2024, "kategorie": "Sozialabgaben", "konto": "647100", "bezeichnung": "VBL für Beschäftigte TVL wissenschaftlicher Dienst", "wert": 9850.0 },
+{ "jahr": 2025, "kategorie": "Sozialabgaben", "konto": "647100", "bezeichnung": "VBL für Beschäftigte TVL wissenschaftlicher Dienst", "wert": 20162.0 },
+{ "jahr": 2026, "kategorie": "Sozialabgaben", "konto": "647100", "bezeichnung": "VBL für Beschäftigte TVL wissenschaftlicher Dienst", "wert": 6939.0 },
+
+{ "jahr": 2024, "kategorie": "Sozialabgaben", "konto": "647110", "bezeichnung": "VBL für Beschäftigte TVL Verwaltungsdienst", "wert": 2642.0 },
+{ "jahr": 2025, "kategorie": "Sozialabgaben", "konto": "647110", "bezeichnung": "VBL für Beschäftigte TVL Verwaltungsdienst", "wert": 5253.0 },
+{ "jahr": 2026, "kategorie": "Sozialabgaben", "konto": "647110", "bezeichnung": "VBL für Beschäftigte TVL Verwaltungsdienst", "wert": 2310.0 },
+
+    { "jahr": 2024, "kategorie": "Abschreibungen", "konto": "653100", "bezeichnung": "Abschreibung technische Anlagen", "wert": 1835.0 },
+    { "jahr": 2025, "kategorie": "Abschreibungen", "konto": "653100", "bezeichnung": "Abschreibung technische Anlagen", "wert": 28950.0 },
+    { "jahr": 2026, "kategorie": "Abschreibungen", "konto": "653100", "bezeichnung": "Abschreibung technische Anlagen", "wert": 10395.0 },
+
+    { "jahr": 2024, "kategorie": "Tagungen & Infrastruktur", "konto": "664200", "bezeichnung": "Tagungsgebühren", "wert": 7216.0 },
+    { "jahr": 2025, "kategorie": "Tagungen & Infrastruktur", "konto": "664200", "bezeichnung": "Tagungsgebühren", "wert": 12586.0 },
+    { "jahr": 2026, "kategorie": "Tagungen & Infrastruktur", "konto": "664200", "bezeichnung": "Tagungsgebühren", "wert": 441.0 },
+
+    { "jahr": 2025, "kategorie": "Tagungen & Infrastruktur", "konto": "670200", "bezeichnung": "Mieten, Pachten für Diensträume/-gebäude", "wert": 2402.0 },
+
+    { "jahr": 2026, "kategorie": "Tagungen & Infrastruktur", "konto": "670900", "bezeichnung": "Mieten, Pachten für sonstiges Anlagevermögen", "wert":     35735.0 },
+
+    { "jahr": 2024, "kategorie": "Tagungen & Infrastruktur", "konto": "675100", "bezeichnung": "Nebenkosten des Geldverkehrs", "wert": 10.0 },
+    { "jahr": 2025, "kategorie": "Tagungen & Infrastruktur", "konto": "675100", "bezeichnung": "Nebenkosten des Geldverkehrs", "wert": 3.0 },
+
+    { "jahr": 2026, "kategorie": "Tagungen & Infrastruktur", "konto": "677600", "bezeichnung": "Aufwendungen für EDV-Dienstleistung", "wert": 445.0 },
+
+    { "jahr": 2024, "kategorie": "Tagungen & Infrastruktur", "konto": "680100", "bezeichnung": "Bürobedarf", "wert": 228.0 },
+
+    { "jahr": 2025, "kategorie": "Tagungen & Infrastruktur", "konto": "680300", "bezeichnung": "andere Drucksachen", "wert": 0.0 },
+
+    { "jahr": 2024, "kategorie": "Reisekosten", "konto": "685110", "bezeichnung": "Tagegeld", "wert": 748.0 },
+    { "jahr": 2025, "kategorie": "Reisekosten", "konto": "685110", "bezeichnung": "Tagegeld", "wert": 3704.0 },
+    { "jahr": 2026, "kategorie": "Reisekosten", "konto": "685110", "bezeichnung": "Tagegeld", "wert": 558.0 },
+
+    { "jahr": 2024, "kategorie": "Reisekosten", "konto": "685120", "bezeichnung": "Übernachtung/Hotel", "wert": 8326.0 },
+    { "jahr": 2025, "kategorie": "Reisekosten", "konto": "685120", "bezeichnung": "Übernachtung/Hotel", "wert": 37843.0 },
+    { "jahr": 2026, "kategorie": "Reisekosten", "konto": "685120", "bezeichnung": "Übernachtung/Hotel", "wert": 2704.0 },
+
+    { "jahr": 2024, "kategorie": "Reisekosten", "konto": "685210", "bezeichnung": "Fahrtkosten Bahn", "wert": 3498.0 },
+    { "jahr": 2025, "kategorie": "Reisekosten", "konto": "685210", "bezeichnung": "Fahrtkosten Bahn", "wert": 3981.0 },
+    { "jahr": 2026, "kategorie": "Reisekosten", "konto": "685210", "bezeichnung": "Fahrtkosten Bahn", "wert": 1390.0 },
+
+    { "jahr": 2025, "kategorie": "Reisekosten", "konto": "685220", "bezeichnung": "Flugkosten", "wert": 28612.0 },
+  
+    { "jahr": 2024, "kategorie": "Reisekosten", "konto": "685230", "bezeichnung": "Fahrtkosten sonstige z.B. Mietwagen, Taxi", "wert": 245.0 },
+    { "jahr": 2025, "kategorie": "Reisekosten", "konto": "685230", "bezeichnung": "Fahrtkosten sonstige z.B. Mietwagen, Taxi", "wert": 3783.0 },
+    { "jahr": 2026, "kategorie": "Reisekosten", "konto": "685230", "bezeichnung": "Fahrtkosten sonstige z.B. Mietwagen, Taxi", "wert": 15.0 },
+
+    { "jahr": 2024, "kategorie": "Reisekosten", "konto": "685240", "bezeichnung": "pauschale Reisekosten", "wert": 5066.0 },
+
+    { "jahr": 2024, "kategorie": "Reisekosten", "konto": "685500", "bezeichnung": "Fremdzuschuss für Reisekosten", "wert": -82.0 },
+    { "jahr": 2025, "kategorie": "Reisekosten", "konto": "685500", "bezeichnung": "Fremdzuschuss für Reisekosten", "wert": -687.0 },
+
+    { "jahr": 2024, "kategorie": "Reisekosten", "konto": "686100", "bezeichnung": "Bewirtung", "wert": 24703.0 },
+    { "jahr": 2025, "kategorie": "Reisekosten", "konto": "686100", "bezeichnung": "Bewirtung", "wert": 47489.0 },
+    { "jahr": 2026, "kategorie": "Reisekosten", "konto": "686100", "bezeichnung": "Bewirtung", "wert": 29309.0 },
+
+    { "jahr": 2024, "kategorie": "Reisekosten", "konto": "686150", "bezeichnung": "Kinderbetreuung bei Veranstaltungen", "wert": 4818.0 },
+
+    { "jahr": 2025, "kategorie": "Reisekosten", "konto": "686500", "bezeichnung": "Streuwerbeartikel", "wert": 1228.0 },
+
+    { "jahr": 2024, "kategorie": "Reisekosten", "konto": "694800", "bezeichnung": "Auslagenerstattung RK für Betriebsfremde", "wert": 28306.0 },
+    { "jahr": 2025, "kategorie": "Reisekosten", "konto": "694800", "bezeichnung": "Auslagenerstattung RK für Betriebsfremde", "wert": 6544.0 },
+    { "jahr": 2026, "kategorie": "Reisekosten", "konto": "694800", "bezeichnung": "Auslagenerstattung RK für Betriebsfremde", "wert": 1582.0 },
+
+    { "jahr": 2024, "kategorie": "Sonstiges Material", "konto": "960100", "bezeichnung": "Sonstiges Material", "wert": 5265.0 },
+    { "jahr": 2025, "kategorie": "Sonstiges Material", "konto": "960100", "bezeichnung": "Sonstiges Material", "wert": 3927.0 },
+    { "jahr": 2026, "kategorie": "Sonstiges Material", "konto": "960100", "bezeichnung": "Sonstiges Material", "wert": 7472.0 },
+
+    { "jahr": 2024, "kategorie": "Gesamt", "konto": "TOTAL", "bezeichnung": "Gesamtergebnis", "wert": 16639.9 },
+    { "jahr": 2025, "kategorie": "Gesamt", "konto": "TOTAL", "bezeichnung": "Gesamtergebnis", "wert": 50065.4 },
+    { "jahr": 2026, "kategorie": "Gesamt", "konto": "TOTAL", "bezeichnung": "Gesamtergebnis", "wert": -2575502.0 }
+  ]
+}

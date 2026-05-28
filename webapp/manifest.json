@@ -30,6 +30,7 @@
 		"rootView": {
 			"viewName": "de.unigoettingen.dashboardapp.view.App",
 			"type": "XML",
+			"async": true,
 			"id": "app"
 		},
 
@@ -37,7 +38,8 @@
 			"minUI5Version": "1.146.0",
 			"libs": {
 				"sap.ui.core": {},
-				"sap.m": {}
+				"sap.m": {},
+				"sap.viz": {}
 			}
 		},
 
@@ -76,11 +78,11 @@
 				}
 			],
 			"targets": {
-				"main": {
-					"viewId": "main",
-					"viewName": "Main"
-				}
-			}
+  				"main": {
+   				"viewName": "Main",
+    			"viewLevel": 1
+  				}
+			}		
 		}
 	}
 }
