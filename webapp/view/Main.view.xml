@@ -59,7 +59,13 @@
         id="idPieChart"
         vizType="pie"
         width="100%"
-        height="400px">
+        height="400px"
+        vizProperties="{
+        title: {
+        text: 'Kosten-Pie-Chart',
+        visible: true
+        }
+        }">
 
         <viz:dataset>
           <viz.data:FlattenedDataset data="{/costGroups}">
