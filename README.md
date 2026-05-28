@@ -1,6 +1,6 @@
 # UI5 Application de.unigoettingen.dashboardapp
 
-Insert the purpose of this project and some interesting info here...
+npm start and then u good
 
 ## Description
 
