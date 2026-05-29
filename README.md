@@ -6,7 +6,10 @@ Do npm install, then npm install --save-dev @ui5/cli
 
 (Vllt hab ich was vergessen)
 
-npm start and then u good
+Zwei PowerShell Termianls öffnen
+Zuerst node server.js eingeben
+Im zweiten Terminal npm start
+
 
 ## Description
 

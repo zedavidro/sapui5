@@ -29,7 +29,7 @@ sap.ui.define([
 
     _loadAndUpdate: function () {
       const oModel = new JSONModel();
-      oModel.loadData("model/finanzen.json");
+      oModel.loadData("http://localhost:3000/api/finanzen");
 
       oModel.attachRequestCompleted(() => {
         let totalCosts = 0;
