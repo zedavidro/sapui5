@@ -1,0 +1,33 @@
+<mvc:View
+  controllerName="de.unigoettingen.dashboardapp.controller.Start"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns="sap.m">
+
+  <Page title="Dashboard Startseite">
+
+    <content>
+      <VBox
+        justifyContent="Center"
+        alignItems="Center"
+        height="100%"
+        class="sapUiLargeMargin">
+
+        <Title text="Willkommen zum Dashboard" level="H2" class="sapUiSmallMarginBottom"/>
+
+        <Button
+          text="Finanzdaten"
+          press="onNavToFinance"
+          width="250px"
+          class="sapUiSmallMarginTop"/>
+
+        <Button
+          text="Personaldaten"
+          press="onNavToHR"
+          width="250px"
+          class="sapUiSmallMarginTop"/>
+
+      </VBox>
+    </content>
+
+  </Page>
+</mvc:View>

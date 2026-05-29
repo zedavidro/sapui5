@@ -1,0 +1,26 @@
+<mvc:View
+  controllerName="de.unigoettingen.dashboardapp.controller.HR"
+  displayBlock="true"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns="sap.m">
+
+  <Page
+    title="Personaldaten"
+    showNavButton="true"
+    navButtonPress="onNavBack">
+
+    <content>
+      <VBox
+        justifyContent="Center"
+        alignItems="Center"
+        height="100%"
+        class="sapUiLargeMargin">
+
+        <Title text="Personaldaten" level="H2" class="sapUiSmallMarginBottom"/>
+        <Text text="Dieser Bereich ist noch nicht angelegt."/>
+
+      </VBox>
+    </content>
+
+  </Page>
+</mvc:View>

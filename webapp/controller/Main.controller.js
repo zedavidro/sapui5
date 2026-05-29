@@ -5,34 +5,30 @@ sap.ui.define([
   "use strict";
 
   return Controller.extend("de.unigoettingen.dashboardapp.controller.Main", {
-	
-	onInit: function () {
+    onNavBack: function () {
+      this.getOwnerComponent().getRouter().navTo("start");
+    },
 
-  	this._selectedYear = "2024";
+    onInit: function () {
+      this._selectedYear = "2024";
+      this._loadAndUpdate();
+    },
 
-  	this._loadAndUpdate();
+    formatEuro: function (value) {
+      if (value === null || value === undefined || isNaN(value)) {
+        return "";
+      }
 
-	},
+      return value.toFixed(2) + " \u20ac";
+    },
 
-  formatEuro: function (value) {
-  if (value === null || value === undefined || isNaN(value)) {
-    return "";
-  }
-
-  return value.toFixed(2) + " €";
-},
-
-	onYearChange: function (oEvent) {
-
-    	this._selectedYear = oEvent.getSource().getSelectedKey();
-
-    	this._loadAndUpdate();
-
-	},
+    onYearChange: function (oEvent) {
+      this._selectedYear = oEvent.getSource().getSelectedKey();
+      this._loadAndUpdate();
+    },
 
     _loadAndUpdate: function () {
-      
-	    const oModel = new JSONModel();
+      const oModel = new JSONModel();
       oModel.loadData("model/finanzen.json");
 
       oModel.attachRequestCompleted(() => {
@@ -41,22 +37,19 @@ sap.ui.define([
         let total = 0;
 
         const data = oModel.getData().finanzen;
-
-        // 1. Kategorie aggregieren
         const aggregated = {};
 
         data.forEach(item => {
+          if (this._selectedYear !== "alle" && item.jahr != this._selectedYear) {
+            return;
+          }
 
-		  if (this._selectedYear !== "alle" && item.jahr != this._selectedYear) {
-    		return;
-  		  }		
-          // Erträge und Förderung müssen in Bar Chart
-          if (item.kategorie === "Erträge & Förderung") {
+          if (item.kategorie === "Ertr\u00e4ge & F\u00f6rderung") {
             totalRevenue += item.wert;
             return;
           }
 
-          if(item.kategorie === "Gesamt") {
+          if (item.kategorie === "Gesamt") {
             total = item.wert;
             return;
           }
@@ -71,32 +64,26 @@ sap.ui.define([
           totalCosts += item.wert;
         });
 
-        // 2. in Pie Chart Format umwandeln
         const costGroups = Object.keys(aggregated).map(key => {
           return {
             name: key,
-            value: Math.abs(aggregated[key]) // optional: negative Werte vermeiden
+            value: Math.abs(aggregated[key])
           };
         });
 
-        // 3. neues Model setzen (für Chart)
-        const chartModel = new JSONModel({
+        this.getView().setModel(new JSONModel({
           costGroups: costGroups
-        });
+        }));
 
-        this.getView().setModel(chartModel);
         this.getView().setModel(new JSONModel({
           costGroups: costGroups,
           kpis: {
             costs: totalCosts,
-            revenue: totalRevenue*(-1),
-            result: total*(-1)
+            revenue: totalRevenue * (-1),
+            result: total * (-1)
           }
-        }), "dashboard"
-        );
-    	});
-
+        }), "dashboard");
+      });
     }
-
   });
 });

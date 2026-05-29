@@ -73,16 +73,34 @@
 			"routes": [
 				{
 					"pattern": "",
-					"name": "main",
+					"name": "start",
+					"target": "start"
+				},
+				{
+					"pattern": "finanzen",
+					"name": "finanzen",
 					"target": "main"
+				},
+				{
+					"pattern": "hr",
+					"name": "hr",
+					"target": "hr"
 				}
 			],
 			"targets": {
-  				"main": {
-   				"viewName": "Main",
-    			"viewLevel": 1
-  				}
-			}		
+				"start": {
+					"viewName": "Start",
+					"viewLevel": 1
+				},
+				"main": {
+					"viewName": "Main",
+					"viewLevel": 2
+				},
+				"hr": {
+					"viewName": "HR",
+					"viewLevel": 2
+				}
+			}
 		}
 	}
 }

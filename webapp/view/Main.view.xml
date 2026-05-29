@@ -1,4 +1,6 @@
 <mvc:View
+
+
 	controllerName="de.unigoettingen.dashboardapp.controller.Main"
 	displayBlock="true"
 	xmlns="sap.m"
@@ -11,9 +13,13 @@
 		formatter: 'de/unigoettingen/dashboardapp/model/formatter'
 	}">
 
-	<Page
-		title="ERP-HR Dashboard"
-		id="page">
+	
+  <Page
+  title="Finanzdaten"
+  id="page"
+  showNavButton="true"
+  navButtonPress="onNavBack">
+
 	<content>
 		
 
