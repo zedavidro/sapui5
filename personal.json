@@ -8,7 +8,8 @@
       "NATIOX": "indisch",
       "OTXT2": "Insitut für Informatik",
       "FIN_ART": "wissenschaftlicher Dienst",
-      "VZAE": 0.5
+      "VZAE": 0.5,
+      "VBEDAT": "2020-11-28"
     },
     {
       "PERNRCOD": "83197899",
@@ -18,7 +19,8 @@
       "NATIOX": "italienisch",
       "OTXT2": "Insitut für Informatik",
       "FIN_ART": "wissenschaftlicher Dienst",
-      "VZAE": 1.0
+      "VZAE": 1.0,
+      "VBEDAT": "2020-09-28"
     },
     {
       "PERNRCOD": "13561599",
@@ -28,7 +30,8 @@
       "NATIOX": "brasilianisch",
       "OTXT2": "Insitut für Informatik",
       "FIN_ART": "wissenschaftlicher Dienst",
-      "VZAE": 0.5
+      "VZAE": 0.5,
+      "VBEDAT": "2027-01-28"
     },
     {
       "PERNRCOD": "31429199",
@@ -38,7 +41,8 @@
       "NATIOX": "indisch",
       "OTXT2": "Insitut für Informatik",
       "FIN_ART": "wissenschaftlicher Dienst",
-      "VZAE": 1.0
+      "VZAE": 1.0,
+      "VBEDAT": "2023-07-28"
     },
     {
       "PERNRCOD": "58181399",
@@ -48,7 +52,8 @@
       "NATIOX": "indisch",
       "OTXT2": "Insitut für Informatik",
       "FIN_ART": "wissenschaftlicher Dienst",
-      "VZAE": 0.5
+      "VZAE": 0.5,
+      "VBEDAT": "2025-07-28"
     },
     {
       "PERNRCOD": "84093699",
@@ -58,7 +63,8 @@
       "NATIOX": "koreanisch",
       "OTXT2": "Insitut für Informatik",
       "FIN_ART": "wissenschaftlicher Dienst",
-      "VZAE": 1.0
+      "VZAE": 1.0,
+      "VBEDAT": "2021-01-28"
     },
     {
       "PERNRCOD": "40587999",
@@ -68,7 +74,8 @@
       "NATIOX": "iranisch",
       "OTXT2": "Insitut für Informatik",
       "FIN_ART": "wissenschaftlicher Dienst",
-      "VZAE": 1.0
+      "VZAE": 1.0,
+      "VBEDAT": "2024-03-28"
     },
     {
       "PERNRCOD": "57683699",
@@ -78,7 +85,8 @@
       "NATIOX": "indisch",
       "OTXT2": "Insitut für Informatik",
       "FIN_ART": "wissenschaftlicher Dienst",
-      "VZAE": 0.5
+      "VZAE": 0.5,
+      "VBEDAT": "2021-03-28"
     },
     {
       "PERNRCOD": "60929699",
@@ -88,7 +96,8 @@
       "NATIOX": "brasilianisch",
       "OTXT2": "Insitut für Informatik",
       "FIN_ART": "wissenschaftlicher Dienst",
-      "VZAE": 1.0
+      "VZAE": 1.0,
+      "VBEDAT": "2024-01-28"
     },
     {
       "PERNRCOD": "52339399",
@@ -98,7 +107,8 @@
       "NATIOX": "deutsch",
       "OTXT2": "Insitut für Informatik",
       "FIN_ART": "wissenschaftlicher Dienst",
-      "VZAE": 1.0
+      "VZAE": 1.0,
+      "VBEDAT": "2026-07-28"
     },
     {
       "PERNRCOD": "71586099",
@@ -108,7 +118,8 @@
       "NATIOX": "chinesisch",
       "OTXT2": "Insitut für Informatik",
       "FIN_ART": "wissenschaftlicher Dienst",
-      "VZAE": 1.0
+      "VZAE": 1.0,
+      "VBEDAT": "2025-10-28"
     },
     {
       "PERNRCOD": "58586399",
@@ -118,7 +129,8 @@
       "NATIOX": "brasilianisch",
       "OTXT2": "Insitut für Informatik",
       "FIN_ART": "wissenschaftlicher Dienst",
-      "VZAE": 1.0
+      "VZAE": 1.0,
+      "VBEDAT": "2019-11-28"
     },
     {
       "PERNRCOD": "66661399",
@@ -128,7 +140,8 @@
       "NATIOX": "deutsch",
       "OTXT2": "Insitut für Informatik",
       "FIN_ART": "Hochschullehrergruppe",
-      "VZAE": 1.0
+      "VZAE": 1.0,
+      "VBEDAT": "2027-09-30"
     },
     {
       "PERNRCOD": "25374899",
@@ -138,7 +151,8 @@
       "NATIOX": "deutsch",
       "OTXT2": "Insitut für Informatik",
       "FIN_ART": "Hochschullehrergruppe",
-      "VZAE": 1.0
+      "VZAE": 1.0,
+      "VBEDAT": "2022-03-30"
     },
     {
       "PERNRCOD": "45351499",
@@ -148,7 +162,8 @@
       "NATIOX": "deutsch",
       "OTXT2": "Insitut für Informatik",
       "FIN_ART": "Hochschullehrergruppe",
-      "VZAE": 1.0
+      "VZAE": 1.0,
+      "VBEDAT": "2026-10-30"
     },
     {
       "PERNRCOD": "60185899",
@@ -158,7 +173,8 @@
       "NATIOX": "deutsch",
       "OTXT2": "Insitut für Informatik",
       "FIN_ART": "Hochschullehrergruppe",
-      "VZAE": 1.0
+      "VZAE": 1.0,
+      "VBEDAT": "2020-08-30"
     },
     {
       "PERNRCOD": "58718499",
@@ -168,7 +184,8 @@
       "NATIOX": "deutsch",
       "OTXT2": "Präsidium",
       "FIN_ART": "techn. und Verwaltungsdienst",
-      "VZAE": 1.0
+      "VZAE": 1.0,
+      "VBEDAT": "2030-02-28"
     },
     {
       "PERNRCOD": "75228599",
@@ -178,7 +195,8 @@
       "NATIOX": "deutsch",
       "OTXT2": "Präsidium",
       "FIN_ART": "techn. und Verwaltungsdienst",
-      "VZAE": 1.0
+      "VZAE": 1.0,
+      "VBEDAT": "2031-09-28"
     },
     {
       "PERNRCOD": "80823199",
@@ -188,7 +206,8 @@
       "NATIOX": "deutsch",
       "OTXT2": "Präsidium",
       "FIN_ART": "techn. und Verwaltungsdienst",
-      "VZAE": 1.0
+      "VZAE": 1.0,
+      "VBEDAT": "2030-07-28"
     },
     {
       "PERNRCOD": "79467899",
@@ -198,7 +217,8 @@
       "NATIOX": "deutsch",
       "OTXT2": "Präsidium",
       "FIN_ART": "techn. und Verwaltungsdienst",
-      "VZAE": 1.0
+      "VZAE": 1.0,
+      "VBEDAT": "2028-06-28"
     }
   ]
 }

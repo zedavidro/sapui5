@@ -11,7 +11,7 @@ db.prepare(`
     wert REAL NOT NULL
   )
   
-`).run(); //Erstellt die Tsabelle, falls noch nicht vorhanden
+`).run(); //Erstellt die Tabelle, falls noch nicht vorhanden
 
 db.prepare(`
   CREATE TABLE IF NOT EXISTS personal (
@@ -23,6 +23,17 @@ db.prepare(`
     NATIOX TEXT NOT NULL,
     OTXT2 TEXT NOT NULL,
     FIN_ART TEXT NOT NULL,
-    VZAE REAL NOT NULL
+    VZAE REAL NOT NULL,
+    VBEDAT TEXT NOT NULL
   )
 `).run();
+
+const personalColumns = db.prepare("PRAGMA table_info(personal)").all();
+const hasVBEDAT = personalColumns.some((column) => column.name === "VBEDAT");
+
+if (!hasVBEDAT) {
+  db.prepare(`
+    ALTER TABLE personal ADD COLUMN VBEDAT TEXT
+  `).run();
+  console.log("VBEDAT wurd angelegt")
+} //Hat VBEDAT einmalig hinzugefügt, darf aber nur einmal laufen

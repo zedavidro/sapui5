@@ -17,10 +17,11 @@ const importConfigs = { //Die Struktur der JSON und der neuen TAbelle wird heir 
       "NATIOX",
       "OTXT2",
       "FIN_ART",
-      "VZAE"
+      "VZAE",
+      "VBEDAT"
     ],
     mapRow: function (row) {
-      return {  //übernimmt die zeilen der JSON in die neunen Objekte mit richtigem Datentyp
+      return {  //übernimmt die zeilen der JSON in die neuen Objekte mit richtigem Datentyp
         PERNRCOD: row.PERNRCOD,
         jahr: Number(row.Jahr),
         PERSALTER: row.PERSALTER,
@@ -28,7 +29,8 @@ const importConfigs = { //Die Struktur der JSON und der neuen TAbelle wird heir 
         NATIOX: row.NATIOX,
         OTXT2: row.OTXT2,
         FIN_ART: row.FIN_ART,
-        VZAE: row.VZAE
+        VZAE: row.VZAE,
+        VBEDAT: row.VBEDAT
       };
     }
   }
@@ -50,14 +52,14 @@ function readRows(config) {
   const data = JSON.parse(fs.readFileSync(jsonPath, "utf8"));
   const rows = data[config.jsonKey];
 
-  if (!Array.isArray(rows)) {
+  if (!Array.isArray(rows)) {   //Falls rows kein Array ist, wird ein Fehler
     throw new Error(`${config.fileName} muss ein Array unter '${config.jsonKey}' enthalten.`);
   }
 
   return rows;
 }
 
-function createInsertStatement(config) {  //Erzeugt Platzhalter und 
+function createInsertStatement(config) {  //Erzeugt Platzhalter, wo später die daten eingefügt werden
   const columns = config.columns.join(", ");
   const placeholders = config.columns.map((column) => `@${column}`).join(", ");
 

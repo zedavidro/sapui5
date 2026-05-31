@@ -19,16 +19,16 @@ app.get("/api/finanzen", (req, res) => { //Getter-Methode für Finanzdaten
   });
 });
 
-/*app.get("api/personal", (req,res) => {
+app.get("/api/personal", (req,res) => {
   const rows =db.prepare(`
-    SELECT
-    FROM
+    SELECT PERNRCOD, jahr, PERSALTER, GESCH, NATIOX, OTXT2, FIN_ART, VZAE, VBEDAT
+    FROM personal
   `).all();
 
   res.json({
     personal: rows
   });
-});*/
+});
 
 app.listen(3000, () => { //startet Backend-Server
   console.log("http://localhost:3000 läuft");
