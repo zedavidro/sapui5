@@ -10,7 +10,10 @@ Zwei PowerShell Termianls öffnen
 Zuerst node server.js eingeben
 Im zweiten Terminal npm start
 
+## Neue Tabelle in Datenbank eintragen
 
+In init-db die Datenbank-Struktur erstellen und sie ausführen
+Dann die import-json.js Datei um die Einträge erweitern und ausführen
 ## Description
 
 Insert the description here...

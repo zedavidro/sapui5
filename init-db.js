@@ -1,5 +1,4 @@
 const Database = require("better-sqlite3");
-
 const db = new Database("dashboard.db");
 
 db.prepare(`
@@ -11,6 +10,19 @@ db.prepare(`
     bezeichnung TEXT,
     wert REAL NOT NULL
   )
-`).run();
+  
+`).run(); //Erstellt die Tsabelle, falls noch nicht vorhanden
 
-console.log("Datenbank angelegt: dashboard.db");
+db.prepare(`
+  CREATE TABLE IF NOT EXISTS personal (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    PERNRCOD TEXT NOT NULL,
+    jahr INTEGER NOT NULL,
+    PERSALTER INTEGER NOT NULL,
+    GESCH TEXT NOT NULL,
+    NATIOX TEXT NOT NULL,
+    OTXT2 TEXT NOT NULL,
+    FIN_ART TEXT NOT NULL,
+    VZAE REAL NOT NULL
+  )
+`).run();

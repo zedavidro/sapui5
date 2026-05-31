@@ -1,0 +1,204 @@
+{
+  "personal": [
+    {
+      "PERNRCOD": "95822499",
+      "Jahr": "2025",
+      "PERSALTER": 26,
+      "GESCH": "M",
+      "NATIOX": "indisch",
+      "OTXT2": "Insitut für Informatik",
+      "FIN_ART": "wissenschaftlicher Dienst",
+      "VZAE": 0.5
+    },
+    {
+      "PERNRCOD": "83197899",
+      "Jahr": "2025",
+      "PERSALTER": 44,
+      "GESCH": "M",
+      "NATIOX": "italienisch",
+      "OTXT2": "Insitut für Informatik",
+      "FIN_ART": "wissenschaftlicher Dienst",
+      "VZAE": 1.0
+    },
+    {
+      "PERNRCOD": "13561599",
+      "Jahr": "2025",
+      "PERSALTER": 48,
+      "GESCH": "M",
+      "NATIOX": "brasilianisch",
+      "OTXT2": "Insitut für Informatik",
+      "FIN_ART": "wissenschaftlicher Dienst",
+      "VZAE": 0.5
+    },
+    {
+      "PERNRCOD": "31429199",
+      "Jahr": "2025",
+      "PERSALTER": 36,
+      "GESCH": "W",
+      "NATIOX": "indisch",
+      "OTXT2": "Insitut für Informatik",
+      "FIN_ART": "wissenschaftlicher Dienst",
+      "VZAE": 1.0
+    },
+    {
+      "PERNRCOD": "58181399",
+      "Jahr": "2025",
+      "PERSALTER": 45,
+      "GESCH": "W",
+      "NATIOX": "indisch",
+      "OTXT2": "Insitut für Informatik",
+      "FIN_ART": "wissenschaftlicher Dienst",
+      "VZAE": 0.5
+    },
+    {
+      "PERNRCOD": "84093699",
+      "Jahr": "2025",
+      "PERSALTER": 46,
+      "GESCH": "W",
+      "NATIOX": "koreanisch",
+      "OTXT2": "Insitut für Informatik",
+      "FIN_ART": "wissenschaftlicher Dienst",
+      "VZAE": 1.0
+    },
+    {
+      "PERNRCOD": "40587999",
+      "Jahr": "2025",
+      "PERSALTER": 28,
+      "GESCH": "W",
+      "NATIOX": "iranisch",
+      "OTXT2": "Insitut für Informatik",
+      "FIN_ART": "wissenschaftlicher Dienst",
+      "VZAE": 1.0
+    },
+    {
+      "PERNRCOD": "57683699",
+      "Jahr": "2025",
+      "PERSALTER": 47,
+      "GESCH": "M",
+      "NATIOX": "indisch",
+      "OTXT2": "Insitut für Informatik",
+      "FIN_ART": "wissenschaftlicher Dienst",
+      "VZAE": 0.5
+    },
+    {
+      "PERNRCOD": "60929699",
+      "Jahr": "2025",
+      "PERSALTER": 46,
+      "GESCH": "W",
+      "NATIOX": "brasilianisch",
+      "OTXT2": "Insitut für Informatik",
+      "FIN_ART": "wissenschaftlicher Dienst",
+      "VZAE": 1.0
+    },
+    {
+      "PERNRCOD": "52339399",
+      "Jahr": "2025",
+      "PERSALTER": 34,
+      "GESCH": "W",
+      "NATIOX": "deutsch",
+      "OTXT2": "Insitut für Informatik",
+      "FIN_ART": "wissenschaftlicher Dienst",
+      "VZAE": 1.0
+    },
+    {
+      "PERNRCOD": "71586099",
+      "Jahr": "2025",
+      "PERSALTER": 34,
+      "GESCH": "M",
+      "NATIOX": "chinesisch",
+      "OTXT2": "Insitut für Informatik",
+      "FIN_ART": "wissenschaftlicher Dienst",
+      "VZAE": 1.0
+    },
+    {
+      "PERNRCOD": "58586399",
+      "Jahr": "2025",
+      "PERSALTER": 30,
+      "GESCH": "M",
+      "NATIOX": "brasilianisch",
+      "OTXT2": "Insitut für Informatik",
+      "FIN_ART": "wissenschaftlicher Dienst",
+      "VZAE": 1.0
+    },
+    {
+      "PERNRCOD": "66661399",
+      "Jahr": "2025",
+      "PERSALTER": 48,
+      "GESCH": "M",
+      "NATIOX": "deutsch",
+      "OTXT2": "Insitut für Informatik",
+      "FIN_ART": "Hochschullehrergruppe",
+      "VZAE": 1.0
+    },
+    {
+      "PERNRCOD": "25374899",
+      "Jahr": "2025",
+      "PERSALTER": 56,
+      "GESCH": "W",
+      "NATIOX": "deutsch",
+      "OTXT2": "Insitut für Informatik",
+      "FIN_ART": "Hochschullehrergruppe",
+      "VZAE": 1.0
+    },
+    {
+      "PERNRCOD": "45351499",
+      "Jahr": "2025",
+      "PERSALTER": 52,
+      "GESCH": "M",
+      "NATIOX": "deutsch",
+      "OTXT2": "Insitut für Informatik",
+      "FIN_ART": "Hochschullehrergruppe",
+      "VZAE": 1.0
+    },
+    {
+      "PERNRCOD": "60185899",
+      "Jahr": "2025",
+      "PERSALTER": 53,
+      "GESCH": "M",
+      "NATIOX": "deutsch",
+      "OTXT2": "Insitut für Informatik",
+      "FIN_ART": "Hochschullehrergruppe",
+      "VZAE": 1.0
+    },
+    {
+      "PERNRCOD": "58718499",
+      "Jahr": "2025",
+      "PERSALTER": 45,
+      "GESCH": "W",
+      "NATIOX": "deutsch",
+      "OTXT2": "Präsidium",
+      "FIN_ART": "techn. und Verwaltungsdienst",
+      "VZAE": 1.0
+    },
+    {
+      "PERNRCOD": "75228599",
+      "Jahr": "2025",
+      "PERSALTER": 38,
+      "GESCH": "M",
+      "NATIOX": "deutsch",
+      "OTXT2": "Präsidium",
+      "FIN_ART": "techn. und Verwaltungsdienst",
+      "VZAE": 1.0
+    },
+    {
+      "PERNRCOD": "80823199",
+      "Jahr": "2025",
+      "PERSALTER": 43,
+      "GESCH": "W",
+      "NATIOX": "deutsch",
+      "OTXT2": "Präsidium",
+      "FIN_ART": "techn. und Verwaltungsdienst",
+      "VZAE": 1.0
+    },
+    {
+      "PERNRCOD": "79467899",
+      "Jahr": "2025",
+      "PERSALTER": 37,
+      "GESCH": "W",
+      "NATIOX": "deutsch",
+      "OTXT2": "Präsidium",
+      "FIN_ART": "techn. und Verwaltungsdienst",
+      "VZAE": 1.0
+    }
+  ]
+}
