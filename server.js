@@ -19,8 +19,8 @@ app.get("/api/finanzen", (req, res) => { //Getter-Methode für Finanzdaten
   });
 });
 
-app.get("/api/personal", (req,res) => {
-  const rows =db.prepare(`
+app.get("/api/personal", (req, res) => {
+  const rows = db.prepare(`
     SELECT PERNRCOD, jahr, PERSALTER, GESCH, NATIOX, OTXT2, FIN_ART, VZAE, VBEDAT
     FROM personal
   `).all();
