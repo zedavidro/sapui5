@@ -85,6 +85,12 @@
 					"pattern": "hr",
 					"name": "hr",
 					"target": "hr"
+				},
+				{
+					"pattern": "pb",
+					"name": "pb",
+					"target": "pb"
+
 				}
 			],
 			"targets": {
@@ -99,6 +105,10 @@
 				"hr": {
 					"viewName": "HR",
 					"viewLevel": 2
+				},
+				"pb": {
+					"viewName": "PB",
+					"viewLevel": "2"
 				}
 			}
 		}

@@ -30,6 +30,17 @@ app.get("/api/personal", (req, res) => {
   });
 });
 
+app.get("/api/publikationen", (req, res) => {
+  const rows = db.prepare(`
+    SELECT year, type, title, status
+    FROM publikationen
+  `).all();
+
+  res.json({
+    publikationen: rows
+  });
+});
+
 app.listen(3000, () => { //startet Backend-Server
   console.log("http://localhost:3000 läuft");
 });

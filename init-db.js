@@ -28,7 +28,17 @@ db.prepare(`
   )
 `).run();
 
-const personalColumns = db.prepare("PRAGMA table_info(personal)").all();
+db.prepare(`
+  CREATE TABLE IF NOT EXISTS publikationen (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    year INTEGER NOT NULL,
+    type TEXT NOT NULL,
+    title TEXT NOT NULL,
+    status TEXT NOT NULL
+  )
+`).run();
+
+/*const personalColumns = db.prepare("PRAGMA table_info(personal)").all();
 const hasVBEDAT = personalColumns.some((column) => column.name === "VBEDAT");
 
 if (!hasVBEDAT) {
@@ -36,4 +46,4 @@ if (!hasVBEDAT) {
     ALTER TABLE personal ADD COLUMN VBEDAT TEXT
   `).run();
   console.log("VBEDAT wurd angelegt")
-} //Hat VBEDAT einmalig hinzugefügt, darf aber nur einmal laufen
+}*/ //Hat VBEDAT einmalig hinzugefügt, darf aber nur einmal laufen

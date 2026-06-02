@@ -33,6 +33,25 @@ const importConfigs = { //Die Struktur der JSON und der neuen TAbelle wird heir 
         VBEDAT: row.VBEDAT
       };
     }
+  },
+   publikationen: {
+    fileName: "publikationen.json",
+    jsonKey: "publikationen",
+    tableName: "publikationen",
+    columns: [
+      "year",
+      "type",
+      "title",
+      "status"
+    ],
+    mapRow: function (row) {
+      return {
+        year: Number(row.year),
+        type: row.type,
+        title: row.title,
+        status: row.status
+      };
+    }
   }
 };
 

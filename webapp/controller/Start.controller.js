@@ -11,7 +11,12 @@ sap.ui.define([
 
     onNavToHR: function () {
       this.getOwnerComponent().getRouter().navTo("hr");
+    },
+
+    onNavToPB: function() {
+      this.getOwnerComponent().getRouter().navTo("pb");
     }
+
 
   });
 });

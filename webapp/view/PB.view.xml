@@ -1,0 +1,70 @@
+<mvc:View
+    controllerName="de.unigoettingen.dashboardapp.controller.PB"
+    displayBlock="true"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:core="sap.ui.core"
+    xmlns:viz="sap.viz.ui5.controls"
+    xmlns:viz.data="sap.viz.ui5.data"
+    xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds"
+    core:require="{
+        formatter: 'de/unigoettingen/dashboardapp/model/formatter'
+    }">
+
+    <Page
+        title="Publikationsdaten"
+        showNavButton="true"
+        navButtonPress="onNavBack">
+
+        <content>
+
+            <!-- Header -->
+            <VBox
+                justifyContent="Center"
+                alignItems="Center"
+                class="sapUiLargeMargin">
+
+                <Title text="Publikationsdaten" level="H2" class="sapUiSmallMarginBottom"/>
+                <Text text="Übersicht über Veröffentlichungen nach Status und Jahr"/>
+            </VBox>
+
+            <!-- Year Selector -->
+            <Select
+                change="onYearChange"
+                selectedKey="{dashboard>/selectedYear}"
+                class="sapUiSmallMargin">
+
+                <items>
+                    <core:Item key="2023" text="2023"/>
+                    <core:Item key="2024" text="2024"/>
+                    <core:Item key="2025" text="2025"/>
+                    <core:Item key="2026" text="2026"/>
+                    <core:Item key="alle" text="alle"/>
+                </items>
+            </Select>
+
+            <!-- KPIs -->
+            <HBox justifyContent="SpaceAround" class="sapUiSmallMargin">
+
+                <VBox class="sapUiSmallMargin">
+                    <Text text="Veröffentlicht"/>
+                    <Text text="{dashboard>/kpis/published}"/>
+                </VBox>
+
+                <VBox class="sapUiSmallMargin">
+                    <Text text="Under Review"/>
+                    <Text text="{dashboard>/kpis/underReview}"/>
+                </VBox>
+
+                <VBox class="sapUiSmallMargin">
+                    <Text text="In Vorbereitung"/>
+                    <Text text="{dashboard>/kpis/inPreparation}"/>
+                </VBox>
+
+            </HBox>
+
+        </content>
+
+    </Page>
+
+</mvc:View>
