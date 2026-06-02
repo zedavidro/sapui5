@@ -38,6 +38,14 @@ db.prepare(`
   )
 `).run();
 
+db.prepare(`
+  CREATE TABLE IF NOT EXISTS konto (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  username TEXT NOT NULL UNIQUE,
+  passwort_hash TEXT NOT NULL
+  )
+`).run();
+
 /*const personalColumns = db.prepare("PRAGMA table_info(personal)").all();
 const hasVBEDAT = personalColumns.some((column) => column.name === "VBEDAT");
 

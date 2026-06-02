@@ -1,116 +1,119 @@
 {
-	"_version": "1.12.0",
-
-	"sap.app": {
-		"id": "de.unigoettingen.dashboardapp",
-		"type": "application",
-		"i18n": "i18n/i18n.properties",
-		"title": "{{appTitle}}",
-		"description": "{{appDescription}}",
-		"applicationVersion": {
-			"version": "${version}"
-		},
-		"sourceTemplate": {
-			"id": "generator-ui5-app",
-			"version": "1.1.0"
-		}
-	},
-
-	"sap.ui": {
-		"technology": "UI5",
-		"icons": {},
-		"deviceTypes": {
-			"desktop": true,
-			"tablet": true,
-			"phone": true
-		}
-	},
-
-	"sap.ui5": {
-		"rootView": {
-			"viewName": "de.unigoettingen.dashboardapp.view.App",
-			"type": "XML",
-			"async": true,
-			"id": "app"
-		},
-
-		"dependencies": {
-			"minUI5Version": "1.146.0",
-			"libs": {
-				"sap.ui.core": {},
-				"sap.m": {},
-				"sap.viz": {}
-			}
-		},
-
-		"handleValidation": true,
-
-		"contentDensities": {
-			"compact": true,
-			"cozy": true
-		},
-
-		"models": {
-			"i18n": {
-				"type": "sap.ui.model.resource.ResourceModel",
-				"settings": {
-					"bundleName": "de.unigoettingen.dashboardapp.i18n.i18n",
-					"supportedLocales": ["en", "de"],
-					"fallbackLocale": "en",
-					"async": true
-				}
-			}
-		},
-
-		"routing": {
-			"config": {
-				"routerClass": "sap.m.routing.Router",
-				"viewType": "XML",
-				"viewPath": "de.unigoettingen.dashboardapp.view",
-				"controlId": "app",
-				"controlAggregation": "pages"
-			},
-			"routes": [
-				{
-					"pattern": "",
-					"name": "start",
-					"target": "start"
-				},
-				{
-					"pattern": "finanzen",
-					"name": "finanzen",
-					"target": "main"
-				},
-				{
-					"pattern": "hr",
-					"name": "hr",
-					"target": "hr"
-				},
-				{
-					"pattern": "pb",
-					"name": "pb",
-					"target": "pb"
-
-				}
-			],
-			"targets": {
-				"start": {
-					"viewName": "Start",
-					"viewLevel": 1
-				},
-				"main": {
-					"viewName": "Main",
-					"viewLevel": 2
-				},
-				"hr": {
-					"viewName": "HR",
-					"viewLevel": 2
-				},
-				"pb": {
-					"viewName": "PB",
-					"viewLevel": "2"
-				}
-			}
-		}
-	}
+  "_version": "1.12.0",
+  "sap.app": {
+    "id": "de.unigoettingen.dashboardapp",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "applicationVersion": {
+      "version": "${version}"
+    },
+    "sourceTemplate": {
+      "id": "generator-ui5-app",
+      "version": "1.1.0"
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "icons": {},
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "rootView": {
+      "viewName": "de.unigoettingen.dashboardapp.view.App",
+      "type": "XML",
+      "async": true,
+      "id": "app"
+    },
+    "dependencies": {
+      "minUI5Version": "1.146.0",
+      "libs": {
+        "sap.ui.core": {},
+        "sap.m": {},
+        "sap.viz": {}
+      }
+    },
+    "handleValidation": true,
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "de.unigoettingen.dashboardapp.i18n.i18n",
+          "supportedLocales": [
+            "en",
+            "de"
+          ],
+          "fallbackLocale": "en",
+          "async": true
+        }
+      }
+    },
+    "routing": {
+      "config": {
+        "routerClass": "sap.m.routing.Router",
+        "viewType": "XML",
+        "viewPath": "de.unigoettingen.dashboardapp.view",
+        "controlId": "app",
+        "controlAggregation": "pages"
+      },
+      "routes": [
+        {
+          "pattern": "",
+          "name": "login",
+          "target": "login"
+        },
+        {
+          "pattern": "dashboard",
+          "name": "dashboard",
+          "target": "start"
+        },
+        {
+          "pattern": "finanzen",
+          "name": "finanzen",
+          "target": "main"
+        },
+        {
+          "pattern": "hr",
+          "name": "hr",
+          "target": "hr"
+        },
+        {
+          "pattern": "pb",
+          "name": "pb",
+          "target": "pb"
+        }
+      ],
+      "targets": {
+        "login": {
+          "viewName": "Auth",
+          "viewLevel": 1
+        },
+        "start": {
+          "viewName": "Start",
+          "viewLevel": 2
+        },
+        "main": {
+          "viewName": "Main",
+          "viewLevel": 3
+        },
+        "hr": {
+          "viewName": "HR",
+          "viewLevel": 3
+        },
+        "pb": {
+          "viewName": "PB",
+          "viewLevel": 3
+        }
+      }
+    }
+  }
 }

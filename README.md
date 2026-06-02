@@ -3,6 +3,7 @@
 Install node.js (e.g. from the web)
 
 Do npm install, then npm install --save-dev @ui5/cli
+npm install bcryptjs machen
 
 (Vllt hab ich was vergessen)
 
@@ -14,6 +15,10 @@ Im zweiten Terminal npm start
 
 In init-db die Datenbank-Struktur erstellen und sie ausführen
 Dann die import-json.js Datei um die Einträge erweitern und ausführen
+
+## Konto anlegen
+node konto-anlegen.js (Username) (Passwort)
+
 ## Description
 
 Insert the description here...

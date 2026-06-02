@@ -1,0 +1,54 @@
+<mvc:View
+    controllerName="de.unigoettingen.dashboardapp.controller.Auth"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:l="sap.ui.layout"
+    xmlns:f="sap.ui.layout.form"
+    displayBlock="true">
+
+    <App id="loginApp">
+        <pages>
+            <Page title="Login" showHeader="false">
+                <content>
+                    <FlexBox
+                        alignItems="Center"
+                        justifyContent="Center"
+                        height="100%">
+
+                        <items>
+                            <VBox class="sapUiMediumMargin sapUiLargePadding"
+                                  width="400px"
+                                  style="background-color: white; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+
+                                <Title text="Willkommen" titleStyle="H2" class="sapUiSmallMarginBottom" />
+                                <Text text="Bitte melden Sie sich an, um fortzufahren." class="sapUiMediumMarginBottom" />
+
+                                <Label text="Benutzername" labelFor="userField" />
+                                <Input
+                                    id="userField"
+                                    value="{login>/username}"
+                                    placeholder="Benutzername eingeben"
+                                    class="sapUiSmallMarginBottom" />
+
+                                <Label text="Passwort" labelFor="pwField" />
+                                <Input
+                                    id="pwField"
+                                    value="{login>/password}"
+                                    type="Password"
+                                    placeholder="Passwort eingeben"
+                                    class="sapUiSmallMarginBottom" />
+
+                                <Button
+                                    text="Anmelden"
+                                    type="Emphasized"
+                                    width="100%"
+                                    press=".onLoginPress" />
+
+                            </VBox>
+                        </items>
+                    </FlexBox>
+                </content>
+            </Page>
+        </pages>
+    </App>
+</mvc:View>

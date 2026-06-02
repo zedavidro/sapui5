@@ -6,7 +6,7 @@ sap.ui.define([
 
   return Controller.extend("de.unigoettingen.dashboardapp.controller.Main", {
     onNavBack: function () { //Zurück-Button
-      this.getOwnerComponent().getRouter().navTo("start");
+      this.getOwnerComponent().getRouter().navTo("dashboard");
     },
 
     onInit: function () {

@@ -8,7 +8,7 @@ sap.ui.define([
 
     // --- Navigation ---
     onNavBack: function () {
-      this.getOwnerComponent().getRouter().navTo("start");
+      this.getOwnerComponent().getRouter().navTo("dashboard");
     },
 
     // --- Lifecycle-Methode ---
@@ -207,4 +207,3 @@ sap.ui.define([
 
   });
 });
-
