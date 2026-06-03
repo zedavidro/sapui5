@@ -13,7 +13,7 @@
 		formatter: 'de/unigoettingen/dashboardapp/model/formatter'
 	}">
 
-	
+
   <Page
   title="Finanzdaten"
   id="page"
@@ -21,9 +21,20 @@
   navButtonPress="onNavBack">
 
 	<content>
-		
+      <IconTabBar
+          id="navTabBar"
+          selectedKey="finanzen"
+          select="onTabSelect"
+          expandable="false"
+          applyContentPadding="false">
+          <items>
+              <IconTabFilter text="Finanzen" key="finanzen" />
+              <IconTabFilter text="Personal" key="hr" />
+              <IconTabFilter text="Publikationen" key="pb" />
+          </items>
+      </IconTabBar>
 
-	  <Select change="onYearChange">
+	  <Select change="onYearChange" class="sapUiSmallMargin">
   	  <items>
       <core:Item key="2024" text="2024"/>
       <core:Item key="2025" text="2025"/>
@@ -59,18 +70,19 @@
   }"/>
 </VBox>
 
-</HBox>	
+</HBox>
 
       <viz:VizFrame
         id="idPieChart"
-        vizType="pie"
+        vizType="column"
         width="100%"
         height="400px"
         vizProperties="{
         title: {
-        text: 'Kosten-Pie-Chart',
+        text: 'Kosten-Säulen-Chart',
         visible: true
-        }
+        },
+        legend: { visible: false }
         }">
 
         <viz:dataset>
@@ -91,11 +103,11 @@
 
         <viz:feeds>
           <viz.feeds:FeedItem
-            uid="size"
+            uid="valueAxis"
             type="Measure"
             values="Amount"/>
           <viz.feeds:FeedItem
-            uid="color"
+            uid="categoryAxis"
             type="Dimension"
             values="Cost Group"/>
         </viz:feeds>

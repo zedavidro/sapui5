@@ -7,12 +7,27 @@ sap.ui.define([
   return Controller.extend("de.unigoettingen.dashboardapp.controller.PB", {
 
     onNavBack: function () {
-      this.getOwnerComponent().getRouter().navTo("dashboard");
+      this.getOwnerComponent().getRouter().navTo("login");
+    },
+
+    onTabSelect: function (oEvent) {
+      const sKey = oEvent.getParameter("key");
+      this.getOwnerComponent().getRouter().navTo(sKey);
     },
 
     onInit: function () {
       this._selectedYear = "alle";
       this._loadAndUpdate();
+
+      this.getOwnerComponent().getRouter().getRoute("pb").attachPatternMatched(this._onRouteMatched, this);
+    },
+
+    _onRouteMatched: function () {
+      const oUserModel = this.getOwnerComponent().getModel("userModel");
+      const iRole = oUserModel ? oUserModel.getProperty("/zugriffsrechte") : 0;
+      if (iRole < 1) {
+        this.getOwnerComponent().getRouter().navTo("login");
+      }
     },
 
     onYearChange: function (oEvent) {
@@ -54,6 +69,8 @@ sap.ui.define([
               break;
             case "inPreparation":
               inPreparation++;
+              break;
+            default:
               break;
           }
         });

@@ -24,6 +24,13 @@
     }
   },
   "sap.ui5": {
+    "resources": {
+      "css": [
+        {
+          "uri": "css/style.css"
+        }
+      ]
+    },
     "rootView": {
       "viewName": "de.unigoettingen.dashboardapp.view.App",
       "type": "XML",
@@ -71,11 +78,7 @@
           "name": "login",
           "target": "login"
         },
-        {
-          "pattern": "dashboard",
-          "name": "dashboard",
-          "target": "start"
-        },
+
         {
           "pattern": "finanzen",
           "name": "finanzen",
@@ -97,10 +100,7 @@
           "viewName": "Auth",
           "viewLevel": 1
         },
-        "start": {
-          "viewName": "Start",
-          "viewLevel": 2
-        },
+
         "main": {
           "viewName": "Main",
           "viewLevel": 3

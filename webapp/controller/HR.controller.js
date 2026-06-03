@@ -8,13 +8,88 @@ sap.ui.define([
 
     // --- Navigation ---
     onNavBack: function () {
-      this.getOwnerComponent().getRouter().navTo("dashboard");
+      this.getOwnerComponent().getRouter().navTo("login");
     },
 
-    // --- Lifecycle-Methode ---
+    onTabSelect: function (oEvent) {
+      const sKey = oEvent.getParameter("key");
+      this.getOwnerComponent().getRouter().navTo(sKey);
+    },
+
     onInit: function () {
       this._selectedYear = "2025";
       this._loadAndUpdate();
+
+      this.getOwnerComponent().getRouter().getRoute("hr").attachPatternMatched(this._onRouteMatched, this);
+
+      // Set scale and reference line properties programmatically to ensure X-Axis starts at year 2015 and shows today's date
+      const oVizFrame = this.getView().byId("idContractEndRadar");
+      if (oVizFrame) {
+        const oToday = new Date();
+        const iCurrentYear = oToday.getFullYear();
+        const iCurrentMonth = oToday.getMonth();
+        const iCurrentDay = oToday.getDate();
+        const fTodayFractional = iCurrentYear + (iCurrentMonth + iCurrentDay / 30) / 12;
+        const sDateLabel = "Heute (" + oToday.toLocaleDateString("de-DE", { month: "long", year: "numeric" }) + ")";
+
+        oVizFrame.setVizProperties({
+          plotArea: {
+            dataPointStyle: {
+              rules: [
+                {
+                  dataContext: { "VZÄ": "0.5" },
+                  properties: {
+                    color: "#f87171" // Coral/light red for 0.5 VZÄ
+                  },
+                  displayName: "Teilzeit (0.5 VZÄ)"
+                },
+                {
+                  dataContext: { "VZÄ": "1.0" },
+                  properties: {
+                    color: "#818cf8" // Indigo for 1.0 VZÄ
+                  },
+                  displayName: "Vollzeit (1.0 VZÄ)"
+                }
+              ]
+            },
+            referenceLine: {
+              line: {
+                valueAxis: [
+                  {
+                    value: fTodayFractional,
+                    visible: true,
+                    size: 2,
+                    type: "dashed",
+                    color: "#ef4444",
+                    label: {
+                      text: sDateLabel,
+                      visible: true
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          valueAxis: {
+            scale: {
+              fixedRange: true,
+              minValue: 2015,
+              maxValue: 2032
+            },
+            label: {
+              formatString: "0"
+            }
+          }
+        });
+      }
+    },
+
+    _onRouteMatched: function () {
+      const oUserModel = this.getOwnerComponent().getModel("userModel");
+      const iRole = oUserModel ? oUserModel.getProperty("/zugriffsrechte") : 0;
+      if (iRole < 2) {
+        this.getOwnerComponent().getRouter().navTo("login");
+      }
     },
 
     // --- Event-Handler für Dropdown ---
@@ -45,6 +120,7 @@ sap.ui.define([
         let totalCost = 0;
 
         // Zwischenspeicher für Aggregationsobjekte
+        const contractTimelineData = [];
         const aggregatedPie = {};
         const aggregatedTrend = {};
         const aggregatedStacked = {};
@@ -61,7 +137,7 @@ sap.ui.define([
             const finArtKey = item.FIN_ART || "Unbekannt";
             const geschKey = item.GESCH || "Unbekannt";
             const orgKey = item.OTXT2 || "Unbekannt";
-            let currentFte = parseFloat(item.VZAE) || 0;
+            const currentFte = parseFloat(item.VZAE) || 0;
 
             // Kostenberechnung für diesen Datensatz (VZÄ * Kostensatz der Gruppe)
             const calculatedCost = currentFte * (costRates[finArtKey] || costRates["Unbekannt"]);
@@ -96,6 +172,24 @@ sap.ui.define([
               return;
             }
 
+            if (item.VBEDAT) {
+              const parts = item.VBEDAT.split("-");
+              const year = parseInt(parts[0], 10);
+              if (!isNaN(year) && year > 1900) {
+                const month = parseInt(parts[1], 10) - 1;
+                const day = parseInt(parts[2], 10);
+                const fractionalYear = year + (month + day / 30) / 12;
+
+                contractTimelineData.push({
+                  empCode: item.PERNRCOD ? "Mitarbeiter " + item.PERNRCOD : "Mitarbeiter",
+                  dateStr: item.VBEDAT,
+                  vzaeStr: item.VZAE ? item.VZAE.toFixed(1) : "0.0",
+                  finArt: finArtKey,
+                  endYear: parseFloat(fractionalYear.toFixed(2))
+                });
+              }
+            }
+
             // Globale KPI Werte erhöhen
             totalHeadcount += 1;
             totalFTE += currentFte;
@@ -111,7 +205,7 @@ sap.ui.define([
             aggregatedStacked[finArtKey][geschKey] += 1;
 
             // 5. Altersstruktur-Histogramm
-            let age = parseInt(item.PERSALTER, 10);
+            const age = parseInt(item.PERSALTER, 10);
             if (!isNaN(age)) {
               let ageGroup = "";
               if (age < 30) ageGroup = "20-29 Jahre";
@@ -168,6 +262,7 @@ sap.ui.define([
           });
         });
         ageStructureData.sort((a, b) => a.ageGroup.localeCompare(b.ageGroup));
+        contractTimelineData.sort((a, b) => a.dateStr.localeCompare(b.dateStr));
 
         // NEU: Controlling Transformationen
         const costByFinArt = Object.keys(aggCostFinArt).map(key => {
@@ -188,6 +283,7 @@ sap.ui.define([
           timeSeriesData: timeSeriesData,
           stackedData: stackedData,
           contractEndData: contractEndData,
+          contractTimelineData: contractTimelineData,
           ageStructureData: ageStructureData,
           costByFinArt: costByFinArt,
           costByOrg: costByOrg

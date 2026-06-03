@@ -1,5 +1,5 @@
 const express = require("express");
-const Database = require("better-sqlite3"); 
+const Database = require("better-sqlite3");
 const app = express();
 const bcrypt = require("bcryptjs")
 const db = new Database("dashboard.db"); //lädt verschiedene Sachen Frameworks oder die Datenbank
@@ -7,8 +7,8 @@ const db = new Database("dashboard.db"); //lädt verschiedene Sachen Frameworks 
 app.use(express.json());
 
 app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "http://localhost:8080"); //Erlaubt Port:8080 das abrufen von 3000 
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS"); //Get oder Post 
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:8080"); //Erlaubt Port:8080 das abrufen von 3000
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS"); //Get oder Post
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
   if (req.method === "OPTIONS") { //preflight anfrage aufgrund der post-Methode -> Browser darf senden
     return res.sendStatus(204);
@@ -18,7 +18,7 @@ app.use((req, res, next) => {
 
 app.get("/api/finanzen", (req, res) => { //Getter-Methode für Finanzdaten
   const rows = db.prepare(`
-    SELECT jahr, kategorie, konto, bezeichnung, wert 
+    SELECT jahr, kategorie, konto, bezeichnung, wert
     FROM finanzen
   `).all();   //SQL-Abfrage gibt alle gefunden Daten wieder
 
@@ -61,7 +61,7 @@ app.post("/api/login", (req, res) => {
   }
 
   const user = db.prepare(`
-    SELECT id, username, passwort_hash
+    SELECT id, username, passwort_hash, Zugriffsrechte
     FROM konto
     WHERE username = ?
   `).get(username);
@@ -86,7 +86,8 @@ app.post("/api/login", (req, res) => {
     success: true,
     user: {
       id: user.id,
-      username: user.username
+      username: user.username,
+      zugriffsrechte: user.Zugriffsrechte
     }
   });
 });

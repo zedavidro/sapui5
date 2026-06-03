@@ -10,7 +10,7 @@ db.prepare(`
     bezeichnung TEXT,
     wert REAL NOT NULL
   )
-  
+
 `).run(); //Erstellt die Tabelle, falls noch nicht vorhanden
 
 db.prepare(`
@@ -42,16 +42,18 @@ db.prepare(`
   CREATE TABLE IF NOT EXISTS konto (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   username TEXT NOT NULL UNIQUE,
-  passwort_hash TEXT NOT NULL
+  passwort_hash TEXT NOT NULL,
+  Zugriffsrechte INTEGER NOT NULL
   )
 `).run();
 
-/*const personalColumns = db.prepare("PRAGMA table_info(personal)").all();
-const hasVBEDAT = personalColumns.some((column) => column.name === "VBEDAT");
+const username = "merlin"; //Zugriffsrechte aktualisieren
+const neueRechte = 3;
 
-if (!hasVBEDAT) {
-  db.prepare(`
-    ALTER TABLE personal ADD COLUMN VBEDAT TEXT
-  `).run();
-  console.log("VBEDAT wurd angelegt")
-}*/ //Hat VBEDAT einmalig hinzugefügt, darf aber nur einmal laufen
+db.prepare(`
+  UPDATE konto
+  SET Zugriffsrechte = ?
+  WHERE username = ?
+`).run(neueRechte, username);
+
+console.log(`Die Rechte für ${username} wurden auf ${neueRechte} gesetzt.`);

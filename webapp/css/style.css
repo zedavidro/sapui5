@@ -1,0 +1,98 @@
+/* Thin Sidebar styling */
+.thin-sidebar {
+  background-color: #121826 !important; /* Very dark slate */
+  border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+  height: 100%;
+  padding-top: 15px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 1001; /* Ensure it sits on top of content */
+}
+
+/* Expanded Sidebar styling */
+.expanded-sidebar {
+  background: rgba(18, 24, 38, 0.98) !important; /* Elegant dark navy/black */
+  backdrop-filter: blur(15px) !important;
+  -webkit-backdrop-filter: blur(15px) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+  height: 100%;
+  padding: 24px 8px 16px 8px;
+  box-sizing: border-box;
+  z-index: 1000;
+  box-shadow: 5px 0 15px rgba(0,0,0,0.2);
+}
+
+/* Make sure the App container takes remaining space */
+.sapMApp {
+  flex-grow: 1 !important;
+  width: auto !important;
+}
+
+/* Styling for buttons in the thin sidebar */
+.thin-sidebar .sapMBtn {
+  margin-bottom: 12px;
+}
+
+.thin-sidebar .sapMBtnIcon {
+  color: #94a3b8 !important; /* Slate color */
+  font-size: 1.3rem !important;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.thin-sidebar .sapMBtn:hover .sapMBtnIcon {
+  color: #818cf8 !important; /* Indigo accent */
+  transform: scale(1.1);
+}
+
+.sidebar-toggle-btn .sapMBtnIcon {
+  color: #ffffff !important;
+}
+
+.sidebar-toggle-btn:hover .sapMBtnIcon {
+  color: #818cf8 !important;
+}
+
+/* Sidebar header styling */
+.sidebar-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 15px;
+  margin-bottom: 15px;
+}
+
+.sidebar-title {
+  color: #ffffff !important;
+  font-weight: bold !important;
+  letter-spacing: 0.5px;
+}
+
+.sidebar-subtitle {
+  color: #94a3b8 !important;
+  font-size: 0.8rem !important;
+}
+
+/* Customize tree items for dark mode */
+.tree-item-custom {
+  background-color: transparent !important;
+}
+
+.tree-item-custom .sapMCLI {
+  background-color: transparent !important;
+  border-bottom: none !important;
+  color: #e2e8f0 !important;
+}
+
+.tree-item-custom:hover .sapMCLI {
+  background-color: rgba(99, 102, 241, 0.15) !important;
+  color: #ffffff !important;
+}
+
+.tree-item-custom .sapMObjStatusNone {
+  color: #a5b4fc !important;
+}
+
+/* Customize Tree expansion button */
+.sapMTreeIcon {
+  color: #818cf8 !important;
+}

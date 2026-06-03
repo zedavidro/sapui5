@@ -6,12 +6,27 @@ sap.ui.define([
 
   return Controller.extend("de.unigoettingen.dashboardapp.controller.Main", {
     onNavBack: function () { //Zurück-Button
-      this.getOwnerComponent().getRouter().navTo("dashboard");
+      this.getOwnerComponent().getRouter().navTo("login");
+    },
+
+    onTabSelect: function (oEvent) {
+      const sKey = oEvent.getParameter("key");
+      this.getOwnerComponent().getRouter().navTo(sKey);
     },
 
     onInit: function () {
       this._selectedYear = "2024";
       this._loadAndUpdate();  //2024 wird beim ersten Laden angezeigt
+
+      this.getOwnerComponent().getRouter().getRoute("finanzen").attachPatternMatched(this._onRouteMatched, this);
+    },
+
+    _onRouteMatched: function () {
+      const oUserModel = this.getOwnerComponent().getModel("userModel");
+      const iRole = oUserModel ? oUserModel.getProperty("/zugriffsrechte") : 0;
+      if (iRole < 3) {
+        this.getOwnerComponent().getRouter().navTo("login");
+      }
     },
 
     formatEuro: function (value) {

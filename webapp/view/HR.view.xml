@@ -14,6 +14,19 @@
     navButtonPress="onNavBack">
 
     <content>
+      <IconTabBar
+          id="navTabBar"
+          selectedKey="hr"
+          select="onTabSelect"
+          expandable="false"
+          applyContentPadding="false">
+          <items>
+              <IconTabFilter text="Finanzen" key="finanzen" />
+              <IconTabFilter text="Personal" key="hr" />
+              <IconTabFilter text="Publikationen" key="pb" />
+          </items>
+      </IconTabBar>
+
       <Toolbar design="Transparent" class="sapUiSmallMargin">
         <Title text="Analysejahr wählen:" class="sapUiTinyMarginEnd"/>
         <Select change="onYearChange" selectedKey="2025">
@@ -66,79 +79,116 @@
           <IconTabFilter icon="sap-icon://employee" text="Struktur &amp; Befristung" key="structure">
             <content>
 
-              <viz:VizFrame
-                id="idPersonalPieChart"
-                vizType="pie"
-                width="100%"
-                height="350px"
-                vizProperties="{ title: { text: 'Verteilung nach Dienstart', visible: true } }">
-                <viz:dataset>
-                  <viz.data:FlattenedDataset data="{/employeeGroups}">
-                    <viz.data:dimensions>
-                      <viz.data:DimensionDefinition name="Dienstart" value="{name}" />
-                    </viz.data:dimensions>
-                    <viz.data:measures>
-                      <viz.data:MeasureDefinition name="Anzahl" value="{value}" />
-                    </viz.data:measures>
-                  </viz.data:FlattenedDataset>
-                </viz:dataset>
-                <viz:feeds>
-                  <viz.feeds:FeedItem uid="size" type="Measure" values="Anzahl"/>
-                  <viz.feeds:FeedItem uid="color" type="Dimension" values="Dienstart"/>
-                </viz:feeds>
-              </viz:VizFrame>
+              <HBox justifyContent="SpaceBetween" width="100%">
+                <VBox width="49%">
+                  <viz:VizFrame
+                    id="idPersonalPieChart"
+                    vizType="column"
+                    width="100%"
+                    height="350px"
+                    vizProperties="{
+                      title: { text: 'Verteilung nach Dienstart', visible: true },
+                      legend: { visible: false }
+                    }">
+                    <viz:dataset>
+                      <viz.data:FlattenedDataset data="{/employeeGroups}">
+                        <viz.data:dimensions>
+                          <viz.data:DimensionDefinition name="Dienstart" value="{name}" />
+                        </viz.data:dimensions>
+                        <viz.data:measures>
+                          <viz.data:MeasureDefinition name="Anzahl" value="{value}" />
+                        </viz.data:measures>
+                      </viz.data:FlattenedDataset>
+                    </viz:dataset>
+                    <viz:feeds>
+                      <viz.feeds:FeedItem uid="valueAxis" type="Measure" values="Anzahl"/>
+                      <viz.feeds:FeedItem uid="categoryAxis" type="Dimension" values="Dienstart"/>
+                    </viz:feeds>
+                  </viz:VizFrame>
+                </VBox>
 
-              <viz:VizFrame
-                id="idStackedBarChart"
-                vizType="stacked_column"
-                width="100%"
-                height="350px"
-                class="sapUiLargeMarginTop"
-                vizProperties="{ title: { text: 'Mitarbeiter nach Dienstart und Geschlecht', visible: true } }">
-                <viz:dataset>
-                  <viz.data:FlattenedDataset data="{/stackedData}">
-                    <viz.data:dimensions>
-                      <viz.data:DimensionDefinition name="Dienstart" value="{finArt}" />
-                      <viz.data:DimensionDefinition name="Geschlecht" value="{gesch}" />
-                    </viz.data:dimensions>
-                    <viz.data:measures>
-                      <viz.data:MeasureDefinition name="Anzahl" value="{count}" />
-                    </viz.data:measures>
-                  </viz.data:FlattenedDataset>
-                </viz:dataset>
-                <viz:feeds>
-                  <viz.feeds:FeedItem uid="valueAxis" type="Measure" values="Anzahl"/>
-                  <viz.feeds:FeedItem uid="categoryAxis" type="Dimension" values="Dienstart"/>
-                  <viz.feeds:FeedItem uid="color" type="Dimension" values="Geschlecht"/>
-                </viz:feeds>
-              </viz:VizFrame>
+                <VBox width="49%">
+                  <viz:VizFrame
+                    id="idStackedBarChart"
+                    vizType="stacked_column"
+                    width="100%"
+                    height="350px"
+                    vizProperties="{ title: { text: 'Mitarbeiter nach Dienstart und Geschlecht', visible: true } }">
+                    <viz:dataset>
+                      <viz.data:FlattenedDataset data="{/stackedData}">
+                        <viz.data:dimensions>
+                          <viz.data:DimensionDefinition name="Dienstart" value="{finArt}" />
+                          <viz.data:DimensionDefinition name="Geschlecht" value="{gesch}" />
+                        </viz.data:dimensions>
+                        <viz.data:measures>
+                          <viz.data:MeasureDefinition name="Anzahl" value="{count}" />
+                        </viz.data:measures>
+                      </viz.data:FlattenedDataset>
+                    </viz:dataset>
+                    <viz:feeds>
+                      <viz.feeds:FeedItem uid="valueAxis" type="Measure" values="Anzahl"/>
+                      <viz.feeds:FeedItem uid="categoryAxis" type="Dimension" values="Dienstart"/>
+                      <viz.feeds:FeedItem uid="color" type="Dimension" values="Geschlecht"/>
+                    </viz:feeds>
+                  </viz:VizFrame>
+                </VBox>
+              </HBox>
 
               <viz:VizFrame
                 id="idContractEndRadar"
-                vizType="stacked_column"
+                vizType="bar"
                 width="100%"
-                height="350px"
+                height="500px"
                 class="sapUiLargeMarginTop"
                 vizProperties="{
-                  title: { text: 'Befristungs-Radar: Auslaufende VZÄ nach Vertragsende', visible: true },
-                  valueAxis: { title: { text: 'Auslaufende VZÄ (FTE)' } },
-                  categoryAxis: { title: { text: 'Ablaufmonat' } }
+                  title: { text: 'Befristungs-Radar: Ablauf der Verträge (Enddatum)', visible: true },
+                  plotArea: {
+                    dataPointStyle: {
+                      rules: [
+                        {
+                          dataContext: { 'VZÄ': '0.5' },
+                          properties: {
+                            color: '#f87171'
+                          },
+                          displayName: 'Teilzeit (0.5 VZÄ)'
+                        },
+                        {
+                          dataContext: { 'VZÄ': '1.0' },
+                          properties: {
+                            color: '#818cf8'
+                          },
+                          displayName: 'Vollzeit (1.0 VZÄ)'
+                        }
+                      ]
+                    }
+                  },
+                  valueAxis: {
+                    title: { text: 'Jahr des Vertragsendes' },
+                    scale: {
+                      fixedRange: true,
+                      minValue: 2015,
+                      maxValue: 2032
+                    },
+                    label: {
+                      formatString: '0'
+                    }
+                  },
+                  categoryAxis: { title: { text: 'Mitarbeiter (Code)' } }
                 }">
                 <viz:dataset>
-                  <viz.data:FlattenedDataset data="{/contractEndData}">
+                  <viz.data:FlattenedDataset data="{/contractTimelineData}">
                     <viz.data:dimensions>
-                      <viz.data:DimensionDefinition name="Ablaufmonat" value="{month}" />
-                      <viz.data:DimensionDefinition name="Dienstart" value="{finArt}" />
+                      <viz.data:DimensionDefinition name="Mitarbeiter" value="{empCode}" />
+                      <viz.data:DimensionDefinition name="VZÄ" value="{vzaeStr}" />
                     </viz.data:dimensions>
                     <viz.data:measures>
-                      <viz.data:MeasureDefinition name="Auslaufende VZÄ" value="{fte}" />
+                      <viz.data:MeasureDefinition name="Vertragsende" value="{endYear}" />
                     </viz.data:measures>
                   </viz.data:FlattenedDataset>
                 </viz:dataset>
                 <viz:feeds>
-                  <viz.feeds:FeedItem uid="valueAxis" type="Measure" values="Auslaufende VZÄ"/>
-                  <viz.feeds:FeedItem uid="categoryAxis" type="Dimension" values="Ablaufmonat"/>
-                  <viz.feeds:FeedItem uid="color" type="Dimension" values="Dienstart"/>
+                  <viz.feeds:FeedItem uid="valueAxis" type="Measure" values="Vertragsende"/>
+                  <viz.feeds:FeedItem uid="categoryAxis" type="Dimension" values="Mitarbeiter,VZÄ"/>
                 </viz:feeds>
               </viz:VizFrame>
 
@@ -149,7 +199,7 @@
                 height="350px"
                 class="sapUiLargeMarginTop"
                 vizProperties="{
-                  title: { text: 'Altersstruktur &amp; Brain Drain (Kopfzahl nach Altersgruppe)', visible: true },
+                  title: { text: 'Altersstruktur', visible: true },
                   valueAxis: { title: { text: 'Kopfzahl (Personen)' } },
                   categoryAxis: { title: { text: 'Altersgruppe' } }
                 }">
@@ -177,54 +227,65 @@
           <IconTabFilter icon="sap-icon://lead" text="Personalkosten-Controlling" key="costs">
             <content>
 
-              <viz:VizFrame
-                id="idCostByFinArtChart"
-                vizType="column"
-                width="100%"
-                height="380px"
-                vizProperties="{
-                  title: { text: 'Personalkosten nach Personalgruppe', visible: true },
-                  valueAxis: { title: { text: 'Kosten in EUR' } },
-                  categoryAxis: { title: { text: 'Dienstart' } }
-                }">
-                <viz:dataset>
-                  <viz.data:FlattenedDataset data="{/costByFinArt}">
-                    <viz.data:dimensions>
-                      <viz.data:DimensionDefinition name="Dienstart" value="{finArt}" />
-                    </viz.data:dimensions>
-                    <viz.data:measures>
-                      <viz.data:MeasureDefinition name="Kosten" value="{cost}" />
-                    </viz.data:measures>
-                  </viz.data:FlattenedDataset>
-                </viz:dataset>
-                <viz:feeds>
-                  <viz.feeds:FeedItem uid="valueAxis" type="Measure" values="Kosten"/>
-                  <viz.feeds:FeedItem uid="categoryAxis" type="Dimension" values="Dienstart"/>
-                </viz:feeds>
-              </viz:VizFrame>
+              <HBox justifyContent="SpaceBetween" width="100%">
+                <VBox width="49%">
+                  <viz:VizFrame
+                    id="idCostByFinArtChart"
+                    vizType="column"
+                    width="100%"
+                    height="380px"
+                    vizProperties="{
+                      title: { text: 'Personalkosten nach Personalgruppe', visible: true },
+                      valueAxis: { title: { text: 'Kosten in EUR' } },
+                      categoryAxis: { title: { text: 'Dienstart' } },
+                      legend: { visible: false }
+                    }">
+                    <viz:dataset>
+                      <viz.data:FlattenedDataset data="{/costByFinArt}">
+                        <viz.data:dimensions>
+                          <viz.data:DimensionDefinition name="Dienstart" value="{finArt}" />
+                        </viz.data:dimensions>
+                        <viz.data:measures>
+                          <viz.data:MeasureDefinition name="Kosten" value="{cost}" />
+                        </viz.data:measures>
+                      </viz.data:FlattenedDataset>
+                    </viz:dataset>
+                    <viz:feeds>
+                      <viz.feeds:FeedItem uid="valueAxis" type="Measure" values="Kosten"/>
+                      <viz.feeds:FeedItem uid="categoryAxis" type="Dimension" values="Dienstart"/>
+                    </viz:feeds>
+                  </viz:VizFrame>
+                </VBox>
 
-              <viz:VizFrame
-                id="idCostByOrgChart"
-                vizType="pie"
-                width="100%"
-                height="380px"
-                class="sapUiLargeMarginTop"
-                vizProperties="{ title: { text: 'Kostenverteilung nach Struktureinheit / Institut', visible: true } }">
-                <viz:dataset>
-                  <viz.data:FlattenedDataset data="{/costByOrg}">
-                    <viz.data:dimensions>
-                      <viz.data:DimensionDefinition name="Abteilung" value="{org}" />
-                    </viz.data:dimensions>
-                    <viz.data:measures>
-                      <viz.data:MeasureDefinition name="Kosten" value="{cost}" />
-                    </viz.data:measures>
-                  </viz.data:FlattenedDataset>
-                </viz:dataset>
-                <viz:feeds>
-                  <viz.feeds:FeedItem uid="size" type="Measure" values="Kosten"/>
-                  <viz.feeds:FeedItem uid="color" type="Dimension" values="Abteilung"/>
-                </viz:feeds>
-              </viz:VizFrame>
+                <VBox width="49%">
+                  <viz:VizFrame
+                    id="idCostByOrgChart"
+                    vizType="column"
+                    width="100%"
+                    height="380px"
+                    vizProperties="{
+                      title: { text: 'Kostenverteilung nach Struktureinheit / Institut', visible: true },
+                      valueAxis: { title: { text: 'Kosten in EUR' } },
+                      categoryAxis: { title: { text: 'Abteilung' } },
+                      legend: { visible: false }
+                    }">
+                    <viz:dataset>
+                      <viz.data:FlattenedDataset data="{/costByOrg}">
+                        <viz.data:dimensions>
+                          <viz.data:DimensionDefinition name="Abteilung" value="{org}" />
+                        </viz.data:dimensions>
+                        <viz.data:measures>
+                          <viz.data:MeasureDefinition name="Kosten" value="{cost}" />
+                        </viz.data:measures>
+                      </viz.data:FlattenedDataset>
+                    </viz:dataset>
+                    <viz:feeds>
+                      <viz.feeds:FeedItem uid="valueAxis" type="Measure" values="Kosten"/>
+                      <viz.feeds:FeedItem uid="categoryAxis" type="Dimension" values="Abteilung"/>
+                    </viz:feeds>
+                  </viz:VizFrame>
+                </VBox>
+              </HBox>
 
             </content>
           </IconTabFilter>

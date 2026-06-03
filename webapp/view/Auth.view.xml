@@ -36,7 +36,8 @@
                                     value="{login>/password}"
                                     type="Password"
                                     placeholder="Passwort eingeben"
-                                    class="sapUiSmallMarginBottom" />
+                                    class="sapUiSmallMarginBottom"
+                                    submit = ".onLoginPress" />
 
                                 <Button
                                     text="Anmelden"

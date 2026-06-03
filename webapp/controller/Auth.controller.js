@@ -8,7 +8,7 @@ sap.ui.define([
 	return BaseController.extend("de.unigoettingen.dashboardapp.controller.Auth", {
 
 		onInit: function () {
-			var oLoginModel = new JSONModel({
+			const oLoginModel = new JSONModel({
 				username: "",
 				password: ""
 			});
@@ -16,9 +16,9 @@ sap.ui.define([
 		},
 
 		onLoginPress: function () {
-			var oModel = this.getView().getModel("login");
-			var sUsername = oModel.getProperty("/username");
-			var sPassword = oModel.getProperty("/password");
+			const oModel = this.getView().getModel("login");
+			const sUsername = oModel.getProperty("/username");
+			const sPassword = oModel.getProperty("/password");
 
 			if (!sUsername || !sPassword) {
 				MessageToast.show("Bitte geben Sie Benutzername und Passwort ein.");
@@ -41,13 +41,18 @@ sap.ui.define([
 			.then(function(data) {
 				if (data.success) {
 					MessageToast.show("Login erfolgreich!");
-					// In der manifest.json heißt die Route fürs Dashboard "dashboard"
-					this.getRouter().navTo("dashboard");
+
+					// Speichere den Benutzer inklusive Zugriffsrechte im globalen Component-Modell
+					const oUserModel = new JSONModel(data.user);
+					this.getOwnerComponent().setModel(oUserModel, "userModel");
+
+					// Weiterleiten zu den Finanzdaten
+					this.getRouter().navTo("finanzen");
 				} else {
 					MessageToast.show(data.message || "Login fehlgeschlagen.");
 				}
 			}.bind(this))
-			.catch(function(error) {
+			.catch(function() {
 				MessageToast.show("Fehler bei der Verbindung zum Server.");
 			});
 		}

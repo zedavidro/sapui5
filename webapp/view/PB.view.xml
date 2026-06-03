@@ -17,6 +17,18 @@
         navButtonPress="onNavBack">
 
         <content>
+            <IconTabBar
+                id="navTabBar"
+                selectedKey="pb"
+                select="onTabSelect"
+                expandable="false"
+                applyContentPadding="false">
+                <items>
+                    <IconTabFilter text="Finanzen" key="finanzen" />
+                    <IconTabFilter text="Personal" key="hr" />
+                    <IconTabFilter text="Publikationen" key="pb" />
+                </items>
+            </IconTabBar>
 
             <!-- Header -->
             <VBox
