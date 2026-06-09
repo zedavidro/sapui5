@@ -42,7 +42,9 @@
       "libs": {
         "sap.ui.core": {},
         "sap.m": {},
-        "sap.viz": {}
+        "sap.viz": {
+          "lazy": true
+        }
       }
     },
     "handleValidation": true,
@@ -70,7 +72,8 @@
         "viewType": "XML",
         "viewPath": "de.unigoettingen.dashboardapp.view",
         "controlId": "app",
-        "controlAggregation": "pages"
+        "controlAggregation": "pages",
+        "transition": "slide"
       },
       "routes": [
         {
@@ -78,7 +81,6 @@
           "name": "login",
           "target": "login"
         },
-
         {
           "pattern": "finanzen",
           "name": "finanzen",
@@ -100,10 +102,9 @@
           "viewName": "Auth",
           "viewLevel": 1
         },
-
         "main": {
           "viewName": "Main",
-          "viewLevel": 3
+          "viewLevel": 2
         },
         "hr": {
           "viewName": "HR",
@@ -111,7 +112,7 @@
         },
         "pb": {
           "viewName": "PB",
-          "viewLevel": 3
+          "viewLevel": 4
         }
       }
     }

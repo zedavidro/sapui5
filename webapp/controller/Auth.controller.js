@@ -13,6 +13,16 @@ sap.ui.define([
 				password: ""
 			});
 			this.getView().setModel(oLoginModel, "login");
+
+			this.getRouter().getRoute("login").attachPatternMatched(this.onRouteMatched, this);
+		},
+
+		onRouteMatched: function () {
+			const oModel = this.getView().getModel("login");
+			if (oModel) {
+				oModel.setProperty("/username", "");
+				oModel.setProperty("/password", "");
+			}
 		},
 
 		onLoginPress: function () {

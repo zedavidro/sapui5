@@ -11,8 +11,17 @@
   z-index: 1001; /* Ensure it sits on top of content */
 }
 
+.app-root-layout {
+  position: relative !important;
+  height: 100%;
+  width: 100%;
+}
+
 /* Expanded Sidebar styling */
 .expanded-sidebar {
+  position: absolute !important;
+  left: 60px;
+  top: 0;
   background: rgba(18, 24, 38, 0.98) !important; /* Elegant dark navy/black */
   backdrop-filter: blur(15px) !important;
   -webkit-backdrop-filter: blur(15px) !important;
@@ -21,10 +30,30 @@
   padding: 24px 8px 16px 8px;
   box-sizing: border-box;
   z-index: 1000;
-  box-shadow: 5px 0 15px rgba(0,0,0,0.2);
+
+  /* Sliding transition and initial hidden/collapsed state */
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, visibility 0.3s ease, box-shadow 0.3s ease !important;
+  transform: translateX(-100%);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
 }
 
-/* Make sure the App container takes remaining space */
+.expanded-sidebar.open {
+  transform: translateX(0);
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  box-shadow: 5px 0 15px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Make sure the main content wrapper and App container take remaining space */
+.main-content-wrapper {
+  flex-grow: 1 !important;
+  width: auto !important;
+  height: 100%;
+}
+
 .sapMApp {
   flex-grow: 1 !important;
   width: auto !important;
@@ -95,4 +124,919 @@
 /* Customize Tree expansion button */
 .sapMTreeIcon {
   color: #818cf8 !important;
+}
+
+/* ==========================================
+   Login Page Styling (Minimalist & Centered)
+   ========================================== */
+
+/* Login Page & Wrapper */
+.login-page-minimal {
+  background: #f8fafc !important; /* light slate background */
+}
+
+.login-page-minimal .sapMPageBgStandard {
+  background: transparent !important;
+}
+
+.login-wrapper-minimal {
+  background: transparent !important;
+}
+
+/* Minimalist Card */
+.login-card-minimal {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0; /* light border */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05),
+              0 10px 15px -3px rgba(0, 0, 0, 0.03),
+              0 20px 25px -5px rgba(0, 0, 0, 0.01) !important;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 400px;
+  width: 100%;
+
+	padding-top: 40px !important;
+}
+
+/* Typography */
+.login-uni-name-minimal {
+  color: #64748b !important;
+  font-weight: 700 !important;
+  font-size: 0.75rem !important;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.login-portal-title-minimal {
+  color: #0f172a !important;
+  font-weight: 800 !important;
+  font-size: 1.6rem !important;
+  letter-spacing: -0.5px;
+}
+
+.login-subtitle-minimal {
+  color: #475569 !important;
+  font-size: 0.85rem !important;
+  line-height: 1.4 !important;
+  max-width: 290px;
+  text-align: center;
+}
+
+.login-footer-minimal {
+  color: #94a3b8 !important;
+  font-size: 0.7rem !important;
+  text-align: center;
+}
+
+/* Form Area */
+.login-form-area-minimal {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Custom Minimalist Inputs (Centered layout, left-aligned text) */
+.login-input-minimal {
+  width: 100% !important;
+  /* max-width: 320px; */
+  height: 46px !important; /* Explicitly set container height */
+	border-radius: 8px !important;
+  /* border-style: solid !important; */
+  /* border-width: 2px !important; */
+  border-color: #cbd5e1 !important; /* Thicker, clean border */
+}
+
+.login-input-minimal .sapMInputBaseInner {
+  border-radius: 4px !important;
+
+  /* HIER IST DIE RETTUNG: Explizit den Typ auf solid setzen */
+  border-style: solid !important;
+  border-width: 1px !important;
+  border-color: #cbd5e1 !important; /* Thicker, clean border */
+
+  font-size: 0.95rem !important;
+  height: 100% !important; /* Take full height of container */
+  line-height: 42px !important; /* Precisely centers text and placeholder vertically with 2px borders */
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+  background-color: #f8fafc !important;
+  color: #0f172a !important; /* Dark text */
+
+  /* Falls die Ecken IMMER NOCH dunkel sind, kommentiere testweise diese Zeile aus: */
+  box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.02) !important; /* Subtle inner shadow */
+
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.login-input-minimal .sapMInputBaseInner:hover {
+  border-color: #94a3b8 !important; /* Hover effect */
+}
+
+.login-input-minimal.sapMInputBaseFocused .sapMInputBaseInner {
+  border-color: #003b7e !important;
+  background-color: #ffffff !important;
+  box-shadow: 0 0 0 3px rgba(0, 59, 126, 0.1), inset 0 2px 4px 0 rgba(0, 0, 0, 0.02) !important;
+}
+
+/* Custom Minimalist Button */
+.login-button-minimal {
+  height: 46px !important;
+  border-radius: 8px !important;
+  overflow: hidden;
+  width: 100% !important;
+  max-width: 320px;
+}
+
+.login-button-minimal .sapMBtnInner {
+  height: 100% !important;
+  line-height: 46px !important; /* Center text vertically */
+  background-image: none !important;
+  background-color: #003b7e !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  font-size: 0.95rem !important;
+  border: none !important;
+  transition: all 0.2s ease !important;
+}
+
+.login-button-minimal:hover .sapMBtnInner {
+  background-color: #00224d !important;
+  box-shadow: 0 4px 12px rgba(0, 59, 126, 0.15) !important;
+}
+
+.login-button-minimal:active .sapMBtnInner {
+  transform: scale(0.98);
+}
+
+/* KPI Cards Styling */
+.kpi-card {
+  background-color: #f1f5f9 !important; /* Soft slate/light grey fill */
+  border: 1px solid #cbd5e1 !important; /* Border around card */
+  border-radius: 12px !important;
+  padding: 16px 24px !important;
+  text-align: center !important;
+  min-width: 180px !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03) !important;
+  transition: all 0.2s ease-in-out !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.kpi-card:hover {
+  transform: translateY(-2px) !important;
+  background-color: #e2e8f0 !important; /* Darken slightly on hover */
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+}
+
+.kpi-title {
+  color: #475569 !important; /* Medium dark slate for titles */
+  font-size: 0.85rem !important;
+  font-weight: 600 !important;
+  margin-bottom: 8px !important;
+}
+
+.kpi-value {
+  color: #0f172a !important; /* Strong dark slate for values */
+  font-size: 1.6rem !important;
+  font-weight: 800 !important;
+}
+
+/* ==========================================
+   Theme variables and general overrides
+   ========================================== */
+
+/* Light Mode Defaults */
+.theme-light {
+  background-color: #ffffff !important;
+}
+
+.theme-light .main-content-wrapper {
+  background-color: #ffffff !important;
+}
+
+.theme-light .sapMPageBgStandard {
+  background-color: #ffffff !important;
+}
+
+.theme-light .sapMBar {
+  background-color: #ffffff !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+.theme-light .sapMBarTitle {
+  color: #0f172a !important;
+}
+
+.theme-light .kpi-card {
+  background-color: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+}
+
+.theme-light .kpi-card:hover {
+  background-color: #e2e8f0 !important;
+}
+
+.theme-light .kpi-title {
+  color: #475569 !important;
+}
+
+.theme-light .kpi-value {
+  color: #0f172a !important;
+}
+
+/* Light Mode Sidebar Overrides */
+.theme-light .thin-sidebar {
+  background-color: #ffffff !important;
+  border-right: 1px solid #e2e8f0 !important;
+}
+
+.theme-light .thin-sidebar .sapMBtnIcon {
+  color: #64748b !important;
+}
+
+.theme-light .thin-sidebar .sapMBtn:hover .sapMBtnIcon {
+  color: #4f46e5 !important;
+}
+
+.theme-light .sidebar-toggle-btn .sapMBtnIcon {
+  color: #0f172a !important;
+}
+
+.theme-light .sidebar-toggle-btn:hover .sapMBtnIcon {
+  color: #4f46e5 !important;
+}
+
+.theme-light .expanded-sidebar {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border-right: 1px solid #e2e8f0 !important;
+  box-shadow: none !important;
+}
+
+.theme-light .expanded-sidebar.open {
+  box-shadow: 5px 0 15px rgba(0,0,0,0.05) !important;
+}
+
+.theme-light .sidebar-header {
+  border-bottom-color: #e2e8f0 !important;
+}
+
+.theme-light .sidebar-title {
+  color: #0f172a !important;
+}
+
+.theme-light .sidebar-subtitle {
+  color: #64748b !important;
+}
+
+.theme-light .sidebar-logo {
+  color: #4f46e5 !important;
+}
+
+.theme-light .tree-item-custom .sapMCLI {
+  color: #334155 !important;
+}
+
+.theme-light .tree-item-custom:hover .sapMCLI {
+  background-color: rgba(99, 102, 241, 0.1) !important;
+  color: #0f172a !important;
+}
+
+/* Light Mode VizFrame Overrides */
+.theme-light .sapVizFrame {
+  background-color: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+}
+
+.theme-light .v-m-background,
+.theme-light .v-background {
+  fill: #ffffff !important;
+}
+
+.theme-light .v-m-title .v-text {
+  fill: #0f172a !important;
+}
+
+.theme-light .v-m-legend .v-label {
+  fill: #475569 !important;
+}
+
+.theme-light .v-m-xAxis .v-label,
+.theme-light .v-m-yAxis .v-label {
+  fill: #64748b !important;
+}
+
+.theme-light .v-m-xAxis .v-title,
+.theme-light .v-m-yAxis .v-title {
+  fill: #475569 !important;
+}
+
+
+/* Dark Mode (Deep Dark Blue) */
+.theme-dark {
+  background-color: #0d1527 !important;
+  color: #f8fafc !important;
+}
+
+.theme-dark .main-content-wrapper {
+  background-color: #0d1527 !important;
+}
+
+.theme-dark .sapMPageBgStandard {
+  background-color: #0d1527 !important;
+}
+
+/* Shared Header in Dark Mode */
+.theme-dark .sapMBar {
+  background-color: #0b0f19 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.theme-dark .sapMBarTitle {
+  color: #ffffff !important;
+}
+
+.theme-dark .sapMBtnIcon {
+  color: #94a3b8 !important;
+}
+
+.theme-dark .sapMBtn:hover .sapMBtnIcon {
+  color: #818cf8 !important;
+}
+
+/* Tabs in Dark Mode */
+.theme-dark .sapMITBContent {
+  background-color: #0d1527 !important;
+}
+
+/* KPI Cards in Dark Mode */
+.theme-dark .kpi-card {
+  background-color: #1e293b !important; /* Slate 800 */
+  border-color: #334155 !important; /* Slate 700 */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1) !important;
+}
+
+.theme-dark .kpi-card:hover {
+  background-color: #334155 !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3) !important;
+}
+
+.theme-dark .kpi-title {
+  color: #94a3b8 !important;
+}
+
+.theme-dark .kpi-value {
+  color: #f8fafc !important;
+}
+
+/* Inputs & Labels in Dark Mode */
+.theme-dark .sapMLabel {
+  color: #94a3b8 !important;
+}
+
+.theme-dark .sapMText {
+  color: #cbd5e1 !important;
+}
+
+.theme-dark .sapMTitle {
+  color: #ffffff !important;
+}
+
+.theme-dark .sapMSelect {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+.theme-dark .sapMSelect .sapMSelectText {
+  color: #ffffff !important;
+}
+
+.theme-dark .sapMSelect .sapMSelectArrow {
+  color: #818cf8 !important;
+}
+
+/* Dark Mode Sidebar Overrides */
+.theme-dark .thin-sidebar {
+  background-color: #070b13 !important; /* Even darker blue */
+  border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+.theme-dark .thin-sidebar .sapMBtnIcon {
+  color: #94a3b8 !important;
+}
+
+.theme-dark .thin-sidebar .sapMBtn:hover .sapMBtnIcon {
+  color: #818cf8 !important;
+}
+
+.theme-dark .sidebar-toggle-btn .sapMBtnIcon {
+  color: #ffffff !important;
+}
+
+.theme-dark .sidebar-toggle-btn:hover .sapMBtnIcon {
+  color: #818cf8 !important;
+}
+
+.theme-dark .expanded-sidebar {
+  background: rgba(7, 11, 19, 0.98) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+  box-shadow: none !important;
+}
+
+.theme-dark .expanded-sidebar.open {
+  box-shadow: 5px 0 15px rgba(0,0,0,0.3) !important;
+}
+
+.theme-dark .sidebar-header {
+  border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.theme-dark .sidebar-title {
+  color: #ffffff !important;
+}
+
+.theme-dark .sidebar-subtitle {
+  color: #94a3b8 !important;
+}
+
+.theme-dark .sidebar-logo {
+  color: #818cf8 !important;
+}
+
+.theme-dark .tree-item-custom .sapMCLI {
+  color: #e2e8f0 !important;
+}
+
+.theme-dark .tree-item-custom:hover .sapMCLI {
+  background-color: rgba(99, 102, 241, 0.2) !important;
+  color: #ffffff !important;
+}
+
+/* Dark Mode VizFrame Overrides */
+.theme-dark .sapVizFrame {
+  background-color: #0d1527 !important;
+  border: 1px solid #334155 !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+}
+
+.theme-dark .v-m-background,
+.theme-dark .v-background {
+  fill: #0d1527 !important;
+}
+
+.theme-dark .v-m-title .v-text {
+  fill: #ffffff !important;
+}
+
+.theme-dark .v-m-legend .v-label {
+  fill: #cbd5e1 !important;
+}
+
+.theme-dark .v-m-xAxis .v-label,
+.theme-dark .v-m-yAxis .v-label {
+  fill: #94a3b8 !important;
+}
+
+.theme-dark .v-m-xAxis .v-title,
+.theme-dark .v-m-yAxis .v-title {
+  fill: #cbd5e1 !important;
+}
+
+/* Theme Dark - Login Screen Overrides */
+.theme-dark .login-page-minimal {
+  background: #0d1527 !important; /* Deep dark blue */
+}
+
+.theme-dark .login-card-minimal {
+  background: #1e293b !important; /* Slate 800 */
+  border-color: #334155 !important; /* Slate 700 */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3),
+              0 10px 15px -3px rgba(0, 0, 0, 0.2),
+              0 20px 25px -5px rgba(0, 0, 0, 0.1) !important;
+}
+
+.theme-dark .login-uni-name-minimal {
+  color: #94a3b8 !important; /* Slate 400 */
+}
+
+.theme-dark .login-portal-title-minimal {
+  color: #ffffff !important; /* White */
+}
+
+.theme-dark .login-subtitle-minimal {
+  color: #cbd5e1 !important; /* Slate 300 */
+}
+
+.theme-dark .login-footer-minimal {
+  color: #64748b !important;
+}
+
+.theme-dark .login-input-minimal {
+  border-color: #334155 !important;
+}
+
+.theme-dark .login-input-minimal .sapMInputBaseInner {
+  border-color: #334155 !important;
+  background-color: #0f172a !important; /* A bit darker, deep dark blue */
+  color: #ffffff !important; /* White text */
+  box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.2) !important;
+}
+
+.theme-dark .login-input-minimal .sapMInputBaseInner:hover {
+  border-color: #475569 !important;
+}
+
+.theme-dark .login-input-minimal.sapMInputBaseFocused .sapMInputBaseInner {
+  border-color: #818cf8 !important; /* Indigo primary accent */
+  background-color: #0d1527 !important;
+  box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.15), inset 0 2px 4px 0 rgba(0, 0, 0, 0.2) !important;
+}
+
+.theme-dark .login-button-minimal .sapMBtnInner {
+  background-color: #818cf8 !important; /* Indigo accent button in dark mode */
+  color: #0d1527 !important; /* Deep dark blue text for high contrast on Indigo */
+}
+
+.theme-dark .login-button-minimal:hover .sapMBtnInner {
+  background-color: #6366f1 !important;
+  box-shadow: 0 4px 12px rgba(129, 140, 248, 0.25) !important;
+}
+
+/* Header Back Button Border Overrides */
+.theme-light .header-back-btn .sapMBtnInner {
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 8px !important;
+  background-color: #f8fafc !important;
+}
+
+.theme-light .header-back-btn:hover .sapMBtnInner {
+  background-color: #f1f5f9 !important;
+  border-color: #94a3b8 !important;
+}
+
+.theme-dark .header-back-btn .sapMBtnInner {
+  border: 1px solid #334155 !important;
+  border-radius: 8px !important;
+  background-color: #1e293b !important;
+}
+
+.theme-dark .header-back-btn:hover .sapMBtnInner {
+  background-color: #334155 !important;
+  border-color: #475569 !important;
+}
+
+/* Rounded Focus Outline for VizFrame */
+.sapVizFrame:focus,
+.sapVizFrame:focus-visible,
+.sapVizFrameFocusOutline,
+.sapVizFrame .sapVizFrameFocusOutline,
+.sapVizFrame.sapUiFocus,
+.sapVizFrame .sapUiFocus,
+.sapVizFrame *,
+.sapVizFrame *:focus,
+.sapVizFrame .sapUiFocus *,
+.sapUiFocus.sapVizFrame,
+.sapUiFocus.sapVizFrame *,
+.sapUiVizFrame,
+.sapUiVizFrame:focus,
+.sapUiVizFrame.sapUiFocus,
+.v-interactive,
+.v-interactive:focus {
+  outline: none !important;
+  outline-color: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Hide UI5 Focus Outline Pseudo-elements and Overlays */
+.sapVizFrame:focus::after,
+.sapVizFrame:focus-within::after,
+.sapVizFrame.sapUiFocus::after,
+.sapVizFrameFocusOutline,
+.sapVizFrame .sapVizFrameFocusOutline {
+  content: none !important;
+  display: none !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Apply rounded focus shadow on the main VizFrame container */
+.theme-light .sapVizFrame.sapUiFocus,
+.theme-light .sapVizFrame:focus {
+  border-color: #4f46e5 !important;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25) !important;
+}
+
+.theme-dark .sapVizFrame.sapUiFocus,
+.theme-dark .sapVizFrame:focus {
+  border-color: #818cf8 !important;
+  box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.35) !important;
+}
+
+/* Shared Tab Bar Pill Navigation */
+.sapMITBHead {
+  padding: 8px 16px !important;
+  background-color: transparent !important;
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  white-space: nowrap !important;
+  align-items: center !important; /* Center tabs vertically */
+  justify-content: flex-start !important;
+  overflow-x: auto !important;
+  -ms-overflow-style: none !important;  /* IE and Edge */
+  scrollbar-width: none !important;  /* Firefox */
+}
+
+.sapMITBHeadContainer {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  white-space: nowrap !important;
+  align-items: center !important; /* Center tabs vertically */
+  justify-content: flex-start !important;
+}
+
+.sapMITBHead::-webkit-scrollbar,
+.sapMITBHeadContainer::-webkit-scrollbar {
+  display: none !important;
+}
+
+/* Hide default UI5 selection underline on line elements and arrows */
+.sapMITBContentSelLine,
+.sapMITBLine,
+.sapMITBHead .sapMITBSelected::after,
+.sapMITBHead .sapMITBSelected:after,
+.sapMITBHead .sapMITBFilter .sapMITBContentArrow {
+  border: none !important;
+  background-image: none !important;
+  background-color: transparent !important;
+  height: 0 !important;
+  display: none !important;
+}
+
+/* Base style for tab filters to guarantee pill shape and no vertical shifting */
+.sapMITBHead .sapMITBFilter,
+.sapMITBHead .sapMITBFilterText,
+.sapMITBHead .sapMITBFilterDefault {
+  margin: 4px 36px !important; /* Increased horizontal spacing and overridden for all filter types */
+  padding: 0 16px !important;
+  height: 38px !important;
+  border-radius: 9999px !important; /* Full pill shape */
+  border: 1px solid transparent !important;
+  transition: all 0.2s ease-in-out !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  vertical-align: middle !important;
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  transform: none !important;
+  box-shadow: none !important;
+  flex-shrink: 0 !important; /* Prevent shrinking */
+}
+
+/* Selected tab filter layout rules - must match base style perfectly */
+.sapMITBHead .sapMITBFilter.sapMITBSelected,
+.sapMITBHead .sapMITBFilterText.sapMITBSelected,
+.sapMITBHead .sapMITBFilterDefault.sapMITBSelected {
+  margin: 4px 12px !important;
+  padding: 0 16px !important;
+  height: 38px !important;
+  border-radius: 9999px !important;
+  border: 1px solid transparent !important;
+  vertical-align: middle !important;
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  transform: none !important;
+  flex-shrink: 0 !important; /* Prevent shrinking */
+}
+
+/* Center all inner structures of the tab filters to ensure text is perfectly vertically centered */
+.sapMITBHead .sapMITBFilterDefault,
+.sapMITBHead .sapMITBFilterText,
+.sapMITBHead .sapMITBFilter .sapMITBText,
+.sapMITBHead .sapMITBFilter .sapMITBFilterIcon {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 1 !important; /* Reset line-height to prevent vertical offset */
+  box-sizing: border-box !important;
+}
+
+/* Remove all redundant rectangular focus outlines, borders, and frames around inner text/icons */
+.sapMITBHead .sapMITBFilterDefault,
+.sapMITBHead .sapMITBFilterText,
+.sapMITBHead .sapMITBFilter .sapMITBText,
+.sapMITBHead .sapMITBFilter .sapMITBFilterIcon,
+.sapMITBHead .sapMITBFilterFocus,
+.sapMITBHead .sapMITBFilterDefault:focus,
+.sapMITBHead .sapMITBFilterDefault:focus-visible,
+.sapMITBHead .sapMITBFilterDefault.sapUiFocus,
+.sapMITBHead .sapMITBFilterText:focus,
+.sapMITBHead .sapMITBFilterText:focus-visible,
+.sapMITBHead .sapMITBFilterText.sapUiFocus,
+.sapMITBHead .sapMITBFilter .sapMITBText:focus,
+.sapMITBHead .sapMITBFilter .sapMITBText:focus-visible,
+.sapMITBHead .sapMITBFilter .sapMITBText.sapUiFocus,
+.sapMITBHead .sapMITBFilter:focus,
+.sapMITBHead .sapMITBFilter:focus-visible,
+.sapMITBHead .sapMITBFilter.sapUiFocus,
+.sapMITBHead .sapMITBFilter *::before,
+.sapMITBHead .sapMITBFilter *::after,
+.sapMITBHead .sapMITBFilter::before,
+.sapMITBHead .sapMITBFilter::after,
+.sapMITBHead .sapMITBFilter *,
+.sapMITBHead .sapMITBFilter *:focus,
+.sapMITBHead .sapMITBFilter *:focus-visible,
+.sapMITBHead .sapMITBFilter *.sapUiFocus {
+  outline: none !important;
+  outline-color: transparent !important;
+  outline-width: 0 !important;
+  border: none !important;
+  border-width: 0 !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  background-image: none !important;
+  background-color: transparent !important;
+}
+
+/* Selected tab styles are transparent (Pill style is handled by .tab-slider-indicator) */
+.theme-light .sapMITBHead .sapMITBFilter.sapMITBSelected,
+.theme-light .sapMITBHead .sapMITBFilter.sapMITBSelected:focus,
+.theme-light .sapMITBHead .sapMITBFilter.sapMITBSelected.sapUiFocus {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.theme-dark .sapMITBHead .sapMITBFilter.sapMITBSelected,
+.theme-dark .sapMITBHead .sapMITBFilter.sapMITBSelected:focus,
+.theme-dark .sapMITBHead .sapMITBFilter.sapMITBSelected.sapUiFocus {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Light Mode Pill styles */
+.theme-light .sapMITBHead .sapMITBFilter {
+  background-color: transparent !important;
+}
+
+.theme-light .sapMITBHead .sapMITBFilter .sapMITBText {
+  color: #64748b !important;
+  font-weight: 600 !important;
+}
+
+/* Hover effect on unselected tabs only */
+.theme-light .sapMITBHead .sapMITBFilter:not(.sapMITBSelected):hover {
+  background-color: #f1f5f9 !important;
+}
+
+.theme-light .sapMITBHead .sapMITBFilter:not(.sapMITBSelected):hover .sapMITBText {
+  color: #4f46e5 !important;
+}
+
+.theme-light .sapMITBHead .sapMITBFilter.sapMITBSelected .sapMITBText {
+  color: #ffffff !important;
+  font-weight: 600 !important;
+}
+
+/* Dark Mode Pill styles */
+.theme-dark .sapMITBHead .sapMITBFilter {
+  background-color: transparent !important;
+}
+
+.theme-dark .sapMITBHead .sapMITBFilter .sapMITBText {
+  color: #94a3b8 !important;
+  font-weight: 600 !important;
+}
+
+/* Hover effect on unselected tabs only */
+.theme-dark .sapMITBHead .sapMITBFilter:not(.sapMITBSelected):hover {
+  background-color: #1e293b !important;
+}
+
+.theme-dark .sapMITBHead .sapMITBFilter:not(.sapMITBSelected):hover .sapMITBText {
+  color: #818cf8 !important;
+}
+
+.theme-dark .sapMITBHead .sapMITBFilter.sapMITBSelected .sapMITBText {
+  color: #0d1527 !important;
+  font-weight: 600 !important;
+}
+
+/* ==========================================================================
+   STABILE PILOT-TABS (Kein Verschieben, starrer Textabstand)
+   ========================================================================== */
+
+/* 1. Das übergeordnete Tab-Element: Bestimmt den festen Abstand von Wort zu Wort */
+.sapMITBHead .sapMITBItem {
+  margin-right: 20px !important; /* Definiert den IMMER gleichen Abstand zwischen den Tabs */
+  margin-left: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* 2. Basis-Stil für ALLE Tabs (aktiv und inaktiv) – MÜSSEN identisch sein */
+.sapMITBHead .sapMITBFilter,
+.sapMITBHead .sapMITBFilter.sapMITBSelected,
+.sapMITBHead .sapMITBFilterText,
+.sapMITBHead .sapMITBFilterText.sapMITBSelected,
+.sapMITBHead .sapMITBFilterDefault,
+.sapMITBHead .sapMITBFilterDefault.sapMITBSelected {
+  margin: 0 !important;          /* Entfernt alle störenden ungleichen Margins */
+  padding: 0 20px !important;    /* Bestimmt, wie weit die Pille links/rechts über den Text steht */
+  height: 38px !important;
+  border-radius: 9999px !important;
+  border: 1px solid transparent !important;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease !important; /* Kein weiches Weiten-Wobbeln */
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+  box-shadow: none !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+/* 3. Der Text im Tab: Verhindert jegliche Stauchung oder Breiten-Veränderung */
+.sapMITBHead .sapMITBFilterText .sapMITBText,
+.sapMITBHead .sapMITBFilter .sapMITBText {
+  display: inline-block !important;
+  white-space: nowrap !important;
+  font-weight: 600 !important;   /* WICHTIG: Schriftgewicht IMMER fett lassen */
+  font-size: 0.95rem !important;
+  line-height: 1 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* 4. Verhindert, dass UI5 beim Selektieren die Schrift dicker/größer macht */
+.theme-light .sapMITBHead .sapMITBFilter .sapMITBText,
+.theme-light .sapMITBHead .sapMITBFilter.sapMITBSelected .sapMITBText,
+.theme-dark .sapMITBHead .sapMITBFilter .sapMITBText,
+.theme-dark .sapMITBHead .sapMITBFilter.sapMITBSelected .sapMITBText {
+  font-weight: 600 !important;  /* Verhindert minimalen Breitenzuwachs durch Fettdruck */
+}
+
+/* Der Content-Pfeil bleibt im Hintergrund deaktiviert */
+.sapMITBHead .sapMITBFilter .sapMITBContentArrow {
+  display: none !important;
+}
+
+/* Sliding Tab Indicator (Pill effect) */
+.tab-slider-indicator {
+  position: absolute !important;
+  border-radius: 9999px !important;
+  transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  z-index: 1 !important; /* Sit behind tab text */
+  pointer-events: none !important;
+  box-sizing: border-box !important;
+}
+
+.theme-light .tab-slider-indicator {
+  background-color: #4f46e5 !important;
+  box-shadow: 0 4px 10px rgba(79, 70, 229, 0.2) !important;
+}
+
+.theme-dark .tab-slider-indicator {
+  background-color: #818cf8 !important;
+  box-shadow: 0 4px 10px rgba(129, 140, 248, 0.25) !important;
+}
+
+/* Reference line label badge and text styling (for both light and dark mode) */
+.v-m-referenceLine rect,
+.v-m-referenceline rect,
+.v-referenceLine rect {
+  fill: #ef4444 !important;
+  stroke: #ef4444 !important;
+  rx: 4px !important; /* rounded corners */
+  ry: 4px !important;
+}
+
+.v-m-referenceLine text,
+.v-m-referenceline text,
+.v-referenceLine text {
+  fill: #ffffff !important;
+  font-weight: bold !important;
+  font-size: 0.75rem !important;
 }

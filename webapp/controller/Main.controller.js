@@ -1,22 +1,13 @@
 sap.ui.define([
-  "sap/ui/core/mvc/Controller",
-  "sap/ui/model/json/JSONModel"  //UI% wird geladen mit COntroller und JSONModel
-], function (Controller, JSONModel) {
+  "./BaseController",
+  "sap/ui/model/json/JSONModel"
+], function (BaseController, JSONModel) {
   "use strict";
 
-  return Controller.extend("de.unigoettingen.dashboardapp.controller.Main", {
-    onNavBack: function () { //Zurück-Button
-      this.getOwnerComponent().getRouter().navTo("login");
-    },
-
-    onTabSelect: function (oEvent) {
-      const sKey = oEvent.getParameter("key");
-      this.getOwnerComponent().getRouter().navTo(sKey);
-    },
+  return BaseController.extend("de.unigoettingen.dashboardapp.controller.Main", {
 
     onInit: function () {
       this._selectedYear = "2024";
-      this._loadAndUpdate();  //2024 wird beim ersten Laden angezeigt
 
       this.getOwnerComponent().getRouter().getRoute("finanzen").attachPatternMatched(this._onRouteMatched, this);
     },
@@ -26,7 +17,9 @@ sap.ui.define([
       const iRole = oUserModel ? oUserModel.getProperty("/zugriffsrechte") : 0;
       if (iRole < 3) {
         this.getOwnerComponent().getRouter().navTo("login");
+        return;
       }
+      this._loadAndUpdate();
     },
 
     formatEuro: function (value) {
@@ -43,61 +36,124 @@ sap.ui.define([
     },
 
     _loadAndUpdate: function () {
-      const oModel = new JSONModel();
-      oModel.loadData("http://localhost:3000/api/finanzen"); //Controller holt sich Finanzdaten aus Port 3000/Backend
+      if (this._aFinanzenData) {
+        this._updateAggregates();
+        return;
+      }
+      if (this._pLoadPromise) {
+        return;
+      }
 
-      oModel.attachRequestCompleted(() => {
-        let totalCosts = 0;
-        let totalRevenue = 0;
-        let total = 0;
-
-        const data = oModel.getData().finanzen;
-        const aggregated = {};
-
-        data.forEach(item => {
-          if (this._selectedYear !== "alle" && item.jahr != this._selectedYear) {
-            return; //Leere Rückgabe, wenn existierendesJahr oder alle nicht angeklickt ist
-          }
-
-          if (item.kategorie === "Ertr\u00e4ge & F\u00f6rderung") { //totalRevenue wird um item erhöht
-            totalRevenue += item.wert;
-            return; 
-          }
-
-          if (item.kategorie === "Gesamt") { //Gesamtkosten
-            total = item.wert;
-            return;
-          }
-
-          const key = item.kategorie;
-
-          if (!aggregated[key]) {
-            aggregated[key] = 0;
-          }
-
-          aggregated[key] += item.wert;
-          totalCosts += item.wert; //ALle anderen Gruppe ohne gegebenen Namen
+      this._pLoadPromise = fetch("http://localhost:3000/api/finanzen")
+        .then(response => response.json())
+        .then(data => {
+          this._aFinanzenData = data.finanzen || [];
+          this._updateAggregates();
+        })
+        .catch(err => {
+          console.error("Error loading financial data:", err);
+        })
+        .finally(() => {
+          this._pLoadPromise = null;
         });
+    },
 
-        const costGroups = Object.keys(aggregated).map(key => { //Für jedes Objekt aus aggregated wird ein objekt erstellt
-          return {
-            name: key,
-            value: Math.abs(aggregated[key])
-          };
-        });
+    _updateAggregates: function () {
+      const data = this._aFinanzenData || [];
+      let totalCosts = 0;
+      let totalRevenue = 0;
+      let total = 0;
 
-        this.getView().setModel(new JSONModel({ //kann eigentlich weg, muss dann in main.view korregiert werden
-          costGroups: costGroups
-        }));
+      const aggregated = {};
 
-        this.getView().setModel(new JSONModel({ //View nimmt sich costGroups
-          costGroups: costGroups,
-          kpis: {
-            costs: totalCosts,
-            revenue: totalRevenue * (-1),
-            result: total * (-1)
-          }
-        }), "dashboard");
+      data.forEach(item => {
+        if (this._selectedYear !== "alle" && item.jahr != this._selectedYear) {
+          return;
+        }
+
+        if (item.kategorie === "Ertr\u00e4ge & F\u00f6rderung") {
+          totalRevenue += item.wert;
+          return; 
+        }
+
+        if (item.kategorie === "Gesamt") {
+          total = item.wert;
+          return;
+        }
+
+        const key = item.kategorie;
+
+        if (!aggregated[key]) {
+          aggregated[key] = 0;
+        }
+
+        aggregated[key] += item.wert;
+        totalCosts += item.wert;
+      });
+
+      const costGroups = Object.keys(aggregated).map(key => {
+        return {
+          name: key,
+          value: Math.abs(aggregated[key])
+        };
+      });
+
+      // Calculate yearly trend (always for 2024, 2025, 2026)
+      const trendData = {};
+      const targetYears = ["2024", "2025", "2026"];
+      targetYears.forEach(y => {
+        trendData[y] = {
+          costs: 0,
+          revenue: 0,
+          result: 0
+        };
+      });
+
+      data.forEach(item => {
+        const y = String(item.jahr);
+        if (!trendData[y]) {
+          return;
+        }
+
+        if (item.kategorie === "Ertr\u00e4ge & F\u00f6rderung") {
+          trendData[y].revenue += item.wert * (-1);
+        } else if (item.kategorie === "Gesamt") {
+          trendData[y].result += item.wert * (-1);
+        } else {
+          trendData[y].costs += item.wert;
+        }
+      });
+
+      const yearlyTrend = [];
+      targetYears.forEach(y => {
+        yearlyTrend.push({ jahr: y, kategorie: "Kosten", wert: trendData[y].costs });
+        yearlyTrend.push({ jahr: y, kategorie: "Ertr\u00e4ge", wert: trendData[y].revenue });
+        yearlyTrend.push({ jahr: y, kategorie: "Ergebnis", wert: trendData[y].result });
+      });
+
+      let oDefaultModel = this.getView().getModel();
+      if (!oDefaultModel) {
+        oDefaultModel = new JSONModel();
+        this.getView().setModel(oDefaultModel);
+      }
+      oDefaultModel.setData({
+        costGroups: costGroups,
+        yearlyTrend: yearlyTrend
+      });
+
+      let oDashboardModel = this.getView().getModel("dashboard");
+      if (!oDashboardModel) {
+        oDashboardModel = new JSONModel();
+        this.getView().setModel(oDashboardModel, "dashboard");
+      }
+      oDashboardModel.setData({
+        costGroups: costGroups,
+        yearlyTrend: yearlyTrend,
+        kpis: {
+          costs: totalCosts,
+          revenue: totalRevenue * (-1),
+          result: total * (-1)
+        }
       });
     }
   });

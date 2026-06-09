@@ -16,37 +16,59 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get("/api/finanzen", (req, res) => { //Getter-Methode für Finanzdaten
-  const rows = db.prepare(`
-    SELECT jahr, kategorie, konto, bezeichnung, wert
-    FROM finanzen
-  `).all();   //SQL-Abfrage gibt alle gefunden Daten wieder
+// Prepare database statements once at startup for optimal performance
+const finanzenStmt = db.prepare(`
+  SELECT jahr, kategorie, konto, bezeichnung, wert
+  FROM finanzen
+`);
 
-  res.json({ //Daten der SQL Abfrage werden als JSON weitergegeben
-    finanzen: rows
-  });
+const personalStmt = db.prepare(`
+  SELECT PERNRCOD, jahr, PERSALTER, GESCH, NATIOX, OTXT2, FIN_ART, VZAE, VBEDAT
+  FROM personal
+`);
+
+const publikationenStmt = db.prepare(`
+  SELECT year, type, title, status
+  FROM publikationen
+`);
+
+const userStmt = db.prepare(`
+  SELECT id, username, passwort_hash, Zugriffsrechte
+  FROM konto
+  WHERE username = ?
+`);
+
+app.get("/api/finanzen", (req, res) => { //Getter-Methode für Finanzdaten
+  try {
+    const rows = finanzenStmt.all();   //SQL-Abfrage gibt alle gefunden Daten wieder
+    res.json({ //Daten der SQL Abfrage werden als JSON weitergegeben
+      finanzen: rows
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
 });
 
 app.get("/api/personal", (req, res) => {
-  const rows = db.prepare(`
-    SELECT PERNRCOD, jahr, PERSALTER, GESCH, NATIOX, OTXT2, FIN_ART, VZAE, VBEDAT
-    FROM personal
-  `).all();
-
-  res.json({
-    personal: rows
-  });
+  try {
+    const rows = personalStmt.all();
+    res.json({
+      personal: rows
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
 });
 
 app.get("/api/publikationen", (req, res) => {
-  const rows = db.prepare(`
-    SELECT year, type, title, status
-    FROM publikationen
-  `).all();
-
-  res.json({
-    publikationen: rows
-  });
+  try {
+    const rows = publikationenStmt.all();
+    res.json({
+      publikationen: rows
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
 });
 
 //Server überprüft login-Daten
@@ -60,36 +82,36 @@ app.post("/api/login", (req, res) => {
     });
   }
 
-  const user = db.prepare(`
-    SELECT id, username, passwort_hash, Zugriffsrechte
-    FROM konto
-    WHERE username = ?
-  `).get(username);
+  try {
+    const user = userStmt.get(username);
 
-  if (!user) {
-    return res.status(401).json({
-      success: false,
-      message: "Benutzername ist falsch."
-    });
-  }
-
-  const passwordIsValid = bcrypt.compareSync(password, user.passwort_hash);
-
-  if (!passwordIsValid) {
-    return res.status(401).json({
-      success: false,
-      message: "Passwort ist falsch."
-    });
-  }
-
-  res.json({
-    success: true,
-    user: {
-      id: user.id,
-      username: user.username,
-      zugriffsrechte: user.Zugriffsrechte
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "Benutzername ist falsch."
+      });
     }
-  });
+
+    const passwordIsValid = bcrypt.compareSync(password, user.passwort_hash);
+
+    if (!passwordIsValid) {
+      return res.status(401).json({
+        success: false,
+        message: "Passwort ist falsch."
+      });
+    }
+
+    res.json({
+      success: true,
+      user: {
+        id: user.id,
+        username: user.username,
+        zugriffsrechte: user.Zugriffsrechte
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
 });
 
 app.listen(3000, () => { //startet Backend-Server

@@ -8,32 +8,14 @@
 	xmlns:core="sap.ui.core"
 	xmlns:viz="sap.viz.ui5.controls"
     xmlns:viz.data="sap.viz.ui5.data"
-    xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds"
-	core:require="{
-		formatter: 'de/unigoettingen/dashboardapp/model/formatter'
-	}">
+    xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds">
 
 
   <Page
-  title="Finanzdaten"
   id="page"
-  showNavButton="true"
-  navButtonPress="onNavBack">
+  showHeader="false">
 
 	<content>
-      <IconTabBar
-          id="navTabBar"
-          selectedKey="finanzen"
-          select="onTabSelect"
-          expandable="false"
-          applyContentPadding="false">
-          <items>
-              <IconTabFilter text="Finanzen" key="finanzen" />
-              <IconTabFilter text="Personal" key="hr" />
-              <IconTabFilter text="Publikationen" key="pb" />
-          </items>
-      </IconTabBar>
-
 	  <Select change="onYearChange" class="sapUiSmallMargin">
   	  <items>
       <core:Item key="2024" text="2024"/>
@@ -46,31 +28,31 @@
 		<!--- KPIs -->
 	  <HBox justifyContent="SpaceAround" class="sapUiSmallMargin">
 
-  		<VBox>
-  <Text text="Kosten"/>
-  <Text text="{
-    path: 'dashboard>/kpis/costs',
-    formatter: '.formatEuro'
-  }"/>
-</VBox>
+  		<VBox class="kpi-card">
+        <Text text="Kosten" class="kpi-title"/>
+        <Text text="{
+          path: 'dashboard>/kpis/costs',
+          formatter: '.formatEuro'
+        }" class="kpi-value"/>
+      </VBox>
 
-<VBox>
-  <Text text="Erträge"/>
-  <Text text="{
-    path: 'dashboard>/kpis/revenue',
-    formatter: '.formatEuro'
-  }"/>
-</VBox>
+      <VBox class="kpi-card">
+        <Text text="Erträge" class="kpi-title"/>
+        <Text text="{
+          path: 'dashboard>/kpis/revenue',
+          formatter: '.formatEuro'
+        }" class="kpi-value"/>
+      </VBox>
 
-<VBox>
-  <Text text="Ergebnis"/>
-  <Text text="{
-    path: 'dashboard>/kpis/result',
-    formatter: '.formatEuro'
-  }"/>
-</VBox>
+      <VBox class="kpi-card">
+        <Text text="Ergebnis" class="kpi-title"/>
+        <Text text="{
+          path: 'dashboard>/kpis/result',
+          formatter: '.formatEuro'
+        }" class="kpi-value"/>
+      </VBox>
 
-</HBox>
+    </HBox>
 
       <viz:VizFrame
         id="idPieChart"
@@ -79,7 +61,7 @@
         height="400px"
         vizProperties="{
         title: {
-        text: 'Kosten-Säulen-Chart',
+        text: 'Kostenaufteilung nach Kategorie',
         visible: true
         },
         legend: { visible: false }
@@ -110,6 +92,70 @@
             uid="categoryAxis"
             type="Dimension"
             values="Cost Group"/>
+        </viz:feeds>
+
+      </viz:VizFrame>
+
+      <!-- Yearly Trend Line Chart -->
+      <viz:VizFrame
+        id="idLineChart"
+        vizType="line"
+        width="100%"
+        height="400px"
+        vizProperties="{
+          title: {
+            text: 'Finanzieller Trend über die Jahre (2024 - 2026)',
+            visible: true
+          },
+          legend: {
+            visible: true
+          },
+          plotArea: {
+            dataLabel: {
+              visible: true
+            },
+            lineStyle: {
+              rules: [{
+                dataContext: { 'Betrag': '*' },
+                properties: { width: 4 }
+              }]
+            }
+          }
+        }"
+        class="sapUiMediumMarginTop">
+
+        <viz:dataset>
+          <viz.data:FlattenedDataset data="{/yearlyTrend}">
+            <viz.data:dimensions>
+              <viz.data:DimensionDefinition
+                name="Jahr"
+                value="{jahr}" />
+              <viz.data:DimensionDefinition
+                name="Kategorie"
+                value="{kategorie}" />
+            </viz.data:dimensions>
+
+            <viz.data:measures>
+              <viz.data:MeasureDefinition
+                name="Betrag"
+                value="{wert}" />
+            </viz.data:measures>
+          </viz.data:FlattenedDataset>
+        </viz:dataset>
+
+        <viz:feeds>
+          <viz.feeds:FeedItem
+            uid="valueAxis"
+            type="Measure"
+            values="Betrag"/>
+          <viz.feeds:FeedItem
+            uid="categoryAxis"
+            type="Dimension"
+            values="Jahr"/>
+          <viz.feeds:FeedItem
+            uid="color"
+            type="Dimension"
+            values="Kategorie"/>
         </viz:feeds>
 
       </viz:VizFrame>

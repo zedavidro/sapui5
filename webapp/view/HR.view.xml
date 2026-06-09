@@ -9,24 +9,10 @@
   xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds">
 
   <Page
-    title="Integrierte Personalsteuerung &amp; Controlling"
-    showNavButton="true"
-    navButtonPress="onNavBack">
+    id="page"
+    showHeader="false">
 
     <content>
-      <IconTabBar
-          id="navTabBar"
-          selectedKey="hr"
-          select="onTabSelect"
-          expandable="false"
-          applyContentPadding="false">
-          <items>
-              <IconTabFilter text="Finanzen" key="finanzen" />
-              <IconTabFilter text="Personal" key="hr" />
-              <IconTabFilter text="Publikationen" key="pb" />
-          </items>
-      </IconTabBar>
-
       <Toolbar design="Transparent" class="sapUiSmallMargin">
         <Title text="Analysejahr wählen:" class="sapUiTinyMarginEnd"/>
         <Select change="onYearChange" selectedKey="2025">
@@ -40,40 +26,40 @@
       </Toolbar>
 
       <HBox justifyContent="SpaceAround" class="sapUiSmallMargin sapUiLargeMarginBottom">
-        <VBox alignItems="Center">
-          <Text text="Kopfzahl (Gesamt)" class="sapUiTinyMarginBottom"/>
-          <Title text="{dashboard>/kpis/headcount}" level="H2"/>
+        <VBox alignItems="Center" class="kpi-card">
+          <Text text="Kopfzahl (Gesamt)" class="kpi-title"/>
+          <Title text="{dashboard>/kpis/headcount}" level="H2" class="kpi-value"/>
         </VBox>
 
-        <VBox alignItems="Center">
-          <Text text="Vollzeitäquivalente (VZÄ)" class="sapUiTinyMarginBottom"/>
+        <VBox alignItems="Center" class="kpi-card">
+          <Text text="Vollzeitäquivalente (VZÄ)" class="kpi-title"/>
           <Title text="{
             path: 'dashboard>/kpis/fte',
             type: 'sap.ui.model.type.Float',
             formatOptions: { maxFractionDigits: 2 }
-          }" level="H2"/>
+          }" level="H2" class="kpi-value"/>
         </VBox>
 
-        <VBox alignItems="Center">
-          <Text text="Personalkosten (Hochrechnung)" class="sapUiTinyMarginBottom"/>
+        <VBox alignItems="Center" class="kpi-card">
+          <Text text="Personalkosten (Hochrechnung)" class="kpi-title"/>
           <Title text="{
             path: 'dashboard>/kpis/totalCost',
             type: 'sap.ui.model.type.Float',
             formatOptions: { style: 'currency', currency: 'EUR', maxFractionDigits: 0 }
-          }" level="H2"/>
+          }" level="H2" class="kpi-value"/>
         </VBox>
 
-        <VBox alignItems="Center">
-          <Text text="Ø Kosten pro VZÄ" class="sapUiTinyMarginBottom"/>
+        <VBox alignItems="Center" class="kpi-card">
+          <Text text="Ø Kosten pro VZÄ" class="kpi-title"/>
           <Title text="{
             path: 'dashboard>/kpis/avgCostPerFTE',
             type: 'sap.ui.model.type.Float',
             formatOptions: { style: 'currency', currency: 'EUR', maxFractionDigits: 0 }
-          }" level="H2"/>
+          }" level="H2" class="kpi-value"/>
         </VBox>
       </HBox>
 
-      <IconTabBar id="idHRIconTabBar" upperCase="true" class="sapUiResponsiveContentPadding">
+      <IconTabBar id="idHRIconTabBar" select="onHRTabSelect" upperCase="true" class="sapUiResponsiveContentPadding">
         <items>
 
           <IconTabFilter icon="sap-icon://employee" text="Struktur &amp; Befristung" key="structure">

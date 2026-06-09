@@ -1,26 +1,18 @@
 sap.ui.define([
-  "sap/ui/core/mvc/Controller",
+  "./BaseController",
   "sap/ui/model/json/JSONModel"
-], function (Controller, JSONModel) {
+], function (BaseController, JSONModel) {
   "use strict";
 
-  return Controller.extend("de.unigoettingen.dashboardapp.controller.HR", {
-
-    // --- Navigation ---
-    onNavBack: function () {
-      this.getOwnerComponent().getRouter().navTo("login");
-    },
-
-    onTabSelect: function (oEvent) {
-      const sKey = oEvent.getParameter("key");
-      this.getOwnerComponent().getRouter().navTo(sKey);
-    },
+  return BaseController.extend("de.unigoettingen.dashboardapp.controller.HR", {
 
     onInit: function () {
       this._selectedYear = "2025";
-      this._loadAndUpdate();
 
       this.getOwnerComponent().getRouter().getRoute("hr").attachPatternMatched(this._onRouteMatched, this);
+
+      // Attach window resize listener for the sliding tab indicator
+      window.addEventListener("resize", this._updateHRTabSlider.bind(this));
 
       // Set scale and reference line properties programmatically to ensure X-Axis starts at year 2015 and shows today's date
       const oVizFrame = this.getView().byId("idContractEndRadar");
@@ -89,7 +81,12 @@ sap.ui.define([
       const iRole = oUserModel ? oUserModel.getProperty("/zugriffsrechte") : 0;
       if (iRole < 2) {
         this.getOwnerComponent().getRouter().navTo("login");
+        return;
       }
+      this._loadAndUpdate();
+      // Update slider position after render
+      setTimeout(this._updateHRTabSlider.bind(this), 50);
+      setTimeout(this._updateHRTabSlider.bind(this), 200);
     },
 
     // --- Event-Handler für Dropdown ---
@@ -100,205 +97,293 @@ sap.ui.define([
 
     // --- Hauptlogik für Datenladung und Aggregation ---
     _loadAndUpdate: function () {
-      const oModel = new JSONModel();
-      oModel.loadData("http://localhost:3000/api/personal");
+      if (this._aPersonalData) {
+        this._updateAggregates();
+        return;
+      }
+      if (this._pLoadPromise) {
+        return;
+      }
 
-      oModel.attachRequestCompleted(() => {
-        const data = oModel.getData().personal || oModel.getData();
-
-        // Pauschale universitäre Jahros-Personalkostensätze für 1.0 VZÄ
-        const costRates = {
-          "Hochschullehrergruppe": 110000,
-          "wissenschaftlicher Dienst": 78000,
-          "techn. und Verwaltungsdienst": 58000,
-          "Unbekannt": 65000
-        };
-
-        // Globale Zähler für KPIs (Gefiltert)
-        let totalHeadcount = 0;
-        let totalFTE = 0;
-        let totalCost = 0;
-
-        // Zwischenspeicher für Aggregationsobjekte
-        const contractTimelineData = [];
-        const aggregatedPie = {};
-        const aggregatedTrend = {};
-        const aggregatedStacked = {};
-        const aggregatedContracts = {};
-        const aggregatedAge = {};
-        const aggCostFinArt = {};
-        const aggCostOrg = {};
-
-        if (Array.isArray(data)) {
-          data.forEach(item => {
-
-            const itemYear = item.jahr || item.Jahr;
-            const yearStr = itemYear ? itemYear.toString() : "Unbekannt";
-            const finArtKey = item.FIN_ART || "Unbekannt";
-            const geschKey = item.GESCH || "Unbekannt";
-            const orgKey = item.OTXT2 || "Unbekannt";
-            const currentFte = parseFloat(item.VZAE) || 0;
-
-            // Kostenberechnung für diesen Datensatz (VZÄ * Kostensatz der Gruppe)
-            const calculatedCost = currentFte * (costRates[finArtKey] || costRates["Unbekannt"]);
-
-            // ==========================================================
-            // LOGIK (Ungefiltert - über alle Jahre hinweg)
-            // ==========================================================
-
-            // 1. Trend-Chart Aggregation
-            if (!aggregatedTrend[yearStr]) {
-              aggregatedTrend[yearStr] = { year: yearStr, headcount: 0, fte: 0 };
-            }
-            aggregatedTrend[yearStr].headcount += 1;
-            aggregatedTrend[yearStr].fte += currentFte;
-
-            // 2. Befristungs-Radar Aggregation
-            if (item.VBEDAT) {
-              const vbedatPrefix = item.VBEDAT.substring(0, 7); // "YYYY-MM"
-              if (!aggregatedContracts[vbedatPrefix]) {
-                aggregatedContracts[vbedatPrefix] = {};
-              }
-              if (!aggregatedContracts[vbedatPrefix][finArtKey]) {
-                aggregatedContracts[vbedatPrefix][finArtKey] = 0;
-              }
-              aggregatedContracts[vbedatPrefix][finArtKey] += currentFte;
-            }
-
-            // ==========================================================
-            // FILTERUNG: Ab hier nur Berechnungen für das gewählte Jahr
-            // ==========================================================
-            if (this._selectedYear !== "alle" && itemYear != this._selectedYear) {
-              return;
-            }
-
-            if (item.VBEDAT) {
-              const parts = item.VBEDAT.split("-");
-              const year = parseInt(parts[0], 10);
-              if (!isNaN(year) && year > 1900) {
-                const month = parseInt(parts[1], 10) - 1;
-                const day = parseInt(parts[2], 10);
-                const fractionalYear = year + (month + day / 30) / 12;
-
-                contractTimelineData.push({
-                  empCode: item.PERNRCOD ? "Mitarbeiter " + item.PERNRCOD : "Mitarbeiter",
-                  dateStr: item.VBEDAT,
-                  vzaeStr: item.VZAE ? item.VZAE.toFixed(1) : "0.0",
-                  finArt: finArtKey,
-                  endYear: parseFloat(fractionalYear.toFixed(2))
-                });
-              }
-            }
-
-            // Globale KPI Werte erhöhen
-            totalHeadcount += 1;
-            totalFTE += currentFte;
-            totalCost += calculatedCost;
-
-            // 3. Klassisches Pie-Chart (Dienstartenverteilung)
-            if (!aggregatedPie[finArtKey]) { aggregatedPie[finArtKey] = 0; }
-            aggregatedPie[finArtKey] += 1;
-
-            // 4. Gestapeltes Diagramm (Dienstart & Geschlecht)
-            if (!aggregatedStacked[finArtKey]) { aggregatedStacked[finArtKey] = {}; }
-            if (!aggregatedStacked[finArtKey][geschKey]) { aggregatedStacked[finArtKey][geschKey] = 0; }
-            aggregatedStacked[finArtKey][geschKey] += 1;
-
-            // 5. Altersstruktur-Histogramm
-            const age = parseInt(item.PERSALTER, 10);
-            if (!isNaN(age)) {
-              let ageGroup = "";
-              if (age < 30) ageGroup = "20-29 Jahre";
-              else if (age < 40) ageGroup = "30-39 Jahre";
-              else if (age < 50) ageGroup = "40-49 Jahre";
-              else if (age < 60) ageGroup = "50-59 Jahre";
-              else ageGroup = "60+ Jahre";
-
-              if (!aggregatedAge[ageGroup]) { aggregatedAge[ageGroup] = {}; }
-              if (!aggregatedAge[ageGroup][finArtKey]) { aggregatedAge[ageGroup][finArtKey] = 0; }
-              aggregatedAge[ageGroup][finArtKey] += 1;
-            }
-
-            // 6. Controlling: Kosten nach Dienstart
-            if (!aggCostFinArt[finArtKey]) { aggCostFinArt[finArtKey] = 0; }
-            aggCostFinArt[finArtKey] += calculatedCost;
-
-            // 7. Controlling: Kosten nach Struktureinheit / Abteilung
-            if (!aggCostOrg[orgKey]) { aggCostOrg[orgKey] = 0; }
-            aggCostOrg[orgKey] += calculatedCost;
-
-          });
-        }
-
-        // ==========================================================
-        // DATEN-TRANSFORMATIONEN FÜR DIE GRAFIKEN
-        // ==========================================================
-
-        const employeeGroups = Object.keys(aggregatedPie).map(key => {
-          return { name: key, value: aggregatedPie[key] };
+      this._pLoadPromise = fetch("http://localhost:3000/api/personal")
+        .then(response => response.json())
+        .then(data => {
+          this._aPersonalData = data.personal || data;
+          this._updateAggregates();
+        })
+        .catch(err => {
+          console.error("Error loading personal data:", err);
+        })
+        .finally(() => {
+          this._pLoadPromise = null;
         });
+    },
 
-        const timeSeriesData = Object.values(aggregatedTrend).sort((a, b) => a.year.localeCompare(b.year));
+    _updateAggregates: function () {
+      const data = this._aPersonalData || [];
 
-        const stackedData = [];
-        Object.keys(aggregatedStacked).forEach(fKey => {
-          Object.keys(aggregatedStacked[fKey]).forEach(gKey => {
-            stackedData.push({ finArt: fKey, gesch: gKey, count: aggregatedStacked[fKey][gKey] });
-          });
-        });
+      // Pauschale universitäre Jahros-Personalkostensätze für 1.0 VZÄ
+      const costRates = {
+        "Hochschullehrergruppe": 110000,
+        "wissenschaftlicher Dienst": 78000,
+        "techn. und Verwaltungsdienst": 58000,
+        "Unbekannt": 65000
+      };
 
-        const contractEndData = [];
-        Object.keys(aggregatedContracts).forEach(mKey => {
-          Object.keys(aggregatedContracts[mKey]).forEach(fKey => {
-            contractEndData.push({ month: mKey, finArt: fKey, fte: aggregatedContracts[mKey][fKey] });
-          });
-        });
-        contractEndData.sort((a, b) => a.month.localeCompare(b.month));
+      // Globale Zähler für KPIs (Gefiltert)
+      let totalHeadcount = 0;
+      let totalFTE = 0;
+      let totalCost = 0;
 
-        const ageStructureData = [];
-        Object.keys(aggregatedAge).forEach(aKey => {
-          Object.keys(aggregatedAge[aKey]).forEach(fKey => {
-            ageStructureData.push({ ageGroup: aKey, finArt: fKey, headcount: aggregatedAge[aKey][fKey] });
-          });
-        });
-        ageStructureData.sort((a, b) => a.ageGroup.localeCompare(b.ageGroup));
-        contractTimelineData.sort((a, b) => a.dateStr.localeCompare(b.dateStr));
+      // Zwischenspeicher für Aggregationsobjekte
+      const contractTimelineData = [];
+      const aggregatedPie = {};
+      const aggregatedTrend = {};
+      const aggregatedStacked = {};
+      const aggregatedContracts = {};
+      const aggregatedAge = {};
+      const aggCostFinArt = {};
+      const aggCostOrg = {};
 
-        // NEU: Controlling Transformationen
-        const costByFinArt = Object.keys(aggCostFinArt).map(key => {
-          return { finArt: key, cost: aggCostFinArt[key] };
-        });
+      if (Array.isArray(data)) {
+        data.forEach(item => {
+          const itemYear = item.jahr || item.Jahr;
+          const yearStr = itemYear ? itemYear.toString() : "Unbekannt";
+          const finArtKey = item.FIN_ART || "Unbekannt";
+          const geschKey = item.GESCH || "Unbekannt";
+          const orgKey = item.OTXT2 || "Unbekannt";
+          const currentFte = parseFloat(item.VZAE) || 0;
 
-        const costByOrg = Object.keys(aggCostOrg).map(key => {
-          return { org: key, cost: aggCostOrg[key] };
-        });
+          // Kostenberechnung für diesen Datensatz (VZÄ * Kostensatz der Gruppe)
+          const calculatedCost = currentFte * (costRates[finArtKey] || costRates["Unbekannt"]);
 
-        // ==========================================================
-        // MODELLBINDUNG AN DIE VIEW
-        // ==========================================================
+          // ==========================================================
+          // LOGIK (Ungefiltert - über alle Jahre hinweg)
+          // ==========================================================
 
-				// Diagramme
-        this.getView().setModel(new JSONModel({
-          employeeGroups: employeeGroups,
-          timeSeriesData: timeSeriesData,
-          stackedData: stackedData,
-          contractEndData: contractEndData,
-          contractTimelineData: contractTimelineData,
-          ageStructureData: ageStructureData,
-          costByFinArt: costByFinArt,
-          costByOrg: costByOrg
-        }));
-
-        // KPIs im globalen dashboard-Modell binden
-        this.getView().setModel(new JSONModel({
-          kpis: {
-            headcount: totalHeadcount,
-            fte: totalFTE,
-            totalCost: totalCost,
-            avgCostPerFTE: totalFTE > 0 ? (totalCost / totalFTE) : 0
+          // 1. Trend-Chart Aggregation
+          if (!aggregatedTrend[yearStr]) {
+            aggregatedTrend[yearStr] = { year: yearStr, headcount: 0, fte: 0 };
           }
-        }), "dashboard");
+          aggregatedTrend[yearStr].headcount += 1;
+          aggregatedTrend[yearStr].fte += currentFte;
+
+          // 2. Befristungs-Radar Aggregation
+          if (item.VBEDAT) {
+            const vbedatPrefix = item.VBEDAT.substring(0, 7); // "YYYY-MM"
+            if (!aggregatedContracts[vbedatPrefix]) {
+              aggregatedContracts[vbedatPrefix] = {};
+            }
+            if (!aggregatedContracts[vbedatPrefix][finArtKey]) {
+              aggregatedContracts[vbedatPrefix][finArtKey] = 0;
+            }
+            aggregatedContracts[vbedatPrefix][finArtKey] += currentFte;
+          }
+
+          // ==========================================================
+          // FILTERUNG: Ab hier nur Berechnungen für das gewählte Jahr
+          // ==========================================================
+          if (this._selectedYear !== "alle" && itemYear != this._selectedYear) {
+            return;
+          }
+
+          if (item.VBEDAT) {
+            const parts = item.VBEDAT.split("-");
+            const year = parseInt(parts[0], 10);
+            if (!isNaN(year) && year > 1900) {
+              const month = parseInt(parts[1], 10) - 1;
+              const day = parseInt(parts[2], 10);
+              const fractionalYear = year + (month + day / 30) / 12;
+
+              contractTimelineData.push({
+                empCode: item.PERNRCOD ? "Mitarbeiter " + item.PERNRCOD : "Mitarbeiter",
+                dateStr: item.VBEDAT,
+                vzaeStr: item.VZAE ? item.VZAE.toFixed(1) : "0.0",
+                finArt: finArtKey,
+                endYear: parseFloat(fractionalYear.toFixed(2))
+              });
+            }
+          }
+
+          // Globale KPI Werte erhöhen
+          totalHeadcount += 1;
+          totalFTE += currentFte;
+          totalCost += calculatedCost;
+
+          // 3. Klassisches Pie-Chart (Dienstartenverteilung)
+          if (!aggregatedPie[finArtKey]) { aggregatedPie[finArtKey] = 0; }
+          aggregatedPie[finArtKey] += 1;
+
+          // 4. Gestapeltes Diagramm (Dienstart & Geschlecht)
+          if (!aggregatedStacked[finArtKey]) { aggregatedStacked[finArtKey] = {}; }
+          if (!aggregatedStacked[finArtKey][geschKey]) { aggregatedStacked[finArtKey][geschKey] = 0; }
+          aggregatedStacked[finArtKey][geschKey] += 1;
+
+          // 5. Altersstruktur-Histogramm
+          const age = parseInt(item.PERSALTER, 10);
+          if (!isNaN(age)) {
+            let ageGroup = "";
+            if (age < 30) ageGroup = "20-29 Jahre";
+            else if (age < 40) ageGroup = "30-39 Jahre";
+            else if (age < 50) ageGroup = "40-49 Jahre";
+            else if (age < 60) ageGroup = "50-59 Jahre";
+            else ageGroup = "60+ Jahre";
+
+            if (!aggregatedAge[ageGroup]) { aggregatedAge[ageGroup] = {}; }
+            if (!aggregatedAge[ageGroup][finArtKey]) { aggregatedAge[ageGroup][finArtKey] = 0; }
+            aggregatedAge[ageGroup][finArtKey] += 1;
+          }
+
+          // 6. Controlling: Kosten nach Dienstart
+          if (!aggCostFinArt[finArtKey]) { aggCostFinArt[finArtKey] = 0; }
+          aggCostFinArt[finArtKey] += calculatedCost;
+
+          // 7. Controlling: Kosten nach Struktureinheit / Abteilung
+          if (!aggCostOrg[orgKey]) { aggCostOrg[orgKey] = 0; }
+          aggCostOrg[orgKey] += calculatedCost;
+        });
+      }
+
+      // ==========================================================
+      // DATEN-TRANSFORMATIONEN FÜR DIE GRAFIKEN
+      // ==========================================================
+
+      const employeeGroups = Object.keys(aggregatedPie).map(key => {
+        return { name: key, value: aggregatedPie[key] };
       });
+
+      const timeSeriesData = Object.values(aggregatedTrend).sort((a, b) => a.year.localeCompare(b.year));
+
+      const stackedData = [];
+      Object.keys(aggregatedStacked).forEach(fKey => {
+        Object.keys(aggregatedStacked[fKey]).forEach(gKey => {
+          stackedData.push({ finArt: fKey, gesch: gKey, count: aggregatedStacked[fKey][gKey] });
+        });
+      });
+
+      const contractEndData = [];
+      Object.keys(aggregatedContracts).forEach(mKey => {
+        Object.keys(aggregatedContracts[mKey]).forEach(fKey => {
+          contractEndData.push({ month: mKey, finArt: fKey, fte: aggregatedContracts[mKey][fKey] });
+        });
+      });
+      contractEndData.sort((a, b) => a.month.localeCompare(b.month));
+
+      const ageStructureData = [];
+      Object.keys(aggregatedAge).forEach(aKey => {
+        Object.keys(aggregatedAge[aKey]).forEach(fKey => {
+          ageStructureData.push({ ageGroup: aKey, finArt: fKey, headcount: aggregatedAge[aKey][fKey] });
+        });
+      });
+      ageStructureData.sort((a, b) => a.ageGroup.localeCompare(b.ageGroup));
+      contractTimelineData.sort((a, b) => a.dateStr.localeCompare(b.dateStr));
+
+      // NEU: Controlling Transformationen
+      const costByFinArt = Object.keys(aggCostFinArt).map(key => {
+        return { finArt: key, cost: aggCostFinArt[key] };
+      });
+
+      const costByOrg = Object.keys(aggCostOrg).map(key => {
+        return { org: key, cost: aggCostOrg[key] };
+      });
+
+      // ==========================================================
+      // MODELLBINDUNG AN DIE VIEW
+      // ==========================================================
+
+      // Diagramme
+      let oViewModel = this.getView().getModel();
+      if (!oViewModel) {
+        oViewModel = new JSONModel();
+        this.getView().setModel(oViewModel);
+      }
+      oViewModel.setData({
+        employeeGroups: employeeGroups,
+        timeSeriesData: timeSeriesData,
+        stackedData: stackedData,
+        contractEndData: contractEndData,
+        contractTimelineData: contractTimelineData,
+        ageStructureData: ageStructureData,
+        costByFinArt: costByFinArt,
+        costByOrg: costByOrg
+      });
+
+      // KPIs im globalen dashboard-Modell binden
+      let oDashboardModel = this.getView().getModel("dashboard");
+      if (!oDashboardModel) {
+        oDashboardModel = new JSONModel();
+        this.getView().setModel(oDashboardModel, "dashboard");
+      }
+      oDashboardModel.setData({
+        kpis: {
+          headcount: totalHeadcount,
+          fte: totalFTE,
+          totalCost: totalCost,
+          avgCostPerFTE: totalFTE > 0 ? (totalCost / totalFTE) : 0
+        }
+      });
+    },
+
+    onHRTabSelect: function () {
+      setTimeout(this._updateHRTabSlider.bind(this), 0);
+    },
+
+    _updateHRTabSlider: function () {
+      const oTabBar = this.getView().byId("idHRIconTabBar");
+      if (!oTabBar) {
+        return;
+      }
+      const oTabBarDom = oTabBar.getDomRef();
+      if (!oTabBarDom) {
+        // Dom not ready yet, retry in next frame
+        setTimeout(this._updateHRTabSlider.bind(this), 50);
+        return;
+      }
+
+      // Find head container
+      const oHeadDom = oTabBarDom.querySelector(".sapMITBHead") || oTabBarDom.querySelector(".sapMITBHeadContainer");
+      if (!oHeadDom) {
+        return;
+      }
+
+      // Ensure indicator exists
+      let oIndicator = oHeadDom.querySelector(".tab-slider-indicator");
+      if (!oIndicator) {
+        oIndicator = document.createElement("div");
+        oIndicator.className = "tab-slider-indicator";
+        oHeadDom.appendChild(oIndicator);
+      }
+
+      // Find selected tab
+      const oSelectedTabDom = oHeadDom.querySelector(".sapMITBSelected");
+      if (oSelectedTabDom) {
+        // Offset calculations relative to oHeadDom
+        oIndicator.style.left = this._getOffsetLeft(oSelectedTabDom, oHeadDom) + "px";
+        oIndicator.style.top = this._getOffsetTop(oSelectedTabDom, oHeadDom) + "px";
+        oIndicator.style.width = oSelectedTabDom.offsetWidth + "px";
+        oIndicator.style.height = oSelectedTabDom.offsetHeight + "px";
+      } else {
+        // Hide if no tab is selected
+        oIndicator.style.width = "0px";
+      }
+    },
+
+    _getOffsetLeft: function (oEl, oParent) {
+      let nLeft = 0;
+      while (oEl && oEl !== oParent) {
+        nLeft += oEl.offsetLeft;
+        oEl = oEl.offsetParent;
+      }
+      return nLeft;
+    },
+
+    _getOffsetTop: function (oEl, oParent) {
+      let nTop = 0;
+      while (oEl && oEl !== oParent) {
+        nTop += oEl.offsetTop;
+        oEl = oEl.offsetParent;
+      }
+      return nTop;
     }
 
   });

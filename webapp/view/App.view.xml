@@ -4,7 +4,7 @@
   xmlns:core="sap.ui.core"
   controllerName="de.unigoettingen.dashboardapp.controller.App">
 
-  <HBox fitContainer="true" renderType="Bare">
+  <HBox fitContainer="true" renderType="Bare" class="app-root-layout">
     <!-- Thin Sidebar (always visible when logged in) -->
     <VBox id="thinSidebar" class="thin-sidebar" visible="{sidebar>/visible}" width="60px" alignItems="Center">
       <Button
@@ -54,8 +54,8 @@
           class="sapUiSmallMarginBottom"/>
     </VBox>
 
-    <!-- Expanded Sidebar (visible based on expanded state) -->
-    <VBox id="expandedSidebar" class="expanded-sidebar" visible="{= ${sidebar>/visible} &amp;&amp; ${sidebar>/expanded} }" width="280px">
+    <!-- Expanded Sidebar (visible based on overall sidebar visibility, sliding transition is controlled via CSS) -->
+    <VBox id="expandedSidebar" class="expanded-sidebar" visible="{sidebar>/visible}" width="280px">
       <VBox class="sidebar-header" alignItems="Center">
         <core:Icon src="sap-icon://education" size="1.8rem" class="sidebar-logo sapUiTinyMarginBottom" color="#818cf8"/>
         <Title text="Uni Göttingen" level="H3" class="sidebar-title"/>
@@ -75,7 +75,39 @@
     </VBox>
 
     <!-- Main Content Area -->
-    <App id="app"/>
+    <VBox id="mainContentWrapper" class="main-content-wrapper" fitContainer="true">
+      <!-- Shared Page Header (Back button and title at the very top) -->
+      <Bar id="sharedHeader" visible="{sidebar>/visible}" design="Header">
+        <contentLeft>
+          <Button icon="sap-icon://nav-back" press="onNavBack" type="Transparent" class="header-back-btn"/>
+        </contentLeft>
+        <contentMiddle>
+          <Title text="{header>/title}" level="H2"/>
+        </contentMiddle>
+        <contentRight>
+          <Button
+              icon="{= ${theme>/dark} ? 'sap-icon://light-mode' : 'sap-icon://dark-mode' }"
+              type="Transparent"
+              press="onToggleTheme"
+              tooltip="Theme wechseln"/>
+        </contentRight>
+      </Bar>
+
+      <IconTabBar
+          id="navTabBar"
+          visible="{sidebar>/visible}"
+          selectedKey="finanzen"
+          select="onTabSelect"
+          expandable="false"
+          applyContentPadding="false">
+          <items>
+              <IconTabFilter text="Finanzen" key="finanzen" />
+              <IconTabFilter text="Personal" key="hr" />
+              <IconTabFilter text="Publikationen" key="pb" />
+          </items>
+      </IconTabBar>
+      <App id="app"/>
+    </VBox>
   </HBox>
 
 </mvc:View>

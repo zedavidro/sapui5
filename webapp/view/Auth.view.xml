@@ -2,51 +2,59 @@
     controllerName="de.unigoettingen.dashboardapp.controller.Auth"
     xmlns:mvc="sap.ui.core.mvc"
     xmlns="sap.m"
+    xmlns:core="sap.ui.core"
     xmlns:l="sap.ui.layout"
     xmlns:f="sap.ui.layout.form"
     displayBlock="true">
 
     <App id="loginApp">
         <pages>
-            <Page title="Login" showHeader="false">
+            <Page title="Login" showHeader="false" class="login-page-minimal">
                 <content>
                     <FlexBox
                         alignItems="Center"
                         justifyContent="Center"
-                        height="100%">
+                        height="100%"
+                        class="login-wrapper-minimal">
 
-                        <items>
-                            <VBox class="sapUiMediumMargin sapUiLargePadding"
-                                  width="400px"
-                                  style="background-color: white; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                        <VBox class="login-card-minimal sapUiLargePadding" alignItems="Center" width="400px">
 
-                                <Title text="Willkommen" titleStyle="H2" class="sapUiSmallMarginBottom" />
-                                <Text text="Bitte melden Sie sich an, um fortzufahren." class="sapUiMediumMarginBottom" />
+                            <!-- Header Logo & Brand -->
+                            <Image src="img/Logo_Uni_Göttingen_2022.png" width="300px" alt="Logo" class="loginLogo" />
 
-                                <Label text="Benutzername" labelFor="userField" />
+                            <Title text="Management-Dashboard" titleStyle="H2" class="login-portal-title-minimal sapUiTinyMarginBottom" />
+                            <Text text="Integriertes Portal für Finanzen, Personal &amp; Publikationen" class="login-subtitle-minimal sapUiMediumMarginBottom" />
+
+                            <!-- Form Area (Centered) -->
+                            <VBox width="100%" class="login-form-area-minimal sapUiMediumMarginTop" alignItems="Center">
+
                                 <Input
                                     id="userField"
                                     value="{login>/username}"
-                                    placeholder="Benutzername eingeben"
-                                    class="sapUiSmallMarginBottom" />
+                                    placeholder="Benutzername"
+                                    class="login-input-minimal sapUiSmallMarginBottom" />
 
-                                <Label text="Passwort" labelFor="pwField" />
                                 <Input
                                     id="pwField"
                                     value="{login>/password}"
                                     type="Password"
-                                    placeholder="Passwort eingeben"
-                                    class="sapUiSmallMarginBottom"
-                                    submit = ".onLoginPress" />
+                                    placeholder="Passwort"
+                                    class="login-input-minimal sapUiMediumMarginBottom"
+                                    submit=".onLoginPress" />
 
                                 <Button
                                     text="Anmelden"
                                     type="Emphasized"
                                     width="100%"
-                                    press=".onLoginPress" />
+                                    press=".onLoginPress"
+                                    class="login-button-minimal sapUiMediumMarginBottom" />
 
                             </VBox>
-                        </items>
+
+                            <!-- Security Notice / Footer -->
+                            <Text text="Internes System • Zugriff nur für autorisierte Mitarbeiter" class="login-footer-minimal sapUiMediumMarginTop" />
+
+                        </VBox>
                     </FlexBox>
                 </content>
             </Page>
