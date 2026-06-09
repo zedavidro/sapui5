@@ -29,7 +29,26 @@ sap.ui.define([
 
 			// Dynamically add Universitätsdaten if user has role 3
 			const oUserModel = this.getOwnerComponent().getModel("userModel");
-			if (oUserModel && oUserModel.getProperty("/zugriffsrechte") === 3) {
+			const iRole = oUserModel ? oUserModel.getProperty("/zugriffsrechte") : 0;
+
+			if (iRole >= 2) {
+				const oSidebarModel = this.getView().getModel("sidebar");
+				const aStructure = JSON.parse(JSON.stringify(oSidebarModel.getProperty("/uniStructure")));
+
+				// Fakultätsfinanzen für Zugang 2 und 3
+				if (!aStructure.find(n => n.text === "Fakultätsfinanzen")) {
+					aStructure.push({
+						text: "Fakultätsfinanzen",
+						icon: "sap-icon://building",
+						isFakultaetsfinanzen: true
+					});
+					oSidebarModel.setProperty("/uniStructure", aStructure);
+					oSidebarModel.refresh(true);
+				}
+			}
+
+			// Universitätsdaten nur für Zugang 3
+			if (iRole === 3) {
 				const oSidebarModel = this.getView().getModel("sidebar");
 				const aStructure = JSON.parse(JSON.stringify(oSidebarModel.getProperty("/uniStructure")));
 				
@@ -46,28 +65,32 @@ sap.ui.define([
 								if (k.unterkategorien && k.unterkategorien.length > 0) {
 									oNode.nodes = k.unterkategorien.map(uk => ({
 										text: uk,
-										// No icon for unterkategorien so it looks cleaner
 										isUnterkategorie: true
 									}));
 								}
 								return oNode;
 							});
 							
-							aStructure.push({
-								text: "Universitätsdaten",
-								icon: "sap-icon://lead",
-								isUnifinanzenMain: true,
-								nodes: aNodes
-							});
-							oSidebarModel.setProperty("/uniStructure", aStructure);
-							oSidebarModel.refresh(true);
+							// Re-read model in case Fakultätsfinanzen was already added
+							const aLatest = JSON.parse(JSON.stringify(oSidebarModel.getProperty("/uniStructure")));
+							if (!aLatest.find(n => n.text === "Universitätsdaten")) {
+								aLatest.push({
+									text: "Universitätsdaten",
+									icon: "sap-icon://lead",
+									isUnifinanzenMain: true,
+									nodes: aNodes
+								});
+								oSidebarModel.setProperty("/uniStructure", aLatest);
+								oSidebarModel.refresh(true);
+							}
 						})
 						.catch(err => console.error("Fehler beim Laden der Kategorien:", err));
 				}
-			} else if (oUserModel && oUserModel.getProperty("/zugriffsrechte") < 3) {
+			} else if (iRole < 2) {
+				// Kein Zugang: Sidebar leeren
 				const oSidebarModel = this.getView().getModel("sidebar");
 				const aStructure = oSidebarModel.getProperty("/uniStructure");
-				const aFiltered = aStructure.filter(n => n.text !== "Universitätsdaten");
+				const aFiltered = aStructure.filter(n => n.text !== "Universitätsdaten" && n.text !== "Fakultätsfinanzen");
 				oSidebarModel.setProperty("/uniStructure", aFiltered);
 				oSidebarModel.refresh(true);
 			}
@@ -91,6 +114,8 @@ sap.ui.define([
 				this.getOwnerComponent().getRouter().navTo("unifinanzen", {
 					kategorie: encodeURIComponent(oData.text)
 				});
+			} else if (oData.isFakultaetsfinanzen) {
+				this.getOwnerComponent().getRouter().navTo("fakultaetsfinanzen");
 			}
 		},
 

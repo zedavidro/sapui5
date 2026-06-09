@@ -98,6 +98,11 @@
           "pattern": "unifinanzen/:kategorie:",
           "name": "unifinanzen",
           "target": "unifinanzen"
+        },
+        {
+          "pattern": "fakultaetsfinanzen",
+          "name": "fakultaetsfinanzen",
+          "target": "fakultaetsfinanzen"
         }
       ],
       "targets": {
@@ -120,6 +125,10 @@
         },
         "unifinanzen": {
           "viewName": "Unifinanzen",
+          "viewLevel": 3
+        },
+        "fakultaetsfinanzen": {
+          "viewName": "Fakultaetsfinanzen",
           "viewLevel": 3
         }
       }
