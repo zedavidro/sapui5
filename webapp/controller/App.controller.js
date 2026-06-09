@@ -14,59 +14,7 @@ sap.ui.define([
 			const oSidebarModel = new JSONModel({
 				visible: false,
 				expanded: false,
-				uniStructure: [
-					{
-						text: "Präsidium",
-						icon: "sap-icon://customer-and-contacts",
-						nodes: [
-							{
-								text: "Wirtschaftsinformatik (Dekanat)",
-								icon: "sap-icon://folder",
-								nodes: [
-									{ text: "LS Anwendungssysteme & E-Business", icon: "sap-icon://document" },
-									{ text: "LS Informationsmanagement", icon: "sap-icon://document" },
-									{ text: "LS Digitalisierung & Innovation", icon: "sap-icon://document" }
-								]
-							},
-							{
-								text: "Mathematik (Dekanat)",
-								icon: "sap-icon://folder",
-								nodes: [
-									{ text: "LS Angewandte Analysis", icon: "sap-icon://document" },
-									{ text: "LS Numerische Mathematik", icon: "sap-icon://document" },
-									{ text: "LS Algebra & Geometrie", icon: "sap-icon://document" }
-								]
-							},
-							{
-								text: "Informatik (Dekanat)",
-								icon: "sap-icon://folder",
-								nodes: [
-									{ text: "LS Softwaretechnik & Programmiersprachen", icon: "sap-icon://document" },
-									{ text: "LS Computergrafik & Visualisierung", icon: "sap-icon://document" },
-									{ text: "LS Verteilte Systeme", icon: "sap-icon://document" }
-								]
-							},
-							{
-								text: "Psychologie (Dekanat)",
-								icon: "sap-icon://folder",
-								nodes: [
-									{ text: "LS Klinische Psychologie", icon: "sap-icon://document" },
-									{ text: "LS Kognitionspsychologie", icon: "sap-icon://document" },
-									{ text: "LS Entwicklungspsychologie", icon: "sap-icon://document" }
-								]
-							},
-							{
-								text: "Medizin (Dekanat)",
-								icon: "sap-icon://folder",
-								nodes: [
-									{ text: "LS Kardiologie & Pneumologie", icon: "sap-icon://document" },
-									{ text: "LS Humangenetik", icon: "sap-icon://document" },
-									{ text: "LS Pharmakologie & Toxikologie", icon: "sap-icon://document" }
-								]
-							}
-						]
-					}
-				]
+				uniStructure: []
 			});
 			this.getView().setModel(oSidebarModel, "sidebar");
 

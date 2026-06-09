@@ -27,7 +27,7 @@
     "resources": {
       "css": [
         {
-          "uri": "css/style.css"
+          "uri": "css/style.css?v=2"
         }
       ]
     },
@@ -95,6 +95,16 @@
           "pattern": "pb",
           "name": "pb",
           "target": "pb"
+        },
+        {
+          "pattern": "unifinanzen/:kategorie:",
+          "name": "unifinanzen",
+          "target": "unifinanzen"
+        },
+        {
+          "pattern": "fakultaetsfinanzen",
+          "name": "fakultaetsfinanzen",
+          "target": "fakultaetsfinanzen"
         }
       ],
       "targets": {

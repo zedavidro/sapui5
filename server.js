@@ -49,6 +49,47 @@ app.get("/api/finanzen", (req, res) => { //Getter-Methode für Finanzdaten
   }
 });
 
+app.get("/api/unifinanzen", (req, res) => {
+  const rows = db.prepare(`
+    SELECT hauptkategorie, unterkategorie, jahr, wert
+    FROM unifinanzen
+    WHERE unterkategorie != 'davon Studienbeiträge' OR unterkategorie IS NULL
+  `).all();
+
+  res.json({
+    unifinanzen: rows
+  });
+});
+
+app.get("/api/unifinanzen/kategorien", (req, res) => {
+  const rows = db.prepare(`
+    SELECT DISTINCT hauptkategorie, unterkategorie
+    FROM unifinanzen
+    WHERE unterkategorie != 'davon Studienbeiträge' OR unterkategorie IS NULL
+  `).all();
+
+  const grouped = {};
+  rows.forEach(r => {
+    if (!grouped[r.hauptkategorie]) {
+      grouped[r.hauptkategorie] = [];
+    }
+    if (r.unterkategorie && r.unterkategorie.trim() !== "") {
+      if (!grouped[r.hauptkategorie].includes(r.unterkategorie)) {
+         grouped[r.hauptkategorie].push(r.unterkategorie);
+      }
+    }
+  });
+
+  const result = Object.keys(grouped).map(hk => ({
+    hauptkategorie: hk,
+    unterkategorien: grouped[hk]
+  }));
+
+  res.json({
+    kategorien: result
+  });
+});
+
 app.get("/api/personal", (req, res) => {
   try {
     const rows = personalStmt.all();

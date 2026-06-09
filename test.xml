@@ -1,0 +1,82 @@
+<mvc:View
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns="sap.m"
+  xmlns:core="sap.ui.core"
+  controllerName="de.unigoettingen.dashboardapp.controller.App">
+
+  <HBox fitContainer="true" renderType="Bare">
+    <!-- Thin Sidebar (always visible when logged in) -->
+    <VBox id="thinSidebar" class="thin-sidebar" visible="{sidebar>/visible}" width="60px" alignItems="Center">
+      <Button
+          icon="sap-icon://menu"
+          type="Transparent"
+          press="onToggleSidebar"
+          class="sidebar-toggle-btn sapUiSmallMarginTop sapUiSmallMarginBottom"/>
+      
+      <VBox class="sidebar-shortcuts sapUiMediumMarginTop" alignItems="Center">
+        <Button
+            icon="sap-icon://commission"
+            tooltip="Finanzen"
+            type="Transparent"
+            press="onShortcutPress">
+            <customData>
+                <core:CustomData key="route" value="finanzen" />
+            </customData>
+        </Button>
+        <Button
+            icon="sap-icon://employee"
+            tooltip="Personal"
+            type="Transparent"
+            press="onShortcutPress">
+            <customData>
+                <core:CustomData key="route" value="hr" />
+            </customData>
+        </Button>
+        <Button
+            icon="sap-icon://course-book"
+            tooltip="Publikationen"
+            type="Transparent"
+            press="onShortcutPress">
+            <customData>
+                <core:CustomData key="route" value="pb" />
+            </customData>
+        </Button>
+      </VBox>
+      
+      <!-- Flex Spacer -->
+      <core:HTML content="&lt;div style='flex-grow: 1;'&gt;&lt;/div&gt;"/>
+      
+      <Button
+          icon="sap-icon://log"
+          tooltip="Abmelden"
+          type="Transparent"
+          press="onLogoutPress"
+          class="sapUiSmallMarginBottom"/>
+    </VBox>
+
+    <!-- Expanded Sidebar (visible based on expanded state) -->
+    <VBox id="expandedSidebar" class="expanded-sidebar" visible="{= ${sidebar>/visible} &amp;&amp; ${sidebar>/expanded} }" width="280px">
+      <VBox class="sidebar-header" alignItems="Center">
+        <core:Icon src="sap-icon://education" size="1.8rem" class="sidebar-logo sapUiTinyMarginBottom" color="#818cf8"/>
+        <Title text="Uni Göttingen" level="H3" class="sidebar-title"/>
+        <Text text="Organisationsstruktur" class="sidebar-subtitle"/>
+      </VBox>
+      <ScrollContainer vertical="true" height="calc(100% - 90px)" width="100%">
+        <Tree
+            id="sidebarTree"
+            items="{path: 'sidebar>/uniStructure', parameters: {arrayNames: ['nodes']}}"
+            mode="SingleSelectMaster"
+            selectionChange="onTreeItemSelect">
+            <StandardTreeItem
+                title="{sidebar>text}"
+                icon="{sidebar>icon}"
+                class="tree-item-custom"/>
+        </Tree>
+      </ScrollContainer>
+    </VBox>
+
+    <!-- Main Content Area -->
+    <App id="app"/>
+  </HBox>
+
+</mvc:View>

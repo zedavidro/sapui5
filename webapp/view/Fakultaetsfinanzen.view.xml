@@ -1,0 +1,26 @@
+<mvc:View
+	controllerName="de.unigoettingen.dashboardapp.controller.Fakultaetsfinanzen"
+	displayBlock="true"
+	xmlns="sap.m"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:core="sap.ui.core">
+
+	<Page
+		title="Fakultätsfinanzen"
+		showNavButton="false">
+
+		<content>
+			<VBox
+				justifyContent="Center"
+				alignItems="Center"
+				class="sapUiLargeMargin">
+				<core:HTML content="&lt;div style='font-size: 6rem; line-height: 1; margin-bottom: 1rem;'&gt;🚧&lt;/div&gt;"/>
+				<Title text="Fakultätsfinanzen" level="H1" class="sapUiSmallMarginBottom"/>
+				<core:HTML content="&lt;div style='font-size: 1.5rem; line-height: 1; margin-bottom: 0.5rem;'&gt;👷 Seite im Aufbau 👷&lt;/div&gt;"/>
+				<Text text="Diese Seite befindet sich derzeit im Aufbau. Bitte schauen Sie später wieder vorbei." class="sapUiSmallMarginTop"/>
+			</VBox>
+		</content>
+
+	</Page>
+
+</mvc:View>

@@ -79,7 +79,7 @@ sap.ui.define([
     _onRouteMatched: function () {
       const oUserModel = this.getOwnerComponent().getModel("userModel");
       const iRole = oUserModel ? oUserModel.getProperty("/zugriffsrechte") : 0;
-      if (iRole < 2) {
+      if (iRole < 1) {
         this.getOwnerComponent().getRouter().navTo("login");
         return;
       }
