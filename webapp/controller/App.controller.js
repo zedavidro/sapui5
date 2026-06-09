@@ -13,59 +13,7 @@ sap.ui.define([
 			const oSidebarModel = new JSONModel({
 				visible: false,
 				expanded: false,
-				uniStructure: [
-					{
-						text: "Präsidium",
-						icon: "sap-icon://customer-and-contacts",
-						nodes: [
-							{
-								text: "Wirtschaftsinformatik (Dekanat)",
-								icon: "sap-icon://folder",
-								nodes: [
-									{ text: "LS Anwendungssysteme & E-Business", icon: "sap-icon://document" },
-									{ text: "LS Informationsmanagement", icon: "sap-icon://document" },
-									{ text: "LS Digitalisierung & Innovation", icon: "sap-icon://document" }
-								]
-							},
-							{
-								text: "Mathematik (Dekanat)",
-								icon: "sap-icon://folder",
-								nodes: [
-									{ text: "LS Angewandte Analysis", icon: "sap-icon://document" },
-									{ text: "LS Numerische Mathematik", icon: "sap-icon://document" },
-									{ text: "LS Algebra & Geometrie", icon: "sap-icon://document" }
-								]
-							},
-							{
-								text: "Informatik (Dekanat)",
-								icon: "sap-icon://folder",
-								nodes: [
-									{ text: "LS Softwaretechnik & Programmiersprachen", icon: "sap-icon://document" },
-									{ text: "LS Computergrafik & Visualisierung", icon: "sap-icon://document" },
-									{ text: "LS Verteilte Systeme", icon: "sap-icon://document" }
-								]
-							},
-							{
-								text: "Psychologie (Dekanat)",
-								icon: "sap-icon://folder",
-								nodes: [
-									{ text: "LS Klinische Psychologie", icon: "sap-icon://document" },
-									{ text: "LS Kognitionspsychologie", icon: "sap-icon://document" },
-									{ text: "LS Entwicklungspsychologie", icon: "sap-icon://document" }
-								]
-							},
-							{
-								text: "Medizin (Dekanat)",
-								icon: "sap-icon://folder",
-								nodes: [
-									{ text: "LS Kardiologie & Pneumologie", icon: "sap-icon://document" },
-									{ text: "LS Humangenetik", icon: "sap-icon://document" },
-									{ text: "LS Pharmakologie & Toxikologie", icon: "sap-icon://document" }
-								]
-							}
-						]
-					}
-				]
+				uniStructure: []
 			});
 			this.getView().setModel(oSidebarModel, "sidebar");
 
@@ -78,6 +26,72 @@ sap.ui.define([
 			// Hide sidebar on login page, show on all other pages
 			const bShowSidebar = sRouteName !== "login";
 			this.getView().getModel("sidebar").setProperty("/visible", bShowSidebar);
+
+			// Dynamically add Universitätsdaten if user has role 3
+			const oUserModel = this.getOwnerComponent().getModel("userModel");
+			if (oUserModel && oUserModel.getProperty("/zugriffsrechte") === 3) {
+				const oSidebarModel = this.getView().getModel("sidebar");
+				const aStructure = JSON.parse(JSON.stringify(oSidebarModel.getProperty("/uniStructure")));
+				
+				if (!aStructure.find(n => n.text === "Universitätsdaten")) {
+					fetch("http://localhost:3000/api/unifinanzen/kategorien")
+						.then(response => response.json())
+						.then(data => {
+							const aNodes = data.kategorien.map(k => {
+								const oNode = {
+									text: k.hauptkategorie,
+									isKategorie: true
+								};
+								
+								if (k.unterkategorien && k.unterkategorien.length > 0) {
+									oNode.nodes = k.unterkategorien.map(uk => ({
+										text: uk,
+										// No icon for unterkategorien so it looks cleaner
+										isUnterkategorie: true
+									}));
+								}
+								return oNode;
+							});
+							
+							aStructure.push({
+								text: "Universitätsdaten",
+								icon: "sap-icon://lead",
+								isUnifinanzenMain: true,
+								nodes: aNodes
+							});
+							oSidebarModel.setProperty("/uniStructure", aStructure);
+							oSidebarModel.refresh(true);
+						})
+						.catch(err => console.error("Fehler beim Laden der Kategorien:", err));
+				}
+			} else if (oUserModel && oUserModel.getProperty("/zugriffsrechte") < 3) {
+				const oSidebarModel = this.getView().getModel("sidebar");
+				const aStructure = oSidebarModel.getProperty("/uniStructure");
+				const aFiltered = aStructure.filter(n => n.text !== "Universitätsdaten");
+				oSidebarModel.setProperty("/uniStructure", aFiltered);
+				oSidebarModel.refresh(true);
+			}
+		},
+
+		onTreeItemSelect: function (oEvent) {
+			const oItem = oEvent.getParameter("listItem");
+			const oContext = oItem.getBindingContext("sidebar");
+			if (!oContext) return;
+			const oData = oContext.getObject();
+
+			if (oData.isUnifinanzenMain) {
+				this.getOwnerComponent().getRouter().navTo("unifinanzen", {
+					kategorie: "alle"
+				});
+			} else if (oData.isKategorie) {
+				this.getOwnerComponent().getRouter().navTo("unifinanzen", {
+					kategorie: encodeURIComponent(oData.text)
+				});
+			} else if (oData.isUnterkategorie) {
+				this.getOwnerComponent().getRouter().navTo("unifinanzen", {
+					kategorie: encodeURIComponent(oData.text)
+				});
+			}
 		},
 
 		onToggleSidebar: function () {

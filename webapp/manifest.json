@@ -27,7 +27,7 @@
     "resources": {
       "css": [
         {
-          "uri": "css/style.css"
+          "uri": "css/style.css?v=2"
         }
       ]
     },
@@ -93,6 +93,11 @@
           "pattern": "pb",
           "name": "pb",
           "target": "pb"
+        },
+        {
+          "pattern": "unifinanzen/:kategorie:",
+          "name": "unifinanzen",
+          "target": "unifinanzen"
         }
       ],
       "targets": {
@@ -111,6 +116,10 @@
         },
         "pb": {
           "viewName": "PB",
+          "viewLevel": 3
+        },
+        "unifinanzen": {
+          "viewName": "Unifinanzen",
           "viewLevel": 3
         }
       }

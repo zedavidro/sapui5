@@ -68,24 +68,42 @@
 }
 
 .sidebar-subtitle {
-  color: #94a3b8 !important;
+  color: #ffffff !important;
   font-size: 0.8rem !important;
 }
 
 /* Customize tree items for dark mode */
 .tree-item-custom {
   background-color: transparent !important;
+  
 }
 
 .tree-item-custom .sapMCLI {
-  background-color: transparent !important;
   border-bottom: none !important;
-  color: #e2e8f0 !important;
+  color: #ffffff !important;
+}
+
+.tree-item-custom,
+.tree-item-custom * {
+  color: #ffffff !important;
+  opacity: 1 !important;
+  text-shadow: none !important;
+}
+
+li[data-is-leaf="true"] .sapMTreeItemBaseExpander,
+li[data-isleaf="true"] .sapMTreeItemBaseExpander,
+li[data-isLeaf="true"] .sapMTreeItemBaseExpander,
+li[aria-level="3"] .sapMTreeItemBaseExpander,
+li[aria-level="3"] .sapMTreeIcon,
+li[aria-level="3"] .sapUiIcon:not(.sapMTreeItemBaseIcon) {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  width: 0 !important;
 }
 
 .tree-item-custom:hover .sapMCLI {
   background-color: rgba(99, 102, 241, 0.15) !important;
-  color: #ffffff !important;
 }
 
 .tree-item-custom .sapMObjStatusNone {

@@ -46,7 +46,7 @@ sap.ui.define([
 					const oUserModel = new JSONModel(data.user);
 					this.getOwnerComponent().setModel(oUserModel, "userModel");
 
-					// Weiterleiten zu den Finanzdaten
+					// Alle Nutzer mit Stufe 1, 2 und 3 starten standardmäßig auf dem Finanzen-Dashboard
 					this.getRouter().navTo("finanzen");
 				} else {
 					MessageToast.show(data.message || "Login fehlgeschlagen.");
