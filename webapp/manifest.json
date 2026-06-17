@@ -123,6 +123,16 @@
         "pb": {
           "viewName": "PB",
           "viewLevel": 4
+        },
+        "unifinanzen": {
+          "viewId": "unifinanzen",
+          "viewName": "Unifinanzen",
+          "viewLevel": 3
+        },
+        "fakultaetsfinanzen": {
+          "viewId": "fakultaetsfinanzen",
+          "viewName": "Fakultaetsfinanzen",
+          "viewLevel": 3
         }
       }
     }

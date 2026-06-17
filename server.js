@@ -23,7 +23,16 @@ const finanzenStmt = db.prepare(`
 `);
 
 const personalStmt = db.prepare(`
-  SELECT PERNRCOD, jahr, PERSALTER, GESCH, NATIOX, OTXT2, FIN_ART, VZAE, VBEDAT
+  SELECT
+    PERNRCOD,
+    CAST(Jahr AS INTEGER) AS jahr,
+    CAST(PERSALTER AS INTEGER) AS PERSALTER,
+    GESCH,
+    NATIOX,
+    OTXT2,
+    FIN_ART,
+    CAST(VZAE AS REAL) AS VZAE,
+    VBEDAT
   FROM personal
 `);
 

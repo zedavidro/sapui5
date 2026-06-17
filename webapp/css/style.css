@@ -109,12 +109,10 @@
 
 .tree-item-custom .sapMCLI {
   border-bottom: none !important;
-  color: #ffffff !important;
 }
 
 .tree-item-custom,
 .tree-item-custom * {
-  color: #ffffff !important;
   opacity: 1 !important;
   text-shadow: none !important;
 }
@@ -418,7 +416,9 @@ li[aria-level="3"] .sapUiIcon:not(.sapMTreeItemBaseIcon) {
   color: #4f46e5 !important;
 }
 
-.theme-light .tree-item-custom .sapMCLI {
+.theme-light .tree-item-custom .sapMCLI,
+.theme-light .tree-item-custom,
+.theme-light .tree-item-custom * {
   color: #334155 !important;
 }
 
@@ -590,7 +590,9 @@ li[aria-level="3"] .sapUiIcon:not(.sapMTreeItemBaseIcon) {
   color: #818cf8 !important;
 }
 
-.theme-dark .tree-item-custom .sapMCLI {
+.theme-dark .tree-item-custom .sapMCLI,
+.theme-dark .tree-item-custom,
+.theme-dark .tree-item-custom * {
   color: #e2e8f0 !important;
 }
 

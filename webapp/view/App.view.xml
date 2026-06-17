@@ -9,7 +9,6 @@
   <html:style>
       .tree-item-custom,
       .tree-item-custom * {
-          color: #ffffff !important;
           opacity: 1 !important;
           text-shadow: none !important;
       }
