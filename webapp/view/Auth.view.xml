@@ -3,56 +3,63 @@
     xmlns:mvc="sap.ui.core.mvc"
     xmlns="sap.m"
     xmlns:core="sap.ui.core"
-    xmlns:l="sap.ui.layout"
-    xmlns:f="sap.ui.layout.form"
     displayBlock="true">
 
     <App id="loginApp">
         <pages>
-            <Page title="Login" showHeader="false" class="login-page-minimal">
+            <Page title="Login" showHeader="false" backgroundDesign="Solid">
                 <content>
                     <FlexBox
                         alignItems="Center"
                         justifyContent="Center"
-                        height="100%"
-                        class="login-wrapper-minimal">
+                        height="100%">
 
-                        <VBox class="login-card-minimal sapUiLargePadding" alignItems="Center" width="400px">
+                        <VBox alignItems="Center" width="24rem" class="sapUiLargeMargin">
 
-                            <!-- Header Logo & Brand -->
-                            <Image src="img/Logo_Uni_Göttingen_2022.png" width="300px" alt="Logo" class="loginLogo" />
+                            <!-- Logo -->
+                            <Image src="img/Logo_Uni_Goettingen_2022.png" width="300px" alt="Logo"
+                                   class="sapUiMediumMarginBottom" />
 
-                            <Title text="Management-Dashboard" titleStyle="H2" class="login-portal-title-minimal sapUiTinyMarginBottom" />
-                            <Text text="Integriertes Portal für Finanzen, Personal &amp; Publikationen" class="login-subtitle-minimal sapUiMediumMarginBottom" />
+                            <!-- Title & Subtitle -->
+                            <Title text="Management-Dashboard" level="H2"
+                                   class="sapUiTinyMarginBottom" titleStyle="H2" />
+                            <Label text="Integriertes Portal für Finanzen, Personal &amp; Publikationen"
+                                   class="sapUiSmallMarginBottom sapThemeText"
+                                   textAlign="Center" wrapping="true" />
 
-                            <!-- Form Area (Centered) -->
-                            <VBox width="100%" class="login-form-area-minimal sapUiMediumMarginTop" alignItems="Center">
+                            <!-- Login Form -->
+                            <VBox width="100%" class="sapUiMediumMarginTop">
 
+                                <Label text="Benutzername" labelFor="userField"
+                                       class="sapUiTinyMarginBottom" />
                                 <Input
                                     id="userField"
                                     value="{login>/username}"
-                                    placeholder="Benutzername"
-                                    class="login-input-minimal sapUiSmallMarginBottom" />
+                                    placeholder="Benutzername eingeben"
+                                    class="sapUiSmallMarginBottom" />
 
+                                <Label text="Passwort" labelFor="pwField"
+                                       class="sapUiTinyMarginBottom" />
                                 <Input
                                     id="pwField"
                                     value="{login>/password}"
                                     type="Password"
-                                    placeholder="Passwort"
-                                    class="login-input-minimal sapUiMediumMarginBottom"
+                                    placeholder="Passwort eingeben"
+                                    class="sapUiMediumMarginBottom"
                                     submit=".onLoginPress" />
 
                                 <Button
                                     text="Anmelden"
                                     type="Emphasized"
                                     width="100%"
-                                    press=".onLoginPress"
-                                    class="login-button-minimal sapUiMediumMarginBottom" />
+                                    press=".onLoginPress" />
 
                             </VBox>
 
-                            <!-- Security Notice / Footer -->
-                            <Text text="Internes System • Zugriff nur für autorisierte Mitarbeiter" class="login-footer-minimal sapUiMediumMarginTop" />
+                            <!-- Footer -->
+                            <Label text="Internes System • Zugriff nur für autorisierte Mitarbeiter"
+                                   class="sapUiMediumMarginTop sapThemeLightText"
+                                   design="Light" wrapping="true" textAlign="Center" />
 
                         </VBox>
                     </FlexBox>

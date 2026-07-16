@@ -1,8 +1,9 @@
 sap.ui.define([
 	"./BaseController",
 	"sap/ui/model/json/JSONModel",
-	"sap/ui/core/Configuration"
-], function (BaseController, JSONModel, Configuration) {
+	"sap/ui/core/Configuration",
+	"sap/tnt/NavigationListItem"
+], function (BaseController, JSONModel, Configuration, NavigationListItem) {
 	"use strict";
 
 	return BaseController.extend("de.unigoettingen.dashboardapp.controller.App", {
@@ -10,11 +11,12 @@ sap.ui.define([
 			// apply content density mode to root view
 			this.getView().addStyleClass(this.getOwnerComponent().getContentDensityClass());
 
-			// Initialize sidebar model with expanded flag and hierarchical structures
+			// Initialize sidebar model
 			const oSidebarModel = new JSONModel({
 				visible: false,
 				expanded: false,
-				uniStructure: []
+				selectedKey: "finanzen",
+				showTabs: false
 			});
 			this.getView().setModel(oSidebarModel, "sidebar");
 
@@ -29,39 +31,33 @@ sap.ui.define([
 				dark: false
 			});
 			this.getView().setModel(oThemeModel, "theme");
-			this.getView().addStyleClass("theme-light");
 			Configuration.setTheme("sap_horizon");
 
 			// Attach router matching to display sidebar only outside login page
 			this.getOwnerComponent().getRouter().attachRouteMatched(this.onRouteMatched, this);
-
-			// Attach window resize listener for the sliding tab indicator
-			window.addEventListener("resize", this._updateTabSlider.bind(this));
 		},
 
 		onRouteMatched: function (oEvent) {
 			const sRouteName = oEvent.getParameter("name");
 			// Hide sidebar on login page, show on all other pages
 			const bShowSidebar = sRouteName !== "login";
-			this.getView().getModel("sidebar").setProperty("/visible", bShowSidebar);
-			this.getView().getModel("sidebar").setProperty("/expanded", false);
+			const oSidebarModel = this.getView().getModel("sidebar");
+			oSidebarModel.setProperty("/visible", bShowSidebar);
 
-			const oSidebar = this.getView().byId("expandedSidebar");
-			if (oSidebar) {
-				oSidebar.removeStyleClass("open");
+			// Collapse sidebar when navigating to login
+			if (!bShowSidebar) {
+				oSidebarModel.setProperty("/expanded", false);
 			}
 
-			if (this._fnDocumentClick) {
-				document.removeEventListener("mousedown", this._fnDocumentClick);
-				this._fnDocumentClick = null;
-			}
+			// Synchronize selected tab and side navigation with route name
+			// Show tabs only when on a Lehrstuhl sub-page
+			const bIsLehrstuhl = (sRouteName === "finanzen" || sRouteName === "hr" || sRouteName === "pb");
+			oSidebarModel.setProperty("/showTabs", bIsLehrstuhl);
 
-			// Synchronize selected tab with route name
 			const oTabBar = this.getView().byId("navTabBar");
-			if (oTabBar && (sRouteName === "finanzen" || sRouteName === "hr" || sRouteName === "pb")) {
+			if (oTabBar && bIsLehrstuhl) {
 				oTabBar.setSelectedKey(sRouteName);
-				// Update slider position after render
-				setTimeout(this._updateTabSlider.bind(this), 0);
+				oSidebarModel.setProperty("/selectedKey", sRouteName);
 			}
 
 			// Update dynamic header title based on current route
@@ -76,99 +72,105 @@ sap.ui.define([
 				}
 			}
 
-			// === Role-based sidebar population (from BranchStinus) ===
+			// === Role-based sidebar population ===
 			const oUserModel = this.getOwnerComponent().getModel("userModel");
 			const iRole = oUserModel ? oUserModel.getProperty("/zugriffsrechte") : 0;
+			const oNavList = this.getView().byId("sideNavList");
 
 			if (iRole >= 2) {
-				const oSidebarModel = this.getView().getModel("sidebar");
-				const aStructure = JSON.parse(JSON.stringify(oSidebarModel.getProperty("/uniStructure")));
-
 				// Fakultätsfinanzen für Zugang 2 und 3
-				if (!aStructure.find(n => n.text === "Fakultätsfinanzen")) {
-					aStructure.push({
+				if (!this._fakultaetsfinanzenItem) {
+					this._fakultaetsfinanzenItem = new NavigationListItem({
 						text: "Fakultätsfinanzen",
 						icon: "sap-icon://building",
-						isFakultaetsfinanzen: true
+						key: "fakultaetsfinanzen"
 					});
-					oSidebarModel.setProperty("/uniStructure", aStructure);
-					oSidebarModel.refresh(true);
+					oNavList.addItem(this._fakultaetsfinanzenItem);
 				}
 			}
 
 			// Universitätsdaten nur für Zugang 3
 			if (iRole === 3) {
-				const oSidebarModel = this.getView().getModel("sidebar");
-				const aStructure = JSON.parse(JSON.stringify(oSidebarModel.getProperty("/uniStructure")));
-				
-				if (!aStructure.find(n => n.text === "Universitätsdaten")) {
+				if (!this._unidatenItem) {
 					fetch("http://localhost:3000/api/unifinanzen/kategorien")
 						.then(response => response.json())
 						.then(data => {
-							const aNodes = data.kategorien.map(k => {
-								const oNode = {
-									text: k.hauptkategorie,
-									isKategorie: true
-								};
-								
-								if (k.unterkategorien && k.unterkategorien.length > 0) {
-									oNode.nodes = k.unterkategorien.map(uk => ({
-										text: uk,
-										isUnterkategorie: true
-									}));
-								}
-								return oNode;
+							this._unidatenItem = new NavigationListItem({
+								text: "Universitätsdaten",
+								icon: "sap-icon://lead",
+								key: "unifinanzen_alle"
 							});
-							
-							// Re-read model in case Fakultätsfinanzen was already added
-							const aLatest = JSON.parse(JSON.stringify(oSidebarModel.getProperty("/uniStructure")));
-							if (!aLatest.find(n => n.text === "Universitätsdaten")) {
-								aLatest.push({
-									text: "Universitätsdaten",
-									icon: "sap-icon://lead",
-									isUnifinanzenMain: true,
-									nodes: aNodes
+
+							data.kategorien.forEach(k => {
+								const oKatItem = new NavigationListItem({
+									text: k.hauptkategorie,
+									key: "unifinanzen_" + encodeURIComponent(k.hauptkategorie)
 								});
-								oSidebarModel.setProperty("/uniStructure", aLatest);
-								oSidebarModel.refresh(true);
-							}
+
+								if (k.unterkategorien && k.unterkategorien.length > 0) {
+									k.unterkategorien.forEach(uk => {
+										oKatItem.addItem(new NavigationListItem({
+											text: uk,
+											key: "unifinanzen_" + encodeURIComponent(uk)
+										}));
+									});
+								}
+
+								this._unidatenItem.addItem(oKatItem);
+							});
+
+							oNavList.addItem(this._unidatenItem);
 						})
 						.catch(err => console.error("Fehler beim Laden der Kategorien:", err));
 				}
 			} else if (iRole < 2) {
-				// Kein Zugang: Sidebar leeren
-				const oSidebarModel = this.getView().getModel("sidebar");
-				const aStructure = oSidebarModel.getProperty("/uniStructure");
-				const aFiltered = aStructure.filter(n => n.text !== "Universitätsdaten" && n.text !== "Fakultätsfinanzen");
-				oSidebarModel.setProperty("/uniStructure", aFiltered);
-				oSidebarModel.refresh(true);
+				// Kein Zugang: Dynamische Items entfernen
+				if (this._fakultaetsfinanzenItem) {
+					oNavList.removeItem(this._fakultaetsfinanzenItem);
+					this._fakultaetsfinanzenItem.destroy();
+					this._fakultaetsfinanzenItem = null;
+				}
+				if (this._unidatenItem) {
+					oNavList.removeItem(this._unidatenItem);
+					this._unidatenItem.destroy();
+					this._unidatenItem = null;
+				}
 			}
 		},
 
 		/**
-		 * Handles tree item selection in the sidebar for navigation
-		 * to unifinanzen/fakultaetsfinanzen views (from BranchStinus)
+		 * Handles navigation item selection in the Fiori SideNavigation
 		 */
-		onTreeItemSelect: function (oEvent) {
-			const oItem = oEvent.getParameter("listItem");
-			const oContext = oItem.getBindingContext("sidebar");
-			if (!oContext) return;
-			const oData = oContext.getObject();
+		onSideNavItemSelect: function (oEvent) {
+			const oItem = oEvent.getParameter("item");
+			const sKey = oItem.getKey();
 
-			if (oData.isUnifinanzenMain) {
-				this.getOwnerComponent().getRouter().navTo("unifinanzen", {
-					kategorie: "alle"
-				});
-			} else if (oData.isKategorie) {
-				this.getOwnerComponent().getRouter().navTo("unifinanzen", {
-					kategorie: encodeURIComponent(oData.text)
-				});
-			} else if (oData.isUnterkategorie) {
-				this.getOwnerComponent().getRouter().navTo("unifinanzen", {
-					kategorie: encodeURIComponent(oData.text)
-				});
-			} else if (oData.isFakultaetsfinanzen) {
+			if (sKey === "logout") {
+				this.onLogoutPress();
+				return;
+			}
+
+			// Klick auf Lehrstuhl-Parent → direkt zu Finanzen
+			if (sKey === "lehrstuhl") {
+				this.getOwnerComponent().getRouter().navTo("finanzen");
+				return;
+			}
+
+			if (sKey === "finanzen" || sKey === "hr" || sKey === "pb") {
+				this.getOwnerComponent().getRouter().navTo(sKey);
+				return;
+			}
+
+			if (sKey === "fakultaetsfinanzen") {
 				this.getOwnerComponent().getRouter().navTo("fakultaetsfinanzen");
+				return;
+			}
+
+			if (sKey.startsWith("unifinanzen_")) {
+				const sKategorie = decodeURIComponent(sKey.replace("unifinanzen_", ""));
+				this.getOwnerComponent().getRouter().navTo("unifinanzen", {
+					kategorie: encodeURIComponent(sKategorie)
+				});
 			}
 		},
 
@@ -182,171 +184,26 @@ sap.ui.define([
 		},
 
 		onToggleSidebar: function () {
-			const oModel = this.getView().getModel("sidebar");
-			const bExpanded = oModel.getProperty("/expanded");
-			const bNewExpanded = !bExpanded;
-			oModel.setProperty("/expanded", bNewExpanded);
-
-			const oSidebar = this.getView().byId("expandedSidebar");
-			if (oSidebar) {
-				if (bNewExpanded) {
-					oSidebar.addStyleClass("open");
-				} else {
-					oSidebar.removeStyleClass("open");
-				}
-			}
-
-			// Update slider position as sidebar width transitions
-			setTimeout(this._updateTabSlider.bind(this), 50);
-			setTimeout(this._updateTabSlider.bind(this), 150);
-			setTimeout(this._updateTabSlider.bind(this), 300);
-
-			// Trigger a global resize event to update other views' sliders
-			setTimeout(function () { window.dispatchEvent(new Event("resize")); }, 50);
-			setTimeout(function () { window.dispatchEvent(new Event("resize")); }, 150);
-			setTimeout(function () { window.dispatchEvent(new Event("resize")); }, 300);
-
-			if (!bExpanded) {
-				if (!this._fnDocumentClick) {
-					this._fnDocumentClick = this._onDocumentClick.bind(this);
-				}
-				setTimeout(function () {
-					document.addEventListener("mousedown", this._fnDocumentClick);
-				}.bind(this), 0);
-			} else if (this._fnDocumentClick) {
-				document.removeEventListener("mousedown", this._fnDocumentClick);
-				this._fnDocumentClick = null;
-			}
+			const oToolPage = this.getView().byId("toolPage");
+			oToolPage.setSideExpanded(!oToolPage.getSideExpanded());
 		},
 
-		_onDocumentClick: function (oEvent) {
-			const oSidebarModel = this.getView().getModel("sidebar");
-			if (!oSidebarModel.getProperty("/expanded")) {
-				return;
-			}
-
-			const oExpandedSidebarDom = this.getView().byId("expandedSidebar").getDomRef();
-			const oThinSidebarDom = this.getView().byId("thinSidebar").getDomRef();
-			const oTarget = oEvent.target;
-
-			if (oExpandedSidebarDom && !oExpandedSidebarDom.contains(oTarget) &&
-				oThinSidebarDom && !oThinSidebarDom.contains(oTarget)) {
-				oSidebarModel.setProperty("/expanded", false);
-
-				const oSidebar = this.getView().byId("expandedSidebar");
-				if (oSidebar) {
-					oSidebar.removeStyleClass("open");
-				}
-				if (this._fnDocumentClick) {
-					document.removeEventListener("mousedown", this._fnDocumentClick);
-					this._fnDocumentClick = null;
-				}
-				// Update slider position as sidebar transitions closed
-				setTimeout(this._updateTabSlider.bind(this), 150);
-				setTimeout(this._updateTabSlider.bind(this), 300);
-
-				// Trigger a global resize event to update other views' sliders
-				setTimeout(function () { window.dispatchEvent(new Event("resize")); }, 150);
-				setTimeout(function () { window.dispatchEvent(new Event("resize")); }, 300);
-			}
-		},
 		onToggleTheme: function () {
 			const oThemeModel = this.getView().getModel("theme");
 			const bDark = oThemeModel.getProperty("/dark");
 			const bNewDark = !bDark;
 			oThemeModel.setProperty("/dark", bNewDark);
 
-			const oRoot = this.getView();
 			if (bNewDark) {
-				oRoot.addStyleClass("theme-dark");
-				oRoot.removeStyleClass("theme-light");
 				Configuration.setTheme("sap_horizon_dark");
 			} else {
-				oRoot.addStyleClass("theme-light");
-				oRoot.removeStyleClass("theme-dark");
 				Configuration.setTheme("sap_horizon");
-			}
-			// Update slider position after theme rendering
-			setTimeout(this._updateTabSlider.bind(this), 100);
-		},
-
-		onShortcutPress: function (oEvent) {
-			const sRoute = oEvent.getSource().data("route");
-			if (sRoute) {
-				this.getOwnerComponent().getRouter().navTo(sRoute);
 			}
 		},
 
 		onLogoutPress: function () {
-			// When logging out, also collapse the sidebar for next login
 			this.getView().getModel("sidebar").setProperty("/expanded", false);
-			const oSidebar = this.getView().byId("expandedSidebar");
-			if (oSidebar) {
-				oSidebar.removeStyleClass("open");
-			}
-			if (this._fnDocumentClick) {
-				document.removeEventListener("mousedown", this._fnDocumentClick);
-				this._fnDocumentClick = null;
-			}
 			this.getOwnerComponent().getRouter().navTo("login");
-		},
-
-		_updateTabSlider: function () {
-			const oTabBar = this.getView().byId("navTabBar");
-			if (!oTabBar) {
-				return;
-			}
-			const oTabBarDom = oTabBar.getDomRef();
-			if (!oTabBarDom) {
-				// Dom not ready yet, retry in next frame
-				setTimeout(this._updateTabSlider.bind(this), 50);
-				return;
-			}
-
-			// Find head container
-			const oHeadDom = oTabBarDom.querySelector(".sapMITBHead") || oTabBarDom.querySelector(".sapMITBHeadContainer");
-			if (!oHeadDom) {
-				return;
-			}
-
-			// Ensure indicator exists
-			let oIndicator = oHeadDom.querySelector(".tab-slider-indicator");
-			if (!oIndicator) {
-				oIndicator = document.createElement("div");
-				oIndicator.className = "tab-slider-indicator";
-				oHeadDom.appendChild(oIndicator);
-			}
-
-			// Find selected tab
-			const oSelectedTabDom = oHeadDom.querySelector(".sapMITBSelected");
-			if (oSelectedTabDom) {
-				// Offset calculations relative to oHeadDom
-				oIndicator.style.left = this._getOffsetLeft(oSelectedTabDom, oHeadDom) + "px";
-				oIndicator.style.top = this._getOffsetTop(oSelectedTabDom, oHeadDom) + "px";
-				oIndicator.style.width = oSelectedTabDom.offsetWidth + "px";
-				oIndicator.style.height = oSelectedTabDom.offsetHeight + "px";
-			} else {
-				// Hide if no tab is selected
-				oIndicator.style.width = "0px";
-			}
-		},
-
-		_getOffsetLeft: function (oEl, oParent) {
-			let nLeft = 0;
-			while (oEl && oEl !== oParent) {
-				nLeft += oEl.offsetLeft;
-				oEl = oEl.offsetParent;
-			}
-			return nLeft;
-		},
-
-		_getOffsetTop: function (oEl, oParent) {
-			let nTop = 0;
-			while (oEl && oEl !== oParent) {
-				nTop += oEl.offsetTop;
-				oEl = oEl.offsetParent;
-			}
-			return nTop;
 		}
 	});
 });

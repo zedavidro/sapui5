@@ -41,20 +41,23 @@
             <!-- KPIs -->
             <HBox justifyContent="SpaceAround" class="sapUiSmallMargin">
 
-                <VBox class="sapUiSmallMargin kpi-card">
-                    <Text text="Veröffentlicht" class="kpi-title"/>
-                    <Text text="{dashboard>/kpis/published}" class="kpi-value"/>
-                </VBox>
+                <GenericTile header="Veröffentlicht" class="sapUiTinyMargin">
+                    <TileContent>
+                        <NumericContent value="{dashboard>/kpis/published}" valueColor="Good" />
+                    </TileContent>
+                </GenericTile>
 
-                <VBox class="sapUiSmallMargin kpi-card">
-                    <Text text="Under Review" class="kpi-title"/>
-                    <Text text="{dashboard>/kpis/underReview}" class="kpi-value"/>
-                </VBox>
+                <GenericTile header="Under Review" class="sapUiTinyMargin">
+                    <TileContent>
+                        <NumericContent value="{dashboard>/kpis/underReview}" valueColor="Critical" />
+                    </TileContent>
+                </GenericTile>
 
-                <VBox class="sapUiSmallMargin kpi-card">
-                    <Text text="In Vorbereitung" class="kpi-title"/>
-                    <Text text="{dashboard>/kpis/inPreparation}" class="kpi-value"/>
-                </VBox>
+                <GenericTile header="In Vorbereitung" class="sapUiTinyMargin">
+                    <TileContent>
+                        <NumericContent value="{dashboard>/kpis/inPreparation}" valueColor="Neutral" />
+                    </TileContent>
+                </GenericTile>
 
             </HBox>
 

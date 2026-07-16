@@ -1,0 +1,75 @@
+<mvc:View
+	controllerName="de.unigoettingen.dashboardapp.controller.Paquin1"
+	displayBlock="true"
+	xmlns="sap.m"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:core="sap.ui.core">
+
+	<Page
+		title="Fakultätsfinanzen"
+		showHeader="false">
+
+		<content>
+			<!-- Jahresauswahl -->
+			<Select change="onYearChange" class="sapUiSmallMargin">
+				<items>
+					<core:Item key="2024" text="2024"/>
+					<core:Item key="2025" text="2025"/>
+					<core:Item key="2026" text="2026"/>
+				</items>
+			</Select>
+
+			<!-- KPI-Karten: Kontoübersicht -->
+			<HBox justifyContent="SpaceAround" class="sapUiSmallMargin" wrap="Wrap">
+
+				<GenericTile header="Budget" class="sapUiTinyMargin">
+					<TileContent>
+						<NumericContent value="{
+							path: 'fakFinanzen>/kpis/budget',
+							formatter: '.formatEuro'
+						}" valueColor="Neutral" />
+					</TileContent>
+				</GenericTile>
+
+				<GenericTile header="Einnahmen (Ist)" class="sapUiTinyMargin">
+					<TileContent>
+						<NumericContent value="{
+							path: 'fakFinanzen>/kpis/einnahmenIst',
+							formatter: '.formatEuro'
+						}" valueColor="Good" />
+					</TileContent>
+				</GenericTile>
+
+				<GenericTile header="Ausgaben (Ist)" class="sapUiTinyMargin">
+					<TileContent>
+						<NumericContent value="{
+							path: 'fakFinanzen>/kpis/ausgabenIst',
+							formatter: '.formatEuro'
+						}" valueColor="Error" />
+					</TileContent>
+				</GenericTile>
+
+				<GenericTile header="Obligo" class="sapUiTinyMargin">
+					<TileContent>
+						<NumericContent value="{
+							path: 'fakFinanzen>/kpis/obligo',
+							formatter: '.formatEuro'
+						}" valueColor="Critical" />
+					</TileContent>
+				</GenericTile>
+
+				<GenericTile header="Rest-Verfügbarkeit" class="sapUiTinyMargin">
+					<TileContent>
+						<NumericContent value="{
+							path: 'fakFinanzen>/kpis/restVerfuegbarkeit',
+							formatter: '.formatEuro'
+						}" valueColor="Good" />
+					</TileContent>
+				</GenericTile>
+
+			</HBox>
+		</content>
+
+	</Page>
+
+</mvc:View>

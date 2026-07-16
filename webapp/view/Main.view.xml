@@ -28,29 +28,38 @@
 		<!--- KPIs -->
 	  <HBox justifyContent="SpaceAround" class="sapUiSmallMargin">
 
-  		<VBox class="kpi-card">
-        <Text text="Kosten" class="kpi-title"/>
-        <Text text="{
-          path: 'dashboard>/kpis/costs',
-          formatter: '.formatEuro'
-        }" class="kpi-value"/>
-      </VBox>
+      <GenericTile header="Kosten" class="sapUiTinyMargin">
+        <TileContent>
+          <NumericContent 
+            value="{
+              path: 'dashboard>/kpis/costs',
+              formatter: '.formatEuro'
+            }" 
+            valueColor="Error" />
+        </TileContent>
+      </GenericTile>
 
-      <VBox class="kpi-card">
-        <Text text="Erträge" class="kpi-title"/>
-        <Text text="{
-          path: 'dashboard>/kpis/revenue',
-          formatter: '.formatEuro'
-        }" class="kpi-value"/>
-      </VBox>
+      <GenericTile header="Erträge" class="sapUiTinyMargin">
+        <TileContent>
+          <NumericContent 
+            value="{
+              path: 'dashboard>/kpis/revenue',
+              formatter: '.formatEuro'
+            }" 
+            valueColor="Good" />
+        </TileContent>
+      </GenericTile>
 
-      <VBox class="kpi-card">
-        <Text text="Ergebnis" class="kpi-title"/>
-        <Text text="{
-          path: 'dashboard>/kpis/result',
-          formatter: '.formatEuro'
-        }" class="kpi-value"/>
-      </VBox>
+      <GenericTile header="Ergebnis" class="sapUiTinyMargin">
+        <TileContent>
+          <NumericContent 
+            value="{
+              path: 'dashboard>/kpis/result',
+              formatter: '.formatEuro'
+            }" 
+            valueColor="Neutral" />
+        </TileContent>
+      </GenericTile>
 
     </HBox>
 

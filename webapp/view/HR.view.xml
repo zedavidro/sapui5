@@ -26,37 +26,41 @@
       </Toolbar>
 
       <HBox justifyContent="SpaceAround" class="sapUiSmallMargin sapUiLargeMarginBottom">
-        <VBox alignItems="Center" class="kpi-card">
-          <Text text="Kopfzahl (Gesamt)" class="kpi-title"/>
-          <Title text="{dashboard>/kpis/headcount}" level="H2" class="kpi-value"/>
-        </VBox>
+        <GenericTile header="Kopfzahl (Gesamt)" class="sapUiTinyMargin">
+          <TileContent>
+            <NumericContent value="{dashboard>/kpis/headcount}" valueColor="Neutral" />
+          </TileContent>
+        </GenericTile>
 
-        <VBox alignItems="Center" class="kpi-card">
-          <Text text="Vollzeitäquivalente (VZÄ)" class="kpi-title"/>
-          <Title text="{
-            path: 'dashboard>/kpis/fte',
-            type: 'sap.ui.model.type.Float',
-            formatOptions: { maxFractionDigits: 2 }
-          }" level="H2" class="kpi-value"/>
-        </VBox>
+        <GenericTile header="Vollzeitäquivalente (VZÄ)" class="sapUiTinyMargin">
+          <TileContent>
+            <NumericContent value="{
+              path: 'dashboard>/kpis/fte',
+              type: 'sap.ui.model.type.Float',
+              formatOptions: { maxFractionDigits: 2 }
+            }" valueColor="Neutral" />
+          </TileContent>
+        </GenericTile>
 
-        <VBox alignItems="Center" class="kpi-card">
-          <Text text="Personalkosten (Hochrechnung)" class="kpi-title"/>
-          <Title text="{
-            path: 'dashboard>/kpis/totalCost',
-            type: 'sap.ui.model.type.Float',
-            formatOptions: { style: 'currency', currency: 'EUR', maxFractionDigits: 0 }
-          }" level="H2" class="kpi-value"/>
-        </VBox>
+        <GenericTile header="Personalkosten (Hochrechnung)" class="sapUiTinyMargin">
+          <TileContent>
+            <NumericContent value="{
+              path: 'dashboard>/kpis/totalCost',
+              type: 'sap.ui.model.type.Float',
+              formatOptions: { style: 'currency', currency: 'EUR', maxFractionDigits: 0 }
+            }" valueColor="Error" />
+          </TileContent>
+        </GenericTile>
 
-        <VBox alignItems="Center" class="kpi-card">
-          <Text text="Ø Kosten pro VZÄ" class="kpi-title"/>
-          <Title text="{
-            path: 'dashboard>/kpis/avgCostPerFTE',
-            type: 'sap.ui.model.type.Float',
-            formatOptions: { style: 'currency', currency: 'EUR', maxFractionDigits: 0 }
-          }" level="H2" class="kpi-value"/>
-        </VBox>
+        <GenericTile header="Ø Kosten pro VZÄ" class="sapUiTinyMargin">
+          <TileContent>
+            <NumericContent value="{
+              path: 'dashboard>/kpis/avgCostPerFTE',
+              type: 'sap.ui.model.type.Float',
+              formatOptions: { style: 'currency', currency: 'EUR', maxFractionDigits: 0 }
+            }" valueColor="Neutral" />
+          </TileContent>
+        </GenericTile>
       </HBox>
 
       <IconTabBar id="idHRIconTabBar" select="onHRTabSelect" upperCase="true" class="sapUiResponsiveContentPadding">

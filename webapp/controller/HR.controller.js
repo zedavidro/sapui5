@@ -119,8 +119,33 @@ sap.ui.define([
         });
     },
 
+    /**
+     * Converts an Excel serial date number (e.g. 44163 or "44163.0") to an ISO date string "YYYY-MM-DD".
+     * Excel epoch starts at 1899-12-30.
+     */
+    _excelSerialToISO: function (vValue) {
+      var iSerial = parseInt(parseFloat(vValue), 10);
+      if (isNaN(iSerial) || iSerial < 1) {
+        return null;
+      }
+      // Excel epoch: 1899-12-30
+      var oEpoch = new Date(1899, 11, 30);
+      var oDate = new Date(oEpoch.getTime() + iSerial * 86400000);
+      var sYear = oDate.getFullYear();
+      var sMonth = String(oDate.getMonth() + 1).padStart(2, "0");
+      var sDay = String(oDate.getDate()).padStart(2, "0");
+      return sYear + "-" + sMonth + "-" + sDay;
+    },
+
     _updateAggregates: function () {
       const data = this._aPersonalData || [];
+
+      // Normalize VBEDAT: convert Excel serial numbers to ISO date strings
+      data.forEach(item => {
+        if (item.VBEDAT && String(item.VBEDAT).indexOf("-") === -1) {
+          item.VBEDAT = this._excelSerialToISO(item.VBEDAT);
+        }
+      });
 
       // Pauschale universitäre Jahros-Personalkostensätze für 1.0 VZÄ
       const costRates = {

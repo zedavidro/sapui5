@@ -4,124 +4,48 @@
     displayBlock="true"
     xmlns="sap.m"
     xmlns:core="sap.ui.core"
-    xmlns:html="http://www.w3.org/1999/xhtml">
+    xmlns:tnt="sap.tnt">
 
-  <html:style>
-      .tree-item-custom,
-      .tree-item-custom * {
-          opacity: 1 !important;
-          text-shadow: none !important;
-      }
-      li[data-is-leaf="true"] .sapMTreeItemBaseExpander,
-      li[data-isleaf="true"] .sapMTreeItemBaseExpander,
-      li[data-isLeaf="true"] .sapMTreeItemBaseExpander,
-      li[aria-level="3"] .sapMTreeItemBaseExpander,
-      li[aria-level="3"] .sapMTreeIcon,
-      li[aria-level="3"] .sapUiIcon:not(.sapMTreeItemBaseIcon) {
-          display: none !important;
-          visibility: hidden !important;
-          opacity: 0 !important;
-          width: 0 !important;
-      }
-  </html:style>
-
-  <HBox fitContainer="true" renderType="Bare" class="app-root-layout">
-    <!-- Thin Sidebar (always visible when logged in) -->
-    <VBox id="thinSidebar" class="thin-sidebar" visible="{sidebar>/visible}" width="60px" alignItems="Center">
-      <Button
-          icon="sap-icon://menu"
-          type="Transparent"
-          press="onToggleSidebar"
-          class="sidebar-toggle-btn sapUiSmallMarginTop sapUiSmallMarginBottom"/>
-      
-      <VBox class="sidebar-shortcuts sapUiMediumMarginTop" alignItems="Center">
+  <tnt:ToolPage id="toolPage" sideExpanded="{sidebar>/expanded}">
+    <tnt:header>
+      <tnt:ToolHeader visible="{sidebar>/visible}">
+        <Button icon="sap-icon://menu" press="onToggleSidebar" type="Transparent"/>
+        <ToolbarSpacer/>
+        <Title text="{header>/title}"/>
+        <ToolbarSpacer/>
         <Button
-            icon="sap-icon://line-chart"
-            tooltip="Finanzen"
+            icon="{= ${theme>/dark} ? 'sap-icon://light-mode' : 'sap-icon://dark-mode' }"
             type="Transparent"
-            press="onShortcutPress">
-            <customData>
-                <core:CustomData key="route" value="finanzen" />
-            </customData>
-        </Button>
-        <Button
-            icon="sap-icon://employee"
-            tooltip="Personal"
-            type="Transparent"
-            press="onShortcutPress">
-            <customData>
-                <core:CustomData key="route" value="hr" />
-            </customData>
-        </Button>
-        <Button
-            icon="sap-icon://course-book"
-            tooltip="Publikationen"
-            type="Transparent"
-            press="onShortcutPress">
-            <customData>
-                <core:CustomData key="route" value="pb" />
-            </customData>
-        </Button>
-      </VBox>
-      
-      <!-- Flex Spacer -->
-      <core:HTML content="&lt;div style='flex-grow: 1;'&gt;&lt;/div&gt;"/>
-      
-      <Button
-          icon="sap-icon://log"
-          tooltip="Abmelden"
-          type="Transparent"
-          press="onLogoutPress"
-          class="sapUiSmallMarginBottom"/>
-    </VBox>
+            press="onToggleTheme"
+            tooltip="Theme wechseln"/>
+      </tnt:ToolHeader>
+    </tnt:header>
 
-    <!-- Expanded Sidebar (visible based on overall sidebar visibility, sliding transition is controlled via CSS) -->
-    <VBox id="expandedSidebar" class="expanded-sidebar" visible="{sidebar>/visible}" width="280px">
-      <VBox class="sidebar-header" alignItems="Center">
-        <core:Icon src="sap-icon://education" size="1.8rem" class="sidebar-logo sapUiTinyMarginBottom" color="#818cf8"/>
-        <Title text="Uni Göttingen" level="H3" class="sidebar-title"/>
-        <Text text="Organisationsstruktur" class="sidebar-subtitle"/>
-      </VBox>
-      <ScrollContainer vertical="true" height="calc(100% - 90px)" width="100%">
-        <Tree
-            id="sidebarTree"
-            items="{path: 'sidebar>/uniStructure', parameters: {arrayNames: ['nodes']}}"
-            mode="SingleSelectMaster"
-            selectionChange="onTreeItemSelect">
-            <StandardTreeItem
-                title="{sidebar>text}"
-                icon="{sidebar>icon}"
-                class="tree-item-custom">
-                <customData>
-                    <core:CustomData key="isLeaf" value="{= ${sidebar>isUnterkategorie} === true ? 'true' : 'false' }" writeToDom="true"/>
-                </customData>
-            </StandardTreeItem>
-        </Tree>
-      </ScrollContainer>
-    </VBox>
+    <tnt:sideContent>
+      <tnt:SideNavigation id="sideNavigation" visible="{sidebar>/visible}"
+                           selectedKey="{sidebar>/selectedKey}"
+                           itemSelect="onSideNavItemSelect">
+        <tnt:item>
+          <tnt:NavigationList id="sideNavList">
+            <tnt:NavigationListItem text="Lehrstuhl" icon="sap-icon://curriculum" key="lehrstuhl">
+              <tnt:NavigationListItem text="Finanzen" icon="sap-icon://line-chart" key="finanzen"/>
+              <tnt:NavigationListItem text="Personal" icon="sap-icon://employee" key="hr"/>
+              <tnt:NavigationListItem text="Publikationen" icon="sap-icon://course-book" key="pb"/>
+            </tnt:NavigationListItem>
+          </tnt:NavigationList>
+        </tnt:item>
+        <tnt:fixedItem>
+          <tnt:NavigationList>
+            <tnt:NavigationListItem text="Abmelden" icon="sap-icon://log" key="logout"/>
+          </tnt:NavigationList>
+        </tnt:fixedItem>
+      </tnt:SideNavigation>
+    </tnt:sideContent>
 
-    <!-- Main Content Area -->
-    <VBox id="mainContentWrapper" class="main-content-wrapper" fitContainer="true">
-      <!-- Shared Page Header (Back button and title at the very top) -->
-      <Bar id="sharedHeader" visible="{sidebar>/visible}" design="Header">
-        <contentLeft>
-          <Button icon="sap-icon://nav-back" press="onNavBack" type="Transparent" class="header-back-btn"/>
-        </contentLeft>
-        <contentMiddle>
-          <Title text="{header>/title}" level="H2"/>
-        </contentMiddle>
-        <contentRight>
-          <Button
-              icon="{= ${theme>/dark} ? 'sap-icon://light-mode' : 'sap-icon://dark-mode' }"
-              type="Transparent"
-              press="onToggleTheme"
-              tooltip="Theme wechseln"/>
-        </contentRight>
-      </Bar>
-
+    <tnt:mainContents>
       <IconTabBar
           id="navTabBar"
-          visible="{sidebar>/visible}"
+          visible="{sidebar>/showTabs}"
           selectedKey="finanzen"
           select="onTabSelect"
           expandable="false"
@@ -133,7 +57,7 @@
           </items>
       </IconTabBar>
       <App id="app"/>
-    </VBox>
-  </HBox>
+    </tnt:mainContents>
+  </tnt:ToolPage>
 
 </mvc:View>
