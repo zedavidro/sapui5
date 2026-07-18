@@ -56,8 +56,16 @@ sap.ui.define([
 					const oUserModel = new JSONModel(data.user);
 					this.getOwnerComponent().setModel(oUserModel, "userModel");
 
-					// Alle Nutzer mit Stufe 1, 2 und 3 starten standardmäßig auf dem Finanzen-Dashboard
-					this.getRouter().navTo("finanzen");
+					// Landing-Page richtet sich nach den Zugriffsrechten:
+					// Stufe 3 → Präsidium, Stufe 2 → Fakultätsfinanzen, sonst → Lehrstuhlfinanzen
+					const iRole = data.user.zugriffsrechte;
+					if (iRole >= 3) {
+						this.getRouter().navTo("unifinanzen", { kategorie: encodeURIComponent("alle") });
+					} else if (iRole === 2) {
+						this.getRouter().navTo("fakultaetsfinanzen");
+					} else {
+						this.getRouter().navTo("finanzen");
+					}
 				} else {
 					MessageToast.show(data.message || "Login fehlgeschlagen.");
 				}

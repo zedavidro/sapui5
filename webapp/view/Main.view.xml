@@ -8,7 +8,10 @@
 	xmlns:core="sap.ui.core"
 	xmlns:viz="sap.viz.ui5.controls"
     xmlns:viz.data="sap.viz.ui5.data"
-    xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds">
+    xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds"
+  core:require="{
+    formatter: 'de/unigoettingen/dashboardapp/model/formatter'
+}">
 
 
   <Page
@@ -16,6 +19,8 @@
   showHeader="false">
 
 	<content>
+    <Toolbar design="Transparent" class="sapUiSmallMargin">
+        <Title text="Analysejahr wählen:" class="sapUiTinyMarginEnd"/>
 	  <Select change="onYearChange" class="sapUiSmallMargin">
   	  <items>
       <core:Item key="2024" text="2024"/>
@@ -24,39 +29,55 @@
 	  <core:Item key="alle" text="alle"/>
   	  </items>
 	  </Select>
+      </Toolbar>
 
 		<!--- KPIs -->
 	  <HBox justifyContent="SpaceAround" class="sapUiSmallMargin">
 
-      <GenericTile header="Kosten" class="sapUiTinyMargin">
-        <TileContent>
+      <GenericTile header="Kosten" class="sapUiTinyMargin" frameType="TwoByOne">
+        <TileContent
+          footer="+3,8% ggü. Vorjahr">
           <NumericContent 
             value="{
               path: 'dashboard>/kpis/costs',
-              formatter: '.formatEuro'
+              formatter: 'formatter.formatNumber'
             }" 
+            scale="{
+        path: 'dashboard>/kpis/costs',
+        formatter: 'formatter.formatScale'
+    }"
             valueColor="Error" />
         </TileContent>
       </GenericTile>
 
-      <GenericTile header="Erträge" class="sapUiTinyMargin">
-        <TileContent>
+      <GenericTile header="Erträge" class="sapUiTinyMargin" frameType="TwoByOne">
+        <TileContent
+          footer="-11,2% ggü. Vorjahr">
           <NumericContent 
             value="{
               path: 'dashboard>/kpis/revenue',
-              formatter: '.formatEuro'
+              formatter: 'formatter.formatNumber'
             }" 
+            scale="{
+        path: 'dashboard>/kpis/revenue',
+        formatter: 'formatter.formatScale'
+    }"
             valueColor="Good" />
         </TileContent>
       </GenericTile>
 
-      <GenericTile header="Ergebnis" class="sapUiTinyMargin">
-        <TileContent>
+      <GenericTile header="Ergebnis" class="sapUiTinyMargin" frameType="TwoByOne">
+        <TileContent
+          footer="Vorjahr: +8,4 Mio. €">
           <NumericContent 
             value="{
               path: 'dashboard>/kpis/result',
-              formatter: '.formatEuro'
-            }" 
+              formatter: 'formatter.formatNumber'
+            }"
+            scale="{
+        path: 'dashboard>/kpis/result',
+        formatter: 'formatter.formatScale'
+    }"
             valueColor="Neutral" />
         </TileContent>
       </GenericTile>

@@ -20,7 +20,7 @@
 		"wdi5": "wdio run ./webapp/test/e2e/\\wdio.conf.js"
 	},
 	"devDependencies": {
-		"@ui5/cli": "^4.0.26",
+		"@ui5/cli": "^4.0.57",
 		"@ui5/middleware-code-coverage": "^2.0.1",
 		"@wdio/cli": "^9.27.1",
 		"@wdio/local-runner": "^9.27.1",

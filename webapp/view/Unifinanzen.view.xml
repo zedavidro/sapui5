@@ -12,47 +12,779 @@
 	}">
 
   <Page
-      title="Universitätsfinanzen"
       id="unifinanzenPage"
       showNavButton="false">
 
-	<content>
-      <!-- Dynamic Title and Trend Icon -->
-      <HBox alignItems="Center" class="sapUiResponsiveMargin">
-          <Title id="chartDynamicTitle" text="Universitätsdaten (Gesamt)" level="H2" class="sapUiTinyMarginEnd" />
-          <core:Icon id="chartTrendIcon" src="sap-icon://trend-up" size="1.5rem" color="Positive" visible="false" />
-      </HBox>
+      <customHeader>
+        <Bar>
+            <contentLeft>
+    <HBox alignItems="Center">
+        <core:Icon
+            src="sap-icon://building"
+            size="1rem"
+            class="sapUiTinyMarginEnd"/>
 
-      <!-- Bar Chart displaying the unifinanzen data grouped by year -->
-      <viz:VizFrame
-        id="unifinanzenChart"
-        vizType="column"
-        width="100%"
-        height="500px"
-        class="sapUiResponsiveMargin"
-        vizProperties="{
-            title: { visible: false },
-            legend: { visible: false },
-            plotArea: {
-                dataLabel: { visible: true },
-                window: { start: 'firstDataPoint', end: 'lastDataPoint' }
-            }
-        }">
-        <viz:dataset>
-          <viz.data:FlattenedDataset data="{unifinanzen>/data}">
-            <viz.data:dimensions>
-              <viz.data:DimensionDefinition name="Jahr" value="{unifinanzen>jahr}" />
-            </viz.data:dimensions>
-            <viz.data:measures>
-              <viz.data:MeasureDefinition name="Wert" value="{unifinanzen>wert}" />
-            </viz.data:measures>
-          </viz.data:FlattenedDataset>
-        </viz:dataset>
-        <viz:feeds>
-          <viz.feeds:FeedItem uid="valueAxis" type="Measure" values="Wert"/>
-          <viz.feeds:FeedItem uid="categoryAxis" type="Dimension" values="Jahr"/>
-        </viz:feeds>
-      </viz:VizFrame>
+        <Title text="Präsidium"
+            class="sapUiTinyMarginTop"/>
+    </HBox>
+</contentLeft>
+
+            <contentMiddle>
+                <IconTabHeader
+                    id="navTabBar"
+                    selectedKey="pr_fi"
+                    select="onTabSelect">
+
+                    <items>
+                        <IconTabFilter text="Finanzen" key="pr_fi"/>
+                        <IconTabFilter text="Drittmittel" key="pr_dm"/>
+                        <IconTabFilter text="Personal" key="pr_hr"/>
+                    </items>
+
+                </IconTabHeader>
+            </contentMiddle>
+<contentRight>
+            <Button
+                id="facultyMenuButton"
+                text="Fakultäten"
+                icon="sap-icon://building"
+                press="onFacultyMenuPress"
+                class="sapUiTinyMarginEnd"/>
+
+            <Select
+                change="onYearChange"
+                width="6rem">
+
+                <items>
+                    <core:Item key="2024" text="2024"/>
+                    <core:Item key="2025" text="2025"/>
+                    <core:Item key="2026" text="2026"/>
+                    <core:Item key="alle" text="Alle"/>
+                </items>
+
+            </Select>
+        </contentRight>
+        </Bar>
+    </customHeader>
+
+	<content>
+    <!--- KPIs -->
+	  <HBox justifyContent="SpaceAround" class="sapUiSmallMargin">
+
+      <GenericTile
+          header="Gesamtbudget"
+          class="sapUiTinyMargin">
+
+          <TileContent
+              footer="+3,8% ggü. Vorjahr">
+
+              <NumericContent
+                  value="487,3"
+                  scale="Mio. €"  
+                  valueColor="Good"/>
+          </TileContent>
+
+      </GenericTile>
+
+      <GenericTile 
+      header="Gesamtausgaben" 
+      class="sapUiTinyMargin">
+
+        <TileContent
+            footer="86,8% verausgabt">
+
+            <NumericContent 
+              value="423,1"
+              scale="Mio. €"  
+              valueColor="Error"/>
+          </TileContent>
+      </GenericTile>
+
+      <GenericTile 
+      header="Drittmittelvolumen" 
+      class="sapUiTinyMargin">
+
+        <TileContent
+          footer="+6,2% ggü. Vorjahr">
+
+          <NumericContent 
+            value="89,3"
+            scale="Mio. €"  
+            valueColor="Neutral" />
+        </TileContent>
+      </GenericTile>
+
+      <GenericTile 
+      header="Personalbestand" 
+      class="sapUiTinyMargin">
+
+        <TileContent
+          footer="+31 Vollzeitäquivalente">
+
+          <NumericContent 
+            value="4.127"
+            scale="VZÄ"  
+            valueColor="Neutral" />
+        </TileContent>
+      </GenericTile>
+
+      <GenericTile 
+      header="Drittmittelprojekte" 
+      class="sapUiTinyMargin">
+
+        <TileContent
+          footer="+18 laufende Projekte">
+
+          <NumericContent 
+            value="312" 
+            valueColor="Neutral" />
+        </TileContent>
+      </GenericTile>
+
+    </HBox>
+
+
+<VBox class="sapUiMediumMarginBegin sapUiMediumMarginEnd">
+
+    <!-- Finanzen -->
+<Table
+    id="finanzenFacultyTable"
+    visible="{= ${view>/selectedTab} === 'pr_fi' }"
+    width="100%"
+    inset="true"
+    mode="SingleSelectMaster"
+    selectionChange=".onFacultySelect">
+
+    <headerToolbar>
+        <OverflowToolbar>
+
+            <Title text="Quartalsweise Plandaten"/>
+
+            <ToolbarSpacer/>
+
+            <Button
+                icon="sap-icon://sort"
+                tooltip="Sortieren"
+                type="Transparent"/>
+
+            <Button
+                icon="sap-icon://excel-attachment"
+                tooltip="Exportieren"
+                type="Transparent"
+                press=".onExport"/>
+
+            <Button
+                icon="sap-icon://action-settings"
+                tooltip="Tabelleneinstellungen"
+                type="Transparent"/>
+
+        </OverflowToolbar>
+    </headerToolbar>
+
+    <columns>
+
+        <Column width="22rem">
+            <Text text="Fakultät"/>
+        </Column>
+
+        <Column hAlign="End">
+            <Text text="Gesamtetat"/>
+        </Column>
+
+        <Column hAlign="End">
+            <Text text="Verausgabt"/>
+        </Column>
+
+        <Column hAlign="End">
+            <Text text="Mittelverbrauch"/>
+        </Column>
+
+        <Column hAlign="End">
+            <Text text="Drittmittelanteil"/>
+        </Column>
+
+    </columns>
+
+    <items>
+
+        <ColumnListItem type="Navigation">
+
+            <cells>
+
+                <ObjectIdentifier
+                    title="Wirtschaftswissenschaftliche Fakultät"/>
+
+                <ObjectNumber
+                    number="18,5"
+                    unit="Mio. €"/>
+
+                <ObjectNumber
+                    number="11,9"
+                    unit="Mio. €"/>
+
+                <ObjectNumber
+                    number="64"
+                    unit="%"/>
+
+                <ObjectNumber
+                    number="17"
+                    unit="%"/>
+
+            </cells>
+
+        </ColumnListItem>
+
+        <ColumnListItem type="Navigation">
+
+            <cells>
+
+                <ObjectIdentifier
+                    title="Fakultät für Mathematik und Informatik"/>
+
+                <ObjectNumber
+                    number="25,2"
+                    unit="Mio. €"/>
+
+                <ObjectNumber
+                    number="17,8"
+                    unit="Mio. €"/>
+
+                <ObjectNumber
+                    number="71"
+                    unit="%"/>
+
+                <ObjectNumber
+                    number="21"
+                    unit="%"/>
+
+            </cells>
+
+        </ColumnListItem>
+
+        <ColumnListItem type="Navigation">
+
+            <cells>
+
+                <ObjectIdentifier
+                    title="Juristische Fakultät"/>
+
+                <ObjectNumber
+                    number="14,3"
+                    unit="Mio. €"/>
+
+                <ObjectNumber
+                    number="9,2"
+                    unit="Mio. €"/>
+
+                <ObjectNumber
+                    number="64"
+                    unit="%"/>
+
+                <ObjectNumber
+                    number="9"
+                    unit="%"/>
+
+            </cells>
+
+        </ColumnListItem>
+
+        <ColumnListItem type="Navigation">
+
+            <cells>
+
+                <ObjectIdentifier
+                    title="Medizinische Fakultät"/>
+
+                <ObjectNumber
+                    number="148,7"
+                    unit="Mio. €"/>
+
+                <ObjectNumber
+                    number="111,6"
+                    unit="Mio. €"/>
+
+                <ObjectNumber
+                    number="75"
+                    unit="%"/>
+
+                <ObjectNumber
+                    number="34"
+                    unit="%"/>
+
+            </cells>
+
+        </ColumnListItem>
+
+    </items>
+
+</Table>
+
+
+<!-- Drittmittel -->
+<!-- 
+    <- Detail-Page für Projektansicht erstellen.
+    Navigation im Controller in onProjectSelect implementieren.
+-->
+<!-- Drittmittel nach Fakultät (Übersicht) -->
+<Table
+    id="drittmittelFacultyTable"
+    visible="{= ${view>/selectedTab} === 'pr_dm' }"
+    width="100%"
+    inset="true"
+    mode="SingleSelectMaster"
+    selectionChange=".onFacultySelect">
+
+    <headerToolbar>
+        <OverflowToolbar>
+
+            <Title text="Drittmittel nach Fakultät"/>
+
+            <ToolbarSpacer/>
+
+            <Button
+                icon="sap-icon://sort"
+                tooltip="Sortieren"
+                type="Transparent"/>
+
+            <Button
+                icon="sap-icon://excel-attachment"
+                tooltip="Exportieren"
+                type="Transparent"
+                press=".onExport"/>
+
+            <Button
+                icon="sap-icon://action-settings"
+                tooltip="Tabelleneinstellungen"
+                type="Transparent"/>
+
+        </OverflowToolbar>
+    </headerToolbar>
+
+    <columns>
+
+        <Column>
+            <Text text="Fakultät"/>
+        </Column>
+
+        <Column hAlign="End">
+            <Text text="Gesamtvolumen"/>
+        </Column>
+
+        <Column hAlign="End">
+            <Text text="Verausgabt"/>
+        </Column>
+
+        <Column hAlign="End">
+            <Text text="Mittelverbrauch"/>
+        </Column>
+
+    </columns>
+
+
+    <items>
+
+        <ColumnListItem type="Navigation">
+
+            <cells>
+
+                <ObjectIdentifier
+                    title="Wirtschaftswissenschaftliche Fakultät"/>
+
+                <ObjectNumber
+                    number="8,7"
+                    unit="Mio. €"/>
+
+                <ObjectNumber
+                    number="5,2"
+                    unit="Mio. €"/>
+
+                <ObjectNumber
+                    number="60"
+                    unit="%"/>
+
+            </cells>
+
+        </ColumnListItem>
+
+
+        <ColumnListItem type="Navigation">
+
+            <cells>
+
+                <ObjectIdentifier
+                    title="Fakultät für Mathematik und Informatik"/>
+
+                <ObjectNumber
+                    number="9,8"
+                    unit="Mio. €"/>
+
+                <ObjectNumber
+                    number="5,5"
+                    unit="Mio. €"/>
+
+                <ObjectNumber
+                    number="56"
+                    unit="%"/>
+
+            </cells>
+
+        </ColumnListItem>
+
+    </items>
+
+</Table>
+
+<Table
+    id="projectTable"
+    visible="{= ${view>/selectedTab} === 'pr_dm' }"
+    width="100%"
+    inset="true"
+    growing="true"
+    growingThreshold="2"
+    growingTriggerText="Weitere Projekte anzeigen">
+
+    <headerToolbar>
+        <Toolbar>
+
+            <Title text="Projekte"/>
+
+            <ToolbarSpacer/>
+
+            <SearchField
+                width="15rem"
+                placeholder="Projekt suchen"/>
+
+            <Button
+                icon="sap-icon://sort"
+                tooltip="Sortieren"
+                type="Transparent"/>
+
+            <Button
+                icon="sap-icon://filter"
+                tooltip="Filter"
+                type="Transparent"/>
+
+            <Button
+                icon="sap-icon://excel-attachment"
+                tooltip="Exportieren"
+                type="Transparent"/>
+
+            <Button
+                icon="sap-icon://action-settings"
+                tooltip="Tabelleneinstellungen"
+                type="Transparent"/>
+
+        </Toolbar>
+    </headerToolbar>
+
+
+    <columns>
+
+        <Column width="22rem">
+            <Text text="Projektname"/>
+        </Column>
+
+        <Column width="6rem">
+            <Text text="Fakultät"/>
+        </Column>
+
+        <Column width="12rem">
+            <Text text="Projektart"/>
+        </Column>
+
+        <Column width="10rem">
+            <Text text="Drittmittelgeber"/>
+        </Column>
+
+        <Column width="6rem">
+            <Text text="Laufzeit"/>
+        </Column>
+
+        <Column width="10rem" hAlign="End">
+            <Text text="Gesamtbewilligung"/>
+        </Column>
+
+        <Column hAlign="End">
+            <Text text="Mittelverbrauch"/>
+        </Column>
+
+    </columns>
+
+
+    <items>
+
+        <ColumnListItem
+            type="Navigation"
+            press=".onProjectSelect">
+
+            <cells>
+
+                <Text text="Digitalisierung mittelständischer Unternehmen"/>
+
+                <ObjectStatus
+                    text="WiWi"
+                    state="Success"
+                    inverted="true"/>
+
+                <Text text="Forschungsprojekt"/>
+
+                <Text text="BMBF"/>
+
+                <Text text="2024–2027"/>
+
+                <ObjectNumber
+                    number="850.000 €"/>
+
+                <ObjectNumber
+                    number="55"
+                    unit="%"/>
+
+            </cells>
+
+        </ColumnListItem>
+
+
+        <ColumnListItem
+            type="Navigation"
+            press=".onProjectSelect">
+
+            <cells>
+
+                <Text text="Nachhaltige Finanzmodelle im europäischen Kontext"/>
+
+                <ObjectStatus
+                    text="WiWi"
+                    state="Success"
+                    inverted="true"/>
+
+                <Text text="Graduiertenschule"/>
+
+                <Text text="EU"/>
+
+                <Text text="2025–2028"/>
+
+                <ObjectNumber
+                    number="1.200.000 €"/>
+
+                <ObjectNumber
+                    number="61"
+                    unit="%"/>
+
+            </cells>
+
+        </ColumnListItem>
+
+
+        <ColumnListItem
+            type="Navigation"
+            press=".onProjectSelect">
+
+            <cells>
+
+                <Text text="KI-basierte Produktionsoptimierung"/>
+
+                <ObjectStatus
+                    text="MuI"
+                    state="Information"
+                    inverted="true"/>
+
+                <Text text="SFB"/>
+
+                <Text text="Industriepartner"/>
+
+                <Text text="2026–2029"/>
+
+                <ObjectNumber
+                    number="1.800.000 €"/>
+
+                <ObjectNumber
+                    number="23"
+                    unit="%"/>
+
+            </cells>
+
+        </ColumnListItem>
+
+    </items>
+
+</Table>
+
+<!-- Chart -->
+    <Panel
+        visible="{= ${view>/selectedTab} === 'pr_dm' }"
+        class="sapUiLargeMarginTop sapUiMediumMarginBottom">
+        <headerToolbar>
+        <Toolbar>
+
+            <Title text="Entwicklung Drittmittel"/>
+
+            <ToolbarSpacer/>
+
+            <Button
+                icon="sap-icon://excel-attachment"
+                tooltip="Exportieren"
+                type="Transparent"/>
+
+            <Button
+                icon="sap-icon://action-settings"
+                tooltip="Tabelleneinstellungen"
+                type="Transparent"/>
+
+        </Toolbar>
+    </headerToolbar>
+
+        <viz:VizFrame
+            id="drittmittelViz"
+            vizType="stacked_bar"
+            width="100%"
+            height="320px">
+
+
+            <viz:dataset>
+
+                <viz.data:FlattenedDataset
+                    data="{drittmittelChart>/data}">
+
+                    <viz.data:dimensions>
+
+                        <viz.data:DimensionDefinition
+                            name="Jahr"
+                            value="{jahr}"/>
+
+                    </viz.data:dimensions>
+
+
+                    <viz.data:measures>
+
+                        <viz.data:MeasureDefinition
+                            name="DFG"
+                            value="{dfg}"/>
+
+                        <viz.data:MeasureDefinition
+                            name="BMBF"
+                            value="{bmbf}"/>
+
+                        <viz.data:MeasureDefinition
+                            name="EU"
+                            value="{eu}"/>
+
+                        <viz.data:MeasureDefinition
+                            name="Stiftungen"
+                            value="{stiftungen}"/>
+
+                        <viz.data:MeasureDefinition
+                            name="Industrie"
+                            value="{industrie}"/>
+
+                        <viz.data:MeasureDefinition
+                            name="Sonstige"
+                            value="{sonstige}"/>
+
+                    </viz.data:measures>
+
+                </viz.data:FlattenedDataset>
+
+            </viz:dataset>
+
+
+
+            <viz:feeds>
+
+                <viz.feeds:FeedItem
+                    uid="categoryAxis"
+                    type="Dimension"
+                    values="Jahr"/>
+
+                <viz.feeds:FeedItem
+                    uid="valueAxis"
+                    type="Measure"
+                    values="DFG,BMBF,EU,Stiftungen,Industrie,Sonstige"/>
+
+            </viz:feeds>
+
+
+        </viz:VizFrame>
+
+    </Panel>
+
+
+    <!-- Personal -->
+        <Table
+            visible="{= ${view>/selectedTab} === 'pr_hr' }"
+            width="100%"
+            inset="true"
+            growing="true">
+
+            <headerToolbar>
+                <Toolbar>
+                    <Title text="Personalstruktur nach Fakultät"/>
+                    <ToolbarSpacer/>
+
+                    <Button
+                icon="sap-icon://sort"
+                tooltip="Sortieren"
+                type="Transparent"/>
+                
+                    <Button
+                        icon="sap-icon://excel-attachment"
+                        tooltip="Exportieren"
+                        type="Transparent"/>
+                    <Button
+                        icon="sap-icon://action-settings"
+                        tooltip="Tabelleneinstellungen"
+                        type="Transparent"/>
+                </Toolbar>
+            </headerToolbar>
+
+            <columns>
+                <Column><Text text="Fakultät"/></Column>
+                <Column hAlign="End"><Text text="Professuren gesamt"/></Column>
+                <Column hAlign="End"><Text text="W1"/></Column>
+                <Column hAlign="End"><Text text="W2"/></Column>
+                <Column hAlign="End"><Text text="W3"/></Column>
+                <Column hAlign="End"><Text text="Wiss. MA"/></Column>
+                <Column hAlign="End"><Text text="Techn. MA"/></Column>
+                <Column hAlign="End"><Text text="Verwaltung"/></Column>
+            </columns>
+
+            <items>
+                <ColumnListItem type="Navigation">
+                    <cells>
+                        <ObjectStatus
+                            text="WiWi"
+                            state="Success"
+                            inverted="true"/>
+                        <Text text="25"/>
+                        <Text text="3"/>
+                        <Text text="10"/>
+                        <Text text="12"/>
+                        <Text text="120"/>
+                        <Text text="15"/>
+                        <Text text="20"/>
+                    </cells>
+                </ColumnListItem>
+
+                <ColumnListItem type="Navigation">
+                    <cells>
+                        <ObjectStatus
+                            text="MuI"
+                            state="Information"
+                            inverted="true"/>
+                        <Text text="18"/>
+                        <Text text="2"/>
+                        <Text text="8"/>
+                        <Text text="8"/>
+                        <Text text="95"/>
+                        <Text text="12"/>
+                        <Text text="16"/>
+                    </cells>
+                </ColumnListItem>
+            </items>
+
+        </Table>
+
+
+</VBox>
     </content>
   </Page>
 

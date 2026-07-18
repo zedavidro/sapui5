@@ -11,7 +11,9 @@
       <tnt:ToolHeader visible="{sidebar>/visible}">
         <Button icon="sap-icon://menu" press="onToggleSidebar" type="Transparent"/>
         <ToolbarSpacer/>
-        <Title text="{header>/title}"/>
+            <!-- static for now -->
+        <Title text="Strategisches Dashboard"/>
+    <Text text="Georg-August-Universität Göttingen" class="sapUiSmallMarginBegin"/>
         <ToolbarSpacer/>
         <Button
             icon="{= ${theme>/dark} ? 'sap-icon://light-mode' : 'sap-icon://dark-mode' }"
@@ -28,9 +30,11 @@
         <tnt:item>
           <tnt:NavigationList id="sideNavList">
             <tnt:NavigationListItem text="Lehrstuhl" icon="sap-icon://curriculum" key="lehrstuhl">
+            <!--
               <tnt:NavigationListItem text="Finanzen" icon="sap-icon://line-chart" key="finanzen"/>
               <tnt:NavigationListItem text="Personal" icon="sap-icon://employee" key="hr"/>
               <tnt:NavigationListItem text="Publikationen" icon="sap-icon://course-book" key="pb"/>
+            -->
             </tnt:NavigationListItem>
           </tnt:NavigationList>
         </tnt:item>

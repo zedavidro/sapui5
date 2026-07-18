@@ -50,8 +50,11 @@ sap.ui.define([
 			}
 
 			// Synchronize selected tab and side navigation with route name
-			// Show tabs only when on a Lehrstuhl sub-page
+			// Show tabs for Lehrstuhl pages and for the Präsidium (unifinanzen)
 			const bIsLehrstuhl = (sRouteName === "finanzen" || sRouteName === "hr" || sRouteName === "pb");
+			const bIsUnifinanzen = (sRouteName === "unifinanzen");
+			// Show the shared main IconTabBar only for Lehrstuhl pages —
+			// Unifinanzen has its own tab header in its view.
 			oSidebarModel.setProperty("/showTabs", bIsLehrstuhl);
 
 			const oTabBar = this.getView().byId("navTabBar");
@@ -69,6 +72,8 @@ sap.ui.define([
 					oHeaderModel.setProperty("/title", "Integrierte Personalsteuerung & Controlling");
 				} else if (sRouteName === "pb") {
 					oHeaderModel.setProperty("/title", "Publikationsdaten");
+				} else if (sRouteName === "unifinanzen") {
+					oHeaderModel.setProperty("/title", "Präsidium");
 				}
 			}
 
@@ -81,8 +86,8 @@ sap.ui.define([
 				// Fakultätsfinanzen für Zugang 2 und 3
 				if (!this._fakultaetsfinanzenItem) {
 					this._fakultaetsfinanzenItem = new NavigationListItem({
-						text: "Fakultätsfinanzen",
-						icon: "sap-icon://building",
+						text: "Fakultät",
+						icon: "sap-icon://education",
 						key: "fakultaetsfinanzen"
 					});
 					oNavList.addItem(this._fakultaetsfinanzenItem);
@@ -92,36 +97,31 @@ sap.ui.define([
 			// Universitätsdaten nur für Zugang 3
 			if (iRole === 3) {
 				if (!this._unidatenItem) {
-					fetch("http://localhost:3000/api/unifinanzen/kategorien")
-						.then(response => response.json())
-						.then(data => {
-							this._unidatenItem = new NavigationListItem({
-								text: "Universitätsdaten",
-								icon: "sap-icon://lead",
-								key: "unifinanzen_alle"
-							});
+					// Use fixed Präsidium categories to match Unifinanzen view
+					this._unidatenItem = new NavigationListItem({
+						text: "Präsidium",
+						icon: "sap-icon://building",
+						key: "unifinanzen_alle"
+					});
 
-							data.kategorien.forEach(k => {
-								const oKatItem = new NavigationListItem({
-									text: k.hauptkategorie,
-									key: "unifinanzen_" + encodeURIComponent(k.hauptkategorie)
-								});
+					const aPrAttributes = [
+						{ text: "Finanzen", key: "pr_fi" },
+						{ text: "Drittmittel", key: "pr_dm" },
+						{ text: "Personal", key: "pr_hr" }
+						];
+						
+					// keine unterpunkte
+					/*
+					aPrAttributes.forEach(c => {
+						const oKatItem = new NavigationListItem({
+							text: c.text,
+							key: "unifinanzen_" + c.key
+						});
+						this._unidatenItem.addItem(oKatItem);
+					});
+					*/
 
-								if (k.unterkategorien && k.unterkategorien.length > 0) {
-									k.unterkategorien.forEach(uk => {
-										oKatItem.addItem(new NavigationListItem({
-											text: uk,
-											key: "unifinanzen_" + encodeURIComponent(uk)
-										}));
-									});
-								}
-
-								this._unidatenItem.addItem(oKatItem);
-							});
-
-							oNavList.addItem(this._unidatenItem);
-						})
-						.catch(err => console.error("Fehler beim Laden der Kategorien:", err));
+					oNavList.addItem(this._unidatenItem);
 				}
 			} else if (iRole < 2) {
 				// Kein Zugang: Dynamische Items entfernen
@@ -167,7 +167,20 @@ sap.ui.define([
 			}
 
 			if (sKey.startsWith("unifinanzen_")) {
-				const sKategorie = decodeURIComponent(sKey.replace("unifinanzen_", ""));
+				let sKategorie = decodeURIComponent(sKey.replace("unifinanzen_", ""));
+
+				// Map Präsidium tab keys to human-readable category names used by Unifinanzen data
+				const mPrMap = {
+					pr_fi: "Finanzen",
+					pr_dm: "Drittmittel",
+					pr_hr: "Personal",
+					alle: "alle"
+				};
+
+				if (mPrMap[sKategorie]) {
+					sKategorie = mPrMap[sKategorie];
+				}
+
 				this.getOwnerComponent().getRouter().navTo("unifinanzen", {
 					kategorie: encodeURIComponent(sKategorie)
 				});

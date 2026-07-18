@@ -6,7 +6,8 @@
   xmlns:core="sap.ui.core"
   xmlns:viz="sap.viz.ui5.controls"
   xmlns:viz.data="sap.viz.ui5.data"
-  xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds">
+  xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds"
+  core:require="{ formatter: 'de/unigoettingen/dashboardapp/model/formatter' }">
 
   <Page
     id="page"
@@ -28,37 +29,39 @@
       <HBox justifyContent="SpaceAround" class="sapUiSmallMargin sapUiLargeMarginBottom">
         <GenericTile header="Kopfzahl (Gesamt)" class="sapUiTinyMargin">
           <TileContent>
-            <NumericContent value="{dashboard>/kpis/headcount}" valueColor="Neutral" />
+            <NumericContent
+              value="{dashboard>/kpis/headcount}"
+              scale="Personen"
+              valueColor="Neutral" />
           </TileContent>
         </GenericTile>
 
         <GenericTile header="Vollzeitäquivalente (VZÄ)" class="sapUiTinyMargin">
           <TileContent>
-            <NumericContent value="{
-              path: 'dashboard>/kpis/fte',
-              type: 'sap.ui.model.type.Float',
-              formatOptions: { maxFractionDigits: 2 }
-            }" valueColor="Neutral" />
+            <NumericContent
+              value="{dashboard>/kpis/fte}"
+              scale="VZÄ"
+              valueColor="Neutral" />
           </TileContent>
         </GenericTile>
 
         <GenericTile header="Personalkosten (Hochrechnung)" class="sapUiTinyMargin">
           <TileContent>
-            <NumericContent value="{
-              path: 'dashboard>/kpis/totalCost',
-              type: 'sap.ui.model.type.Float',
-              formatOptions: { style: 'currency', currency: 'EUR', maxFractionDigits: 0 }
-            }" valueColor="Error" />
+            <NumericContent
+              value="{path: 'dashboard>/kpis/totalCost', formatter: 'formatter.formatNumber'}"
+              scale="{path: 'dashboard>/kpis/totalCost', formatter: 'formatter.formatScale'}"
+              valueColor="Error"
+              size="L" />
           </TileContent>
         </GenericTile>
 
         <GenericTile header="Ø Kosten pro VZÄ" class="sapUiTinyMargin">
           <TileContent>
-            <NumericContent value="{
-              path: 'dashboard>/kpis/avgCostPerFTE',
-              type: 'sap.ui.model.type.Float',
-              formatOptions: { style: 'currency', currency: 'EUR', maxFractionDigits: 0 }
-            }" valueColor="Neutral" />
+            <NumericContent
+              value="{path: 'dashboard>/kpis/avgCostPerFTE', formatter: 'formatter.formatNumber'}"
+              scale="{path: 'dashboard>/kpis/avgCostPerFTE', formatter: 'formatter.formatScale'}"
+              valueColor="Neutral"
+              size="L" />
           </TileContent>
         </GenericTile>
       </HBox>

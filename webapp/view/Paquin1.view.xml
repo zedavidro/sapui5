@@ -3,71 +3,766 @@
 	displayBlock="true"
 	xmlns="sap.m"
 	xmlns:mvc="sap.ui.core.mvc"
-	xmlns:core="sap.ui.core">
+	xmlns:core="sap.ui.core"
+		core:require="{
+		formatter: 'de/unigoettingen/dashboardapp/model/formatter'
+	}">
 
 	<Page
-		title="Fakultätsfinanzen"
-		showHeader="false">
+		id="paquin1Page"
+		showNavButton="false">
+
+		<customHeader>
+			<Bar>
+				<contentLeft>
+					<HBox alignItems="Center">
+						<core:Icon src="sap-icon://education" size="1rem" class="sapUiTinyMarginEnd"/>
+						<Title text="Fakultätsfinanzen" class="sapUiTinyMarginTop"/>
+					</HBox>
+				</contentLeft>
+
+				<contentMiddle>
+					<IconTabHeader id="navTabBar" selectedKey="pr_fi" select="onTabSelect">
+						<items>
+							<IconTabFilter text="Finanzen" key="pr_fi"/>
+							<IconTabFilter text="Personal" key="pr_hr"/>
+						</items>
+					</IconTabHeader>
+				</contentMiddle>
+
+				<contentRight>
+					<Button
+						id="lehrstuhlMenuButton"
+						text="Lehrstuhl"
+						icon="sap-icon://education"
+						press="onLehrstuhlMenuPress"
+						class="sapUiTinyMarginEnd"/>
+
+					<!-- Jahresauswahl -->
+					<Select change="onYearChange" class="sapUiSmallMargin">
+						<items>
+							<core:Item key="2024" text="2024"/>
+							<core:Item key="2025" text="2025"/>
+							<core:Item key="2026" text="2026"/>
+						</items>
+					</Select>
+				</contentRight>
+			</Bar>
+		</customHeader>
 
 		<content>
-			<!-- Jahresauswahl -->
-			<Select change="onYearChange" class="sapUiSmallMargin">
-				<items>
-					<core:Item key="2024" text="2024"/>
-					<core:Item key="2025" text="2025"/>
-					<core:Item key="2026" text="2026"/>
-				</items>
-			</Select>
 
-			<!-- KPI-Karten: Kontoübersicht -->
-			<HBox justifyContent="SpaceAround" class="sapUiSmallMargin" wrap="Wrap">
+			<!--- KPI-Karten: Kontoübersicht -->
+			<HBox justifyContent="SpaceAround" class="sapUiSmallMargin" wrap="Wrap" visible="{= ${view>/selectedTab} === 'pr_fi' }">
 
-				<GenericTile header="Budget" class="sapUiTinyMargin">
-					<TileContent>
-						<NumericContent value="{
-							path: 'fakFinanzen>/kpis/budget',
-							formatter: '.formatEuro'
-						}" valueColor="Neutral" />
-					</TileContent>
-				</GenericTile>
+    <GenericTile
+    header="Budget"
+    class="sapUiTinyMargin">
 
-				<GenericTile header="Einnahmen (Ist)" class="sapUiTinyMargin">
-					<TileContent>
-						<NumericContent value="{
-							path: 'fakFinanzen>/kpis/einnahmenIst',
-							formatter: '.formatEuro'
-						}" valueColor="Good" />
-					</TileContent>
-				</GenericTile>
+    <TileContent
+        footer="+3,8% ggü. Vorjahr">
 
-				<GenericTile header="Ausgaben (Ist)" class="sapUiTinyMargin">
-					<TileContent>
-						<NumericContent value="{
-							path: 'fakFinanzen>/kpis/ausgabenIst',
-							formatter: '.formatEuro'
-						}" valueColor="Error" />
-					</TileContent>
-				</GenericTile>
+        <NumericContent
+            value="{
+                path: 'fakFinanzen>/kpis/budget',
+                formatter: 'formatter.formatNumber'
+            }"
+            scale="{
+                path: 'fakFinanzen>/kpis/budget',
+                formatter: 'formatter.formatScale'
+            }"
+            valueColor="Neutral"/>
+    </TileContent>
 
-				<GenericTile header="Obligo" class="sapUiTinyMargin">
-					<TileContent>
-						<NumericContent value="{
-							path: 'fakFinanzen>/kpis/obligo',
-							formatter: '.formatEuro'
-						}" valueColor="Critical" />
-					</TileContent>
-				</GenericTile>
+</GenericTile>
 
-				<GenericTile header="Rest-Verfügbarkeit" class="sapUiTinyMargin">
-					<TileContent>
-						<NumericContent value="{
-							path: 'fakFinanzen>/kpis/restVerfuegbarkeit',
-							formatter: '.formatEuro'
-						}" valueColor="Good" />
-					</TileContent>
-				</GenericTile>
 
-			</HBox>
+<GenericTile
+    header="Verausgabt"
+    class="sapUiTinyMargin">
+
+    <TileContent
+        footer="82,4% verausgabt">
+
+        <NumericContent
+            value="{
+                path: 'fakFinanzen>/kpis/ausgabenIst',
+                formatter: 'formatter.formatNumber'
+            }"
+            scale="{
+                path: 'fakFinanzen>/kpis/ausgabenIst',
+                formatter: 'formatter.formatScale'
+            }"
+            valueColor="Error"/>
+    </TileContent>
+
+</GenericTile>
+
+
+<GenericTile
+    header="Obligo"
+    class="sapUiTinyMargin">
+
+    <TileContent
+        footer="{
+			parts: [
+				{ path: 'fakFinanzen>/kpis/obligo' },
+				{ path: 'fakFinanzen>/kpis/budget' }
+			],
+			formatter: 'formatter.formatObligoFooter'
+		}">
+
+        <NumericContent
+            value="{
+                path: 'fakFinanzen>/kpis/obligo',
+                formatter: 'formatter.formatNumber'
+            }"
+            scale="{
+                path: 'fakFinanzen>/kpis/obligo',
+                formatter: 'formatter.formatScale'
+            }"
+            valueColor="Critical"/>
+    </TileContent>
+
+</GenericTile>
+
+
+<GenericTile
+    header="Verfügbar"
+    class="sapUiTinyMargin">
+
+    <TileContent
+        footer="{
+			parts: [
+				{ path: 'fakFinanzen>/kpis/restVerfuegbarkeit' },
+				{ path: 'fakFinanzen>/kpis/budget' }
+			],
+			formatter: 'formatter.formatRestFooter'
+		}">
+
+        <NumericContent
+            value="{
+                path: 'fakFinanzen>/kpis/restVerfuegbarkeit',
+                formatter: 'formatter.formatNumber'
+            }"
+            scale="{
+                path: 'fakFinanzen>/kpis/restVerfuegbarkeit',
+                formatter: 'formatter.formatScale'
+            }"
+            valueColor="Good"/>
+    </TileContent>
+
+</GenericTile>
+
+</HBox>
+
+			<HBox justifyContent="SpaceAround" class="sapUiSmallMargin" wrap="Wrap" visible="{= ${view>/selectedTab} === 'pr_hr' }">
+
+    <GenericTile
+    header="Kopfzahl (Gesamt)"
+    class="sapUiTinyMargin">
+
+    <TileContent>
+
+        <NumericContent
+            value="{fakPersonal>/kpis/headcount}"
+            scale="Personen"
+            valueColor="Neutral"/>
+    </TileContent>
+
+</GenericTile>
+
+
+<GenericTile
+    header="Personalbestand (VZÄ)"
+    class="sapUiTinyMargin">
+
+    <TileContent>
+
+        <NumericContent
+            value="{path: 'fakPersonal>/kpis/fte', formatter: 'formatter.formatNumber'}"
+            scale="VZÄ"
+            valueColor="Neutral"/>
+    </TileContent>
+
+</GenericTile>
+
+
+<GenericTile
+    header="Personalkosten"
+    class="sapUiTinyMargin">
+
+    <TileContent>
+
+        <NumericContent
+            value="{path: 'fakPersonal>/kpis/totalCost', formatter: 'formatter.formatNumber'}"
+            scale="{path: 'fakPersonal>/kpis/totalCost', formatter: 'formatter.formatScale'}"
+            valueColor="Error"/>
+    </TileContent>
+
+</GenericTile>
+
+
+<GenericTile
+    header="Ø Kosten pro VZÄ"
+    class="sapUiTinyMargin">
+
+    <TileContent>
+
+        <NumericContent
+            value="86.920"
+            scale="€"
+            valueColor="Neutral"/>
+    </TileContent>
+
+</GenericTile>
+
+</HBox>
+
+<VBox class="sapUiMediumMarginBegin sapUiMediumMarginEnd">
+
+    <!-- Budgetaufstellung (Finanzen tab) -->
+    <Table
+        id="budgetBreakdown"
+        visible="{= ${view>/selectedTab} === 'pr_fi' }"
+        width="100%"
+        inset="true">
+
+		<headerToolbar>
+        <Toolbar>
+
+            <Title text="Budgetaufstellung"/>
+
+            <ToolbarSpacer/>
+
+            <Button
+                icon="sap-icon://excel-attachment"
+                tooltip="Exportieren"
+                type="Transparent"/>
+
+            <Button
+                icon="sap-icon://action-settings"
+                tooltip="Tabelleneinstellungen"
+                type="Transparent"/>
+
+        </Toolbar>
+    </headerToolbar>
+
+        <columns>
+            <Column>
+                <Text text="Bereich"/>
+            </Column>
+
+            <Column>
+                <Text text="Position"/>
+            </Column>
+
+            <Column hAlign="End">
+                <Text text="Budget"/>
+            </Column>
+
+            <Column hAlign="End">
+                <Text text="Obligo"/>
+            </Column>
+
+            <Column hAlign="End">
+                <Text text="Verausgabt"/>
+            </Column>
+
+            <Column hAlign="Center">
+                <Text text="Verfügbar"/>
+            </Column>
+        </columns>
+
+
+        <items>
+
+            <!-- Ausgaben -->
+            <ColumnListItem>
+                <cells>
+
+                    <Text
+                        text="Ausgaben"
+                        class="sapUiStrong"/>
+
+                    <Text text="Personal"/>
+
+                    <Text text="750.000 €"/>
+
+                    <Text text="80.000 €"/>
+
+                    <Text text="620.000 €"/>
+
+                    <Text text="50.000 €"/>
+
+                </cells>
+            </ColumnListItem>
+
+
+            <ColumnListItem>
+                <cells>
+
+                    <Text text=""/>
+
+                    <Text text="Sachmittel"/>
+
+                    <Text text="250.000 €"/>
+
+                    <Text text="45.000 €"/>
+
+                    <Text text="180.000 €"/>
+
+                    <Text text="25.000 €"/>
+
+                </cells>
+            </ColumnListItem>
+
+
+            <ColumnListItem>
+                <cells>
+
+                    <Text text=""/>
+
+                    <Text text="Investitionen"/>
+
+                    <Text text="150.000 €"/>
+
+                    <Text text="20.000 €"/>
+
+                    <Text text="80.000 €"/>
+
+                    <Text text="50.000 €"/>
+
+                </cells>
+            </ColumnListItem>
+
+
+            <ColumnListItem>
+                <cells>
+
+                    <Text text=""/>
+
+                    <Text text="Drittmittelprojekte"/>
+
+                    <Text text="150.000 €"/>
+
+                    <Text text="0 €"/>
+
+                    <Text text="100.000 €"/>
+
+                    <Text text="50.000 €"/>
+
+                </cells>
+            </ColumnListItem>
+
+
+            <!-- Summe Ausgaben -->
+            <ColumnListItem>
+
+                <cells>
+
+                    <Text
+                        text="Summe Ausgaben"
+                        class="sapUiStrong"/>
+
+                    <Text text=""/>
+
+                    <ObjectNumber
+                        number="1300000"
+                        unit="€"
+                        class="sapUiStrong"/>
+
+                    <ObjectNumber
+                        number="145000"
+                        unit="€"
+                        class="sapUiStrong"/>
+
+                    <ObjectNumber
+                        number="980000"
+                        unit="€"
+                        class="sapUiStrong"/>
+
+                    <ObjectNumber
+                        number="175000"
+                        unit="€"
+                        class="sapUiStrong"/>
+
+                </cells>
+
+            </ColumnListItem>
+
+
+            <!-- Einnahmen -->
+            <ColumnListItem>
+
+                <cells>
+
+                    <Text
+                        text="Einnahmen"
+                        class="sapUiStrong"/>
+
+                    <Text text="Landesmittel"/>
+
+                    <Text text="1.100.000 €"/>
+
+                    <Text text=""/>
+
+                    <Text text=""/>
+
+                    <Text text=""/>
+
+                </cells>
+
+            </ColumnListItem>
+
+
+            <ColumnListItem>
+
+                <cells>
+
+                    <Text text=""/>
+
+                    <Text text="Drittmittel"/>
+
+                    <Text text="150.000 €"/>
+
+                    <Text text=""/>
+
+                    <Text text=""/>
+
+                    <Text text=""/>
+
+                </cells>
+
+            </ColumnListItem>
+
+
+            <ColumnListItem>
+
+                <cells>
+
+                    <Text text=""/>
+
+                    <Text text="Erlöse/Erträge"/>
+
+                    <Text text="50.000 €"/>
+
+                    <Text text=""/>
+
+                    <Text text=""/>
+
+                    <Text text=""/>
+
+                </cells>
+
+            </ColumnListItem>
+
+
+            <!-- Summe Einnahmen -->
+            <ColumnListItem>
+
+                <cells>
+
+                    <Text
+                        text="Summe Einnahmen"
+                        class="sapUiStrong"/>
+
+                    <Text text=""/>
+
+                    <ObjectNumber
+                        number="1300000"
+                        unit="€"
+                        class="sapUiStrong"/>
+
+                    <Text text=""/>
+
+                    <Text text=""/>
+
+                    <Text text=""/>
+
+                </cells>
+
+            </ColumnListItem>
+
+
+        </items>
+
+    </Table>
+
+            <!-- Lehrstuhlübersicht (gleiche Stilistik wie Budgetaufstellung) -->
+            <Table
+                id="lehrstuhlBreakdown"
+                visible="{= ${view>/selectedTab} === 'pr_fi' }"
+                width="100%"
+                inset="true">
+
+                <headerToolbar>
+                    <Toolbar>
+                        <Title text="Lehrstuhlübersicht"/>
+						<ToolbarSpacer/>
+
+            <Button
+                icon="sap-icon://sort"
+                tooltip="Sortieren"
+                type="Transparent"/>
+
+            <Button
+                icon="sap-icon://excel-attachment"
+                tooltip="Exportieren"
+                type="Transparent"
+                press=".onExport"/>
+
+            <Button
+                icon="sap-icon://action-settings"
+                tooltip="Tabelleneinstellungen"
+                type="Transparent"/>
+                    </Toolbar>
+                </headerToolbar>
+				
+
+                <columns>
+                    <Column><Text text="Lehrstuhl"/></Column>
+                    <Column hAlign="End"><Text text="Budget"/></Column>
+                    <Column hAlign="End"><Text text="Verausgabt"/></Column>
+                    <Column hAlign="End"><Text text="Obligo"/></Column>
+                    <Column hAlign="End"><Text text="Verfügbar"/></Column>
+                    <Column hAlign="Center"><Text text="Status"/></Column>
+                </columns>
+
+                <items>
+                    <ColumnListItem type="Inactive">
+                        <cells>
+                            <ObjectIdentifier title="Lehrstuhl Smart Services" text="Prof. Müller"/>
+                            <Text text="450.000 €"/>
+                            <Text text="170.000 €"/>
+                            <Text text="120.000 €"/>
+                            <Text text="160.000 €"/>
+                            <Text text="🟢"/>
+                        </cells>
+                    </ColumnListItem>
+
+                    <ColumnListItem type="Inactive">
+                        <cells>
+                            <ObjectIdentifier title="Lehrstuhl für E-Business" text="Prof. Schmidt"/>
+                            <Text text="500.000 €"/>
+                            <Text text="190.000 €"/>
+                            <Text text="140.000 €"/>
+                            <Text text="170.000 €"/>
+                            <Text text="🟢"/>
+                        </cells>
+                    </ColumnListItem>
+
+                    <ColumnListItem type="Navigation" press=".onLehrstuhlSelect">
+                        <cells>
+                            <ObjectIdentifier title="Lehrstuhl KI-Forschung" text="Prof. Weber"/>
+                            <Text text="450.000 €"/>
+                            <Text text="150.000 €"/>
+                            <Text text="120.000 €"/>
+                            <Text text="180.000 €"/>
+                            <Text text="🟢"/>
+                        </cells>
+                    </ColumnListItem>
+
+                </items>
+
+            </Table>
+
+            <!-- Finanzbewegungen (gleiche Stilistik) -->
+            <Table
+                id="finanzbewegungen"
+                visible="{= ${view>/selectedTab} === 'pr_fi' }"
+                width="100%"
+                inset="true">
+
+				<headerToolbar>
+					<Toolbar>
+
+						<Title text="Finanzbewegungen"/>
+
+						<ToolbarSpacer/>
+
+						<SearchField
+							width="15rem"
+							placeholder="Buchung suchen"/>
+
+						<Button
+							icon="sap-icon://sort"
+							tooltip="Sortieren"
+							type="Transparent"/>
+
+						<Button
+							icon="sap-icon://filter"
+							tooltip="Filter"
+							type="Transparent"/>
+
+						<Button
+							icon="sap-icon://excel-attachment"
+							tooltip="Exportieren"
+							type="Transparent"/>
+
+						<Button
+							icon="sap-icon://action-settings"
+							tooltip="Tabelleneinstellungen"
+							type="Transparent"/>
+
+					</Toolbar>
+				</headerToolbar>
+
+                <columns>
+                    <Column><Text text="Datum"/></Column>
+                    <Column><Text text="Lehrstuhl"/></Column>
+                    <Column><Text text="Buchung"/></Column>
+                    <Column><Text text="Projekt/Kostenstelle"/></Column>
+                    <Column><Text text="Typ"/></Column>
+                    <Column><Text text="Betrag"/></Column>
+                </columns>
+
+                <items>
+                    <ColumnListItem>
+                        <cells>
+                            <Text text="03.01.2026"/>
+                            <Text text="Prof. Müller"/>
+                            <Text text="Laborbedarf"/>
+                            <Text text="Kostenstelle 123"/>
+                            <Text text="Ausgabe"/>
+                            <Text text="-5.200 €" class="sapUiMonospace"/>
+                        </cells>
+                    </ColumnListItem>
+
+                    <ColumnListItem>
+                        <cells>
+                            <Text text="12.02.2026"/>
+                            <Text text="Prof. Weber"/>
+                            <Text text="Drittmittelzahlung"/>
+                            <Text text="Projekt KI"/>
+                            <Text text="Einnahme"/>
+                            <Text text="+20.000 €" class="sapUiMonospace"/>
+                        </cells>
+                    </ColumnListItem>
+
+                    <ColumnListItem>
+                        <cells>
+                            <Text text="01.03.2026"/>
+                            <Text text="Prof. Müller"/>
+                            <Text text="Bestellung Server"/>
+                            <Text text="Kostenstelle 123"/>
+                            <Text text="Obligo"/>
+                            <Text text="-15.000 €" class="sapUiMonospace"/>
+                        </cells>
+                    </ColumnListItem>
+
+                </items>
+
+            </Table>
+
+            <Table
+                id="personalDetail"
+                visible="{= ${view>/selectedTab} === 'pr_hr' }"
+                width="100%"
+                inset="true">
+
+
+				    <headerToolbar>
+        <Toolbar>
+
+            <Title text="Personalbindung &amp; Einsatz"/>
+
+            <ToolbarSpacer/>
+
+            <SearchField
+                width="15rem"
+                placeholder="Person suchen"/>
+
+            <Button
+                icon="sap-icon://sort"
+                tooltip="Sortieren"
+                type="Transparent"/>
+
+            <Button
+                icon="sap-icon://filter"
+                tooltip="Filter"
+                type="Transparent"/>
+
+            <Button
+                icon="sap-icon://excel-attachment"
+                tooltip="Exportieren"
+                type="Transparent"/>
+
+            <Button
+                icon="sap-icon://action-settings"
+                tooltip="Tabelleneinstellungen"
+                type="Transparent"/>
+
+        </Toolbar>
+    </headerToolbar>
+
+                <columns>
+                    <Column><Text text="Name"/></Column>
+                    <Column><Text text="Rolle"/></Column>
+                    <Column><Text text="Finanzierung"/></Column>
+                    <Column><Text text="Von"/></Column>
+                    <Column><Text text="Bis"/></Column>
+                    <Column hAlign="End"><Text text="VZÄ"/></Column>
+                    <Column hAlign="End"><Text text="Jahreskosten"/></Column>
+                    <Column><Text text="Status"/></Column>
+                </columns>
+
+                <items>
+                    <ColumnListItem>
+                        <cells>
+                            <Text text="Dr. Jana Becker"/>
+                            <Text text="Projektleitung"/>
+                            <Text text="Drittmittel"/>
+                            <Text text="01.02.2026"/>
+                            <Text text="31.01.2027"/>
+                            <Text text="0,75"/>
+                            <ObjectNumber number="72000" unit="€"/>
+                            <ObjectStatus text="Aktiv" state="Success"/>
+                        </cells>
+                    </ColumnListItem>
+
+                    <ColumnListItem>
+                        <cells>
+                            <Text text="M.Sc. Paul Klein"/>
+                            <Text text="Lehre"/>
+                            <Text text="Grundmittel"/>
+                            <Text text="01.10.2025"/>
+                            <Text text="30.09.2026"/>
+                            <Text text="0,50"/>
+                            <ObjectNumber number="38000" unit="€"/>
+                            <ObjectStatus text="Aktiv" state="Success"/>
+                        </cells>
+                    </ColumnListItem>
+
+                    <ColumnListItem>
+                        <cells>
+                            <Text text="M.Sc. Lena Schmidt"/>
+                            <Text text="Forschung"/>
+                            <Text text="Drittmittel"/>
+                            <Text text="15.03.2026"/>
+                            <Text text="14.03.2027"/>
+                            <Text text="0,60"/>
+                            <ObjectNumber number="45000" unit="€"/>
+                            <ObjectStatus text="Geplant" state="Warning"/>
+                        </cells>
+                    </ColumnListItem>
+
+                    <ColumnListItem>
+                        <cells>
+                            <Text text="Dr. Markus Braun"/>
+                            <Text text="Verwaltung"/>
+                            <Text text="Grundmittel"/>
+                            <Text text="01.01.2026"/>
+                            <Text text="31.12.2026"/>
+                            <Text text="0,40"/>
+                            <ObjectNumber number="33000" unit="€"/>
+                            <ObjectStatus text="Aktiv" state="Success"/>
+                        </cells>
+                    </ColumnListItem>
+                </items>
+            </Table>
+
+</VBox>
 		</content>
 
 	</Page>

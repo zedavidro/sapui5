@@ -2,15 +2,181 @@ sap.ui.define([
 	"de/unigoettingen/dashboardapp/controller/BaseController",
 	"sap/ui/model/json/JSONModel",
 	"sap/ui/model/Filter",
-	"sap/ui/model/FilterOperator"
-], function (BaseController, JSONModel, Filter, FilterOperator) {
+	"sap/ui/model/FilterOperator",
+	"sap/m/Popover",
+	"sap/m/List",
+	"sap/m/StandardListItem"
+], function (BaseController, JSONModel, Filter, FilterOperator, Popover, List, StandardListItem) {
 	"use strict";
 
 	return BaseController.extend("de.unigoettingen.dashboardapp.controller.Unifinanzen", {
 
 		onInit: function () {
+			
+			    this.getView().setModel(
+        new sap.ui.model.json.JSONModel({
+            selectedTab: "pr_fi"
+        }),
+        "view"
+		
+    );
+
+			// Mock data for Drittmittel stacked bar chart (in Mio. €)
+			const oDrittmittelChart = new JSONModel({
+				data: [
+					{ jahr: "2022", dfg: 10.2, bmbf: 10.0, eu: 6.1, stiftungen: 4.2, industrie: 10.2, sonstige: 6.2 },
+					{ jahr: "2023", dfg: 10.4, bmbf: 10.1, eu: 8.2, stiftungen: 5.7, industrie: 10.4, sonstige: 4.3 },
+					{ jahr: "2024", dfg: 10.6, bmbf: 10.3, eu: 10.0, stiftungen: 6.5, industrie: 10.6, sonstige: 1.6 },
+					{ jahr: "2025", dfg: 10.8, bmbf: 10.4, eu: 10.2, stiftungen: 7.0, industrie: 10.5, sonstige: 2.5 }
+				]
+			});
+			this.getView().setModel(oDrittmittelChart, "drittmittelChart");
+
+			// Fakultätenübersicht mit hinterlegten Lehrstühlen (nur WiWi hat aktuell Daten)
+			this.getView().setModel(new JSONModel({
+				faculties: [
+					{ key: "physik", name: "Fakultät für Physik", lehrstuehle: [] },
+					{ key: "infomath", name: "Fakultät für Informatik und Mathematik", lehrstuehle: [] },
+					{
+						key: "wiwi",
+						name: "Wirtschaftswissenschaftliche Fakultät",
+						lehrstuehle: [
+							{ professor: "Prof. Müller", lehrstuhl: "Lehrstuhl Smart Services" },
+							{ professor: "Prof. Schmidt", lehrstuhl: "Lehrstuhl für E-Business" },
+							{ professor: "Prof. Weber", lehrstuhl: "Lehrstuhl KI-Forschung", route: "finanzen" }
+						]
+					}
+				]
+			}), "fakultaeten");
+
 			this.getRouter().getRoute("unifinanzen").attachMatched(this._onRouteMatched, this);
 		},
+
+		onAfterRendering: function () {
+			const oViz = this.byId("drittmittelViz");
+			if (oViz) {
+				oViz.setVizProperties({
+					title: { visible: true, text: "Drittmittel 2022–2025 (Mio. €)" },
+					plotArea: { colorPalette: ['#cfe8ff', '#9fd1ff', '#6fb9ff', '#3f9fff', '#0f87ff', '#0066cc'] },
+					valueAxis: { title: { visible: true, text: 'Mio. €' } }
+				});
+			}
+		},
+
+		onFacultyMenuPress: function (oEvent) {
+			if (!this._oFacultyPopover) {
+				this._oFacultyList = new List({
+					mode: "None",
+					items: {
+						path: "fakultaeten>/faculties",
+						template: new StandardListItem({
+							title: "{fakultaeten>name}",
+							icon: "sap-icon://building",
+							type: "{= ${fakultaeten>key} === 'wiwi' ? 'Navigation' : 'Inactive' }"
+						})
+					}
+				});
+				this._oFacultyList.setModel(this.getView().getModel("fakultaeten"), "fakultaeten");
+				this._oFacultyList.attachItemPress(this._onFacultyItemPress, this);
+
+				this._oFacultyPopover = new Popover({
+					placement: "Bottom",
+					showHeader: false,
+					content: [this._oFacultyList]
+				});
+				this._oFacultyPopover.attachAfterOpen(() => this._attachFacultyHover(this._oFacultyList));
+				this.getView().addDependent(this._oFacultyPopover);
+			}
+			this._oFacultyPopover.openBy(oEvent.getSource());
+		},
+
+		_onFacultyItemPress: function (oEvent) {
+			const oContext = oEvent.getParameter("listItem").getBindingContext("fakultaeten");
+			if (oContext.getProperty("key") === "wiwi") {
+				this._oFacultyPopover.close();
+				this.navTo("fakultaetsfinanzen");
+			}
+		},
+
+		_attachFacultyHover: function (oList) {
+			if (!oList) {
+				return;
+			}
+			oList.getItems().forEach((oItem) => {
+				const oDomRef = oItem.getDomRef();
+				if (!oDomRef || oDomRef.dataset.hoverBound) {
+					return;
+				}
+				oDomRef.dataset.hoverBound = "true";
+				let iTimer;
+				oDomRef.addEventListener("mouseenter", () => {
+					iTimer = setTimeout(() => this._showLehrstuhlPopover(oItem), 2000);
+				});
+				oDomRef.addEventListener("mouseleave", () => {
+					clearTimeout(iTimer);
+				});
+			});
+		},
+
+		_showLehrstuhlPopover: function (oItem) {
+			const oContext = oItem.getBindingContext("fakultaeten");
+			const sName = oContext.getProperty("name");
+			const aLehrstuehle = oContext.getProperty("lehrstuehle") || [];
+
+			if (!this._oLehrstuhlPopover) {
+				this._oLehrstuhlList = new List();
+				this._oLehrstuhlPopover = new Popover({
+					placement: "Right",
+					content: [this._oLehrstuhlList]
+				});
+				this.getView().addDependent(this._oLehrstuhlPopover);
+			}
+
+			this._oLehrstuhlPopover.setTitle(sName);
+			this._oLehrstuhlList.destroyItems();
+
+			if (aLehrstuehle.length === 0) {
+				this._oLehrstuhlList.addItem(new StandardListItem({
+					title: "Keine Lehrstuhldaten verfügbar",
+					icon: "sap-icon://message-information"
+				}));
+			} else {
+				aLehrstuehle.forEach((o) => {
+					const oListItem = new StandardListItem({
+						title: o.lehrstuhl,
+						description: o.professor,
+						icon: "sap-icon://education",
+						type: o.route ? "Navigation" : "Inactive"
+					});
+					if (o.route) {
+						oListItem.attachPress(() => {
+							this._oLehrstuhlPopover.close();
+							if (this._oFacultyPopover) {
+								this._oFacultyPopover.close();
+							}
+							this.navTo(o.route);
+						});
+					}
+					this._oLehrstuhlList.addItem(oListItem);
+				});
+			}
+
+			this._oLehrstuhlPopover.openBy(oItem);
+		},
+
+		onTabSelect: function (oEvent) {
+    const key = oEvent.getParameter("key");
+
+    this.getView()
+        .getModel("view")
+        .setProperty("/selectedTab", key);
+},
+
+onFacultyPress: function (oEvent) {
+    const sFaculty = oEvent.getSource().getText();
+
+    this.getOwnerComponent().getRouter().getRoute("finanzen").attachPatternMatched(this._onRouteMatched, this);
+},
 
 		_onRouteMatched: function (oEvent) {
 			const oUserModel = this.getOwnerComponent().getModel("userModel");
@@ -22,6 +188,22 @@ sap.ui.define([
 			
 			const oArgs = oEvent.getParameter("arguments");
 			this._kategorieFilter = oArgs.kategorie;
+
+			// Map route category names to tab keys (if a Präsidium tab was selected)
+			const mMap = {
+				Finanzen: "pr_fi",
+				Drittmittel: "pr_dm",
+				Personal: "pr_hr",
+				alle: "pr_fi"
+			};
+
+			if (this._kategorieFilter) {
+				const sDecoded = decodeURIComponent(this._kategorieFilter);
+				const sTabKey = mMap[sDecoded];
+				if (sTabKey) {
+					this.getView().getModel("view").setProperty("/selectedTab", sTabKey);
+				}
+			}
 
 			// Lade die Finanzen vom Backend, wenn die Route aufgerufen wird
 			this._loadFinanzenData();
