@@ -74,6 +74,49 @@ sap.ui.define(function () {
 			const percent = (rest / budget * 100).toFixed(1);
 
 			return percent + "% Budgetspielraum";
+		},
+
+		formatBudgetFooter: function (budget, prevBudget) {
+			if (!budget || !prevBudget) {
+				return "Kein Vorjahresvergleich verfügbar";
+			}
+
+			const percent = (budget - prevBudget) / prevBudget * 100;
+			const sign = percent >= 0 ? "+" : "";
+
+			return sign + percent.toFixed(1).replace(".", ",") + "% ggü. Vorjahr";
+		},
+
+		formatEuroInt: function (value) {
+			if (value === null || value === undefined || isNaN(value)) {
+				return "";
+			}
+
+			return new Intl.NumberFormat("de-DE", { maximumFractionDigits: 0 }).format(value) + " €";
+		},
+
+		formatSignedEuro: function (value) {
+			if (value === null || value === undefined || isNaN(value)) {
+				return "";
+			}
+
+			return new Intl.NumberFormat("de-DE", { maximumFractionDigits: 0, signDisplay: "always" }).format(value) + " €";
+		},
+
+		formatBudgetartStatus: function (value) {
+			if (value === null || value === undefined || isNaN(value)) {
+				return "";
+			}
+
+			return value >= 0 ? "Überschuss" : "Defizit";
+		},
+
+		formatBudgetartColor: function (value) {
+			if (value === null || value === undefined || isNaN(value)) {
+				return "Neutral";
+			}
+
+			return value >= 0 ? "Good" : "Error";
 		}
 
     };

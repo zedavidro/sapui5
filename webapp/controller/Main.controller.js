@@ -22,6 +22,28 @@ sap.ui.define([
       this._loadAndUpdate();
     },
 
+    // sap.viz hat keine deklarative Option, Data-Label-Text pro Serie einzufärben.
+    // Die gerenderten <text>-Knoten sind serienweise gruppiert (erst alle Kosten-Punkte,
+    // dann alle Erträge-, dann alle Ergebnis-Punkte je Jahr) statt zeilenweise wie im Datenmodell,
+    // daher Gruppierung per Index-Drittel statt Modulo. Zusätzlich werden die Labels je Serie
+    // vertikal versetzt, da nah beieinanderliegende Werte sich sonst überlappen.
+    onTrendChartRenderComplete: function (oEvent) {
+      const oChart = oEvent.getSource();
+      const oDomRef = oChart.getDomRef();
+      if (!oDomRef) {
+        return;
+      }
+      const aColors = ["#aa0808", "#256f3a", "#131e29"];
+      const aOffsets = [-18, 0, 18];
+      const aLabels = oDomRef.querySelectorAll(".v-datalabel text");
+      const iPerSeries = aLabels.length / aColors.length;
+      aLabels.forEach((oText, i) => {
+        const iSeries = Math.floor(i / iPerSeries);
+        oText.setAttribute("fill", aColors[iSeries]);
+        oText.setAttribute("transform", "translate(0, " + aOffsets[iSeries] + ")");
+      });
+    },
+
     formatEuro: function (value) {
       if (value === null || value === undefined || isNaN(value)) {
         return "";

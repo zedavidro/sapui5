@@ -141,6 +141,7 @@
             visible: true
           },
           plotArea: {
+            colorPalette: ['#aa0808', '#256f3a', '#131e29'],
             dataLabel: {
               visible: true
             },
@@ -152,6 +153,7 @@
             }
           }
         }"
+        renderComplete="onTrendChartRenderComplete"
         class="sapUiMediumMarginTop">
 
         <viz:dataset>

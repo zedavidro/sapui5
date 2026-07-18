@@ -26,6 +26,7 @@
 						<items>
 							<IconTabFilter text="Finanzen" key="pr_fi"/>
 							<IconTabFilter text="Personal" key="pr_hr"/>
+							<IconTabFilter text="Kostenstellen" key="pr_ks"/>
 						</items>
 					</IconTabHeader>
 				</contentMiddle>
@@ -60,7 +61,13 @@
     class="sapUiTinyMargin">
 
     <TileContent
-        footer="+3,8% ggü. Vorjahr">
+        footer="{
+            parts: [
+                { path: 'fakFinanzen>/kpis/budget' },
+                { path: 'fakFinanzen>/kpis/prevBudget' }
+            ],
+            formatter: 'formatter.formatBudgetFooter'
+        }">
 
         <NumericContent
             value="{
@@ -154,6 +161,62 @@
 
 </GenericTile>
 
+
+<GenericTile
+    header="Grundmittel"
+    class="sapUiTinyMargin">
+
+    <TileContent
+        footer="{
+            path: 'budgetarten>/grundmittel/saldo',
+            formatter: 'formatter.formatBudgetartStatus'
+        }">
+
+        <NumericContent
+            value="{
+                path: 'budgetarten>/grundmittel/saldo',
+                formatter: 'formatter.formatNumber'
+            }"
+            scale="{
+                path: 'budgetarten>/grundmittel/saldo',
+                formatter: 'formatter.formatScale'
+            }"
+            valueColor="{
+                path: 'budgetarten>/grundmittel/saldo',
+                formatter: 'formatter.formatBudgetartColor'
+            }"/>
+    </TileContent>
+
+</GenericTile>
+
+
+<GenericTile
+    header="Drittmittel"
+    class="sapUiTinyMargin">
+
+    <TileContent
+        footer="{
+            path: 'budgetarten>/drittmittel/saldo',
+            formatter: 'formatter.formatBudgetartStatus'
+        }">
+
+        <NumericContent
+            value="{
+                path: 'budgetarten>/drittmittel/saldo',
+                formatter: 'formatter.formatNumber'
+            }"
+            scale="{
+                path: 'budgetarten>/drittmittel/saldo',
+                formatter: 'formatter.formatScale'
+            }"
+            valueColor="{
+                path: 'budgetarten>/drittmittel/saldo',
+                formatter: 'formatter.formatBudgetartColor'
+            }"/>
+    </TileContent>
+
+</GenericTile>
+
 </HBox>
 
 			<HBox justifyContent="SpaceAround" class="sapUiSmallMargin" wrap="Wrap" visible="{= ${view>/selectedTab} === 'pr_hr' }">
@@ -221,9 +284,10 @@
 
 <VBox class="sapUiMediumMarginBegin sapUiMediumMarginEnd">
 
-    <!-- Budgetaufstellung (Finanzen tab) -->
+    <!-- Budgetaufstellung (Finanzen tab) – je Geschäftsjahr aus tableData>/budgetaufstellung -->
     <Table
         id="budgetBreakdown"
+        items="{tableData>/budgetaufstellung}"
         visible="{= ${view>/selectedTab} === 'pr_fi' }"
         width="100%"
         inset="true">
@@ -234,6 +298,23 @@
             <Title text="Budgetaufstellung"/>
 
             <ToolbarSpacer/>
+
+            <Select
+                id="lehrstuhlFilterSelect"
+                change="onLehrstuhlFilterChange"
+                selectedKey="alle"
+                width="16rem"
+                class="sapUiTinyMarginEnd">
+                <items>
+                    <core:Item key="alle" text="Alle Lehrstühle"/>
+                    <core:Item key="Lehrstuhl Smart Services" text="Lehrstuhl Smart Services (Prof. Adam)"/>
+                    <core:Item key="Lehrstuhl für E-Business" text="Lehrstuhl für E-Business (Prof. Schumann)"/>
+                    <core:Item key="Lehrstuhl KI-Forschung" text="Lehrstuhl KI-Forschung (Prof. Weber)"/>
+                    <core:Item key="Lehrstuhl Makroökonomik" text="Lehrstuhl Makroökonomik (Prof. Wagner)"/>
+                    <core:Item key="Lehrstuhl International Finances" text="Lehrstuhl International Finances (Prof. Fischer)"/>
+                    <core:Item key="Lehrstuhl Marketing" text="Lehrstuhl Marketing (Prof. Neumann)"/>
+                </items>
+            </Select>
 
             <Button
                 icon="sap-icon://excel-attachment"
@@ -277,222 +358,45 @@
 
         <items>
 
-            <!-- Ausgaben -->
             <ColumnListItem>
                 <cells>
 
                     <Text
-                        text="Ausgaben"
-                        class="sapUiStrong"/>
-
-                    <Text text="Personal"/>
-
-                    <Text text="750.000 €"/>
-
-                    <Text text="80.000 €"/>
-
-                    <Text text="620.000 €"/>
-
-                    <Text text="50.000 €"/>
-
-                </cells>
-            </ColumnListItem>
-
-
-            <ColumnListItem>
-                <cells>
-
-                    <Text text=""/>
-
-                    <Text text="Sachmittel"/>
-
-                    <Text text="250.000 €"/>
-
-                    <Text text="45.000 €"/>
-
-                    <Text text="180.000 €"/>
-
-                    <Text text="25.000 €"/>
-
-                </cells>
-            </ColumnListItem>
-
-
-            <ColumnListItem>
-                <cells>
-
-                    <Text text=""/>
-
-                    <Text text="Investitionen"/>
-
-                    <Text text="150.000 €"/>
-
-                    <Text text="20.000 €"/>
-
-                    <Text text="80.000 €"/>
-
-                    <Text text="50.000 €"/>
-
-                </cells>
-            </ColumnListItem>
-
-
-            <ColumnListItem>
-                <cells>
-
-                    <Text text=""/>
-
-                    <Text text="Drittmittelprojekte"/>
-
-                    <Text text="150.000 €"/>
-
-                    <Text text="0 €"/>
-
-                    <Text text="100.000 €"/>
-
-                    <Text text="50.000 €"/>
-
-                </cells>
-            </ColumnListItem>
-
-
-            <!-- Summe Ausgaben -->
-            <ColumnListItem>
-
-                <cells>
+                        text="{tableData>bereich}"
+                        class="{= ${tableData>rowType} === 'total' ? 'sapUiStrong' : '' }"/>
 
                     <Text
-                        text="Summe Ausgaben"
-                        class="sapUiStrong"/>
-
-                    <Text text=""/>
-
-                    <ObjectNumber
-                        number="1300000"
-                        unit="€"
-                        class="sapUiStrong"/>
-
-                    <ObjectNumber
-                        number="145000"
-                        unit="€"
-                        class="sapUiStrong"/>
-
-                    <ObjectNumber
-                        number="980000"
-                        unit="€"
-                        class="sapUiStrong"/>
-
-                    <ObjectNumber
-                        number="175000"
-                        unit="€"
-                        class="sapUiStrong"/>
-
-                </cells>
-
-            </ColumnListItem>
-
-
-            <!-- Einnahmen -->
-            <ColumnListItem>
-
-                <cells>
+                        text="{tableData>position}"
+                        class="{= ${tableData>rowType} === 'total' ? 'sapUiStrong' : '' }"/>
 
                     <Text
-                        text="Einnahmen"
-                        class="sapUiStrong"/>
-
-                    <Text text="Landesmittel"/>
-
-                    <Text text="1.100.000 €"/>
-
-                    <Text text=""/>
-
-                    <Text text=""/>
-
-                    <Text text=""/>
-
-                </cells>
-
-            </ColumnListItem>
-
-
-            <ColumnListItem>
-
-                <cells>
-
-                    <Text text=""/>
-
-                    <Text text="Drittmittel"/>
-
-                    <Text text="150.000 €"/>
-
-                    <Text text=""/>
-
-                    <Text text=""/>
-
-                    <Text text=""/>
-
-                </cells>
-
-            </ColumnListItem>
-
-
-            <ColumnListItem>
-
-                <cells>
-
-                    <Text text=""/>
-
-                    <Text text="Erlöse/Erträge"/>
-
-                    <Text text="50.000 €"/>
-
-                    <Text text=""/>
-
-                    <Text text=""/>
-
-                    <Text text=""/>
-
-                </cells>
-
-            </ColumnListItem>
-
-
-            <!-- Summe Einnahmen -->
-            <ColumnListItem>
-
-                <cells>
+                        text="{path: 'tableData>budget', formatter: 'formatter.formatEuroInt'}"
+                        class="{= ${tableData>rowType} === 'total' ? 'sapUiStrong' : '' }"/>
 
                     <Text
-                        text="Summe Einnahmen"
-                        class="sapUiStrong"/>
+                        text="{path: 'tableData>obligo', formatter: 'formatter.formatEuroInt'}"
+                        class="{= ${tableData>rowType} === 'total' ? 'sapUiStrong' : '' }"/>
 
-                    <Text text=""/>
+                    <Text
+                        text="{path: 'tableData>verausgabt', formatter: 'formatter.formatEuroInt'}"
+                        class="{= ${tableData>rowType} === 'total' ? 'sapUiStrong' : '' }"/>
 
-                    <ObjectNumber
-                        number="1300000"
-                        unit="€"
-                        class="sapUiStrong"/>
-
-                    <Text text=""/>
-
-                    <Text text=""/>
-
-                    <Text text=""/>
+                    <Text
+                        text="{path: 'tableData>verfuegbar', formatter: 'formatter.formatEuroInt'}"
+                        class="{= ${tableData>rowType} === 'total' ? 'sapUiStrong' : '' }"/>
 
                 </cells>
-
             </ColumnListItem>
-
 
         </items>
 
     </Table>
 
-            <!-- Lehrstuhlübersicht (gleiche Stilistik wie Budgetaufstellung) -->
+            <!-- Lehrstuhlübersicht / Kostenstellen (gleiche Stilistik wie Budgetaufstellung) -->
             <Table
                 id="lehrstuhlBreakdown"
-                visible="{= ${view>/selectedTab} === 'pr_fi' }"
+                items="{tableData>/lehrstuehle}"
+                visible="{= ${view>/selectedTab} === 'pr_ks' }"
                 width="100%"
                 inset="true">
 
@@ -500,6 +404,11 @@
                     <Toolbar>
                         <Title text="Lehrstuhlübersicht"/>
 						<ToolbarSpacer/>
+
+            <SearchField
+                width="15rem"
+                placeholder="Lehrstuhl suchen"
+                liveChange="onKostenstellenSearch"/>
 
             <Button
                 icon="sap-icon://sort"
@@ -522,44 +431,32 @@
 
                 <columns>
                     <Column><Text text="Lehrstuhl"/></Column>
+                    <Column><Text text="KostenstellenID"/></Column>
                     <Column hAlign="End"><Text text="Budget"/></Column>
                     <Column hAlign="End"><Text text="Verausgabt"/></Column>
                     <Column hAlign="End"><Text text="Obligo"/></Column>
                     <Column hAlign="End"><Text text="Verfügbar"/></Column>
+                    <Column hAlign="End"><Text text="Übertragbar (max. 20%)"/></Column>
+                    <Column hAlign="End"><Text text="Verfällt an Zentralhaushalt"/></Column>
                     <Column hAlign="Center"><Text text="Status"/></Column>
                 </columns>
 
                 <items>
-                    <ColumnListItem type="Inactive">
+                    <ColumnListItem
+                        type="{= ${tableData>route} ? 'Navigation' : 'Inactive' }"
+                        press=".onLehrstuhlSelect">
                         <cells>
-                            <ObjectIdentifier title="Lehrstuhl Smart Services" text="Prof. Müller"/>
-                            <Text text="450.000 €"/>
-                            <Text text="170.000 €"/>
-                            <Text text="120.000 €"/>
-                            <Text text="160.000 €"/>
-                            <Text text="🟢"/>
-                        </cells>
-                    </ColumnListItem>
-
-                    <ColumnListItem type="Inactive">
-                        <cells>
-                            <ObjectIdentifier title="Lehrstuhl für E-Business" text="Prof. Schmidt"/>
-                            <Text text="500.000 €"/>
-                            <Text text="190.000 €"/>
-                            <Text text="140.000 €"/>
-                            <Text text="170.000 €"/>
-                            <Text text="🟢"/>
-                        </cells>
-                    </ColumnListItem>
-
-                    <ColumnListItem type="Navigation" press=".onLehrstuhlSelect">
-                        <cells>
-                            <ObjectIdentifier title="Lehrstuhl KI-Forschung" text="Prof. Weber"/>
-                            <Text text="450.000 €"/>
-                            <Text text="150.000 €"/>
-                            <Text text="120.000 €"/>
-                            <Text text="180.000 €"/>
-                            <Text text="🟢"/>
+                            <ObjectIdentifier title="{tableData>lehrstuhl}" text="{tableData>professor}"/>
+                            <Text text="{tableData>kostenstelleId}"/>
+                            <Text text="{path: 'tableData>budget', formatter: 'formatter.formatEuroInt'}"/>
+                            <Text text="{path: 'tableData>verausgabt', formatter: 'formatter.formatEuroInt'}"/>
+                            <Text text="{path: 'tableData>obligo', formatter: 'formatter.formatEuroInt'}"/>
+                            <Text text="{path: 'tableData>verfuegbar', formatter: 'formatter.formatEuroInt'}"/>
+                            <Text text="{path: 'tableData>uebertragbar', formatter: 'formatter.formatEuroInt'}"/>
+                            <Text
+                                text="{path: 'tableData>verfaellt', formatter: 'formatter.formatEuroInt'}"
+                                class="{= ${tableData>verfaellt} > 0 ? 'sapUiStrong' : '' }"/>
+                            <Text text="{tableData>status}"/>
                         </cells>
                     </ColumnListItem>
 
@@ -567,9 +464,68 @@
 
             </Table>
 
+            <!-- Gebäude (Kostenstellen der Fakultät nach Gebäude) -->
+            <Table
+                id="gebaeudeBreakdown"
+                items="{tableData>/gebaeude}"
+                visible="{= ${view>/selectedTab} === 'pr_ks' }"
+                width="100%"
+                inset="true"
+                class="sapUiMediumMarginTop">
+
+                <headerToolbar>
+                    <Toolbar>
+                        <Title text="Gebäude"/>
+                        <ToolbarSpacer/>
+
+                        <Button
+                            icon="sap-icon://excel-attachment"
+                            tooltip="Exportieren"
+                            type="Transparent"/>
+
+                        <Button
+                            icon="sap-icon://action-settings"
+                            tooltip="Tabelleneinstellungen"
+                            type="Transparent"/>
+                    </Toolbar>
+                </headerToolbar>
+
+                <columns>
+                    <Column><Text text="Gebäude"/></Column>
+                    <Column><Text text="KostenstellenID"/></Column>
+                    <Column hAlign="End"><Text text="Budget"/></Column>
+                    <Column hAlign="End"><Text text="Verausgabt"/></Column>
+                    <Column hAlign="End"><Text text="Obligo"/></Column>
+                    <Column hAlign="End"><Text text="Verfügbar"/></Column>
+                    <Column hAlign="End"><Text text="Übertragbar (max. 20%)"/></Column>
+                    <Column hAlign="End"><Text text="Verfällt an Zentralhaushalt"/></Column>
+                    <Column hAlign="Center"><Text text="Status"/></Column>
+                </columns>
+
+                <items>
+                    <ColumnListItem>
+                        <cells>
+                            <Text text="{tableData>gebaeude}"/>
+                            <Text text="{tableData>kostenstelleId}"/>
+                            <Text text="{path: 'tableData>budget', formatter: 'formatter.formatEuroInt'}"/>
+                            <Text text="{path: 'tableData>verausgabt', formatter: 'formatter.formatEuroInt'}"/>
+                            <Text text="{path: 'tableData>obligo', formatter: 'formatter.formatEuroInt'}"/>
+                            <Text text="{path: 'tableData>verfuegbar', formatter: 'formatter.formatEuroInt'}"/>
+                            <Text text="{path: 'tableData>uebertragbar', formatter: 'formatter.formatEuroInt'}"/>
+                            <Text
+                                text="{path: 'tableData>verfaellt', formatter: 'formatter.formatEuroInt'}"
+                                class="{= ${tableData>verfaellt} > 0 ? 'sapUiStrong' : '' }"/>
+                            <Text text="{tableData>status}"/>
+                        </cells>
+                    </ColumnListItem>
+                </items>
+
+            </Table>
+
             <!-- Finanzbewegungen (gleiche Stilistik) -->
             <Table
                 id="finanzbewegungen"
+                items="{tableData>/finanzbewegungen}"
                 visible="{= ${view>/selectedTab} === 'pr_fi' }"
                 width="100%"
                 inset="true">
@@ -620,34 +576,12 @@
                 <items>
                     <ColumnListItem>
                         <cells>
-                            <Text text="03.01.2026"/>
-                            <Text text="Prof. Müller"/>
-                            <Text text="Laborbedarf"/>
-                            <Text text="Kostenstelle 123"/>
-                            <Text text="Ausgabe"/>
-                            <Text text="-5.200 €" class="sapUiMonospace"/>
-                        </cells>
-                    </ColumnListItem>
-
-                    <ColumnListItem>
-                        <cells>
-                            <Text text="12.02.2026"/>
-                            <Text text="Prof. Weber"/>
-                            <Text text="Drittmittelzahlung"/>
-                            <Text text="Projekt KI"/>
-                            <Text text="Einnahme"/>
-                            <Text text="+20.000 €" class="sapUiMonospace"/>
-                        </cells>
-                    </ColumnListItem>
-
-                    <ColumnListItem>
-                        <cells>
-                            <Text text="01.03.2026"/>
-                            <Text text="Prof. Müller"/>
-                            <Text text="Bestellung Server"/>
-                            <Text text="Kostenstelle 123"/>
-                            <Text text="Obligo"/>
-                            <Text text="-15.000 €" class="sapUiMonospace"/>
+                            <Text text="{tableData>datum}"/>
+                            <Text text="{tableData>lehrstuhl}"/>
+                            <Text text="{tableData>buchung}"/>
+                            <Text text="{tableData>kostenstelle}"/>
+                            <Text text="{tableData>typ}"/>
+                            <Text text="{path: 'tableData>betrag', formatter: 'formatter.formatSignedEuro'}" class="sapUiMonospace"/>
                         </cells>
                     </ColumnListItem>
 

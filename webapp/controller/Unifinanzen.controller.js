@@ -41,8 +41,8 @@ sap.ui.define([
 						key: "wiwi",
 						name: "Wirtschaftswissenschaftliche Fakultät",
 						lehrstuehle: [
-							{ professor: "Prof. Müller", lehrstuhl: "Lehrstuhl Smart Services" },
-							{ professor: "Prof. Schmidt", lehrstuhl: "Lehrstuhl für E-Business" },
+							{ professor: "Prof. Adam", lehrstuhl: "Lehrstuhl Smart Services" },
+							{ professor: "Prof. Schumann", lehrstuhl: "Lehrstuhl für E-Business" },
 							{ professor: "Prof. Weber", lehrstuhl: "Lehrstuhl KI-Forschung", route: "finanzen" }
 						]
 					}
