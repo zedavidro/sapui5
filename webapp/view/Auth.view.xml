@@ -23,7 +23,7 @@
                             <!-- Title & Subtitle -->
                             <Title text="Management-Dashboard" level="H2"
                                    class="sapUiTinyMarginBottom" titleStyle="H2" />
-                            <Label text="Integriertes Portal für Finanzen, Personal &amp; Publikationen"
+                            <Label text="Integrierte Analyse von Finanzen &amp; Personal"
                                    class="sapUiSmallMarginBottom sapThemeText"
                                    textAlign="Center" wrapping="true" />
 
@@ -57,7 +57,7 @@
                             </VBox>
 
                             <!-- Footer -->
-                            <Label text="Internes System • Zugriff nur für autorisierte Mitarbeiter"
+                            <Label text="Version 1.0 • Prototyp"
                                    class="sapUiMediumMarginTop sapThemeLightText"
                                    design="Light" wrapping="true" textAlign="Center" />
 
