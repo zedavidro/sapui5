@@ -1,3 +1,9 @@
+<!--
+  PB.view.xml — Publikationsdaten-Seite (Route "pb")
+  - Zeigt eine Jahresauswahl sowie 3 KPI-Kacheln (Veröffentlicht/Under Review/In Vorbereitung)
+  - Daten kommen aus /api/publikationen und werden im Controller (PB.controller.js) je
+    gewähltem Jahr aggregiert (Modell "dashboard")
+-->
 <mvc:View
     controllerName="de.unigoettingen.dashboardapp.controller.PB"
     displayBlock="true"
@@ -23,7 +29,7 @@
                 <Text text="Übersicht über Veröffentlichungen nach Status und Jahr"/>
             </VBox>
 
-            <!-- Year Selector -->
+            <!-- Jahresauswahl: löst onYearChange aus (lädt/aggregiert die Publikationsdaten neu) -->
             <Select
                 change="onYearChange"
                 selectedKey="{dashboard>/selectedYear}"
@@ -38,7 +44,7 @@
                 </items>
             </Select>
 
-            <!-- KPIs -->
+            <!-- KPI-Kacheln: Anzahl Publikationen je Status (gebunden an dashboard>/kpis) -->
             <HBox justifyContent="SpaceAround" class="sapUiSmallMargin">
 
                 <GenericTile header="Veröffentlicht" class="sapUiTinyMargin">

@@ -1,3 +1,11 @@
+<!--
+  Auth.view.xml — Login-Seite
+  - Erste Seite, die ein nicht eingeloggter Nutzer sieht (Route "" / "login")
+  - Enthält nur ein einfaches Formular: Logo, Titel, Benutzername/Passwort, Anmelden-Button
+  - Kein Zugriff auf die Seitenleiste/Reiter der Shell (App.view.xml blendet diese für die
+    Login-Route extra aus, siehe App.controller.js/onRouteMatched)
+  - Logik (Login-Prüfung, Weiterleitung je nach Rolle) liegt in Auth.controller.js
+-->
 <mvc:View
     controllerName="de.unigoettingen.dashboardapp.controller.Auth"
     xmlns:mvc="sap.ui.core.mvc"
@@ -5,10 +13,12 @@
     xmlns:core="sap.ui.core"
     displayBlock="true">
 
+    <!-- Eigene kleine App-Instanz nur für die Login-Seite (kein ToolPage-Rahmen nötig) -->
     <App id="loginApp">
         <pages>
             <Page title="Login" showHeader="false" backgroundDesign="Solid">
                 <content>
+                    <!-- Zentriert den gesamten Login-Kasten horizontal und vertikal auf der Seite -->
                     <FlexBox
                         alignItems="Center"
                         justifyContent="Center"
@@ -28,6 +38,11 @@
                                    textAlign="Center" wrapping="true" />
 
                             <!-- Login Form -->
+                            <!--
+                              Beide Eingabefelder sind an das View-Modell "login" gebunden
+                              (username/password), das im Controller (onInit) angelegt und bei
+                              jedem erneuten Aufruf der Login-Seite zurückgesetzt wird.
+                            -->
                             <VBox width="100%" class="sapUiMediumMarginTop">
 
                                 <Label text="Benutzername" labelFor="userField"
@@ -48,6 +63,7 @@
                                     class="sapUiMediumMarginBottom"
                                     submit=".onLoginPress" />
 
+                                <!-- Anmelden per Klick ODER durch Enter-Taste im Passwort-Feld (submit oben) -->
                                 <Button
                                     text="Anmelden"
                                     type="Emphasized"

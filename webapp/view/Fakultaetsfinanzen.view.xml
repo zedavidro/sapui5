@@ -1,3 +1,11 @@
+<!--
+  Fakultaetsfinanzen.view.xml — verwaister Platzhalter-View (NICHT aktiv verwendet)
+  - Hinweis: In manifest.json ist die Route "fakultaetsfinanzen" auf den View "Paquin1"
+    (Paquin1.view.xml) gemappt, nicht auf diesen View hier. Diese Datei stammt aus einer
+    früheren/zusammengeführten Version des Prototyps und wird über das Routing nie erreicht.
+  - Zeigt nur eine "Seite im Aufbau"-Meldung (Baustellen-Emoji + Hinweistext), falls sie
+    doch einmal manuell eingebunden werden sollte
+-->
 <mvc:View
 	controllerName="de.unigoettingen.dashboardapp.controller.Fakultaetsfinanzen"
 	displayBlock="true"
@@ -10,6 +18,7 @@
 		showNavButton="false">
 
 		<content>
+			<!-- Einfache zentrierte "Baustellen"-Meldung als Platzhalterinhalt -->
 			<VBox
 				justifyContent="Center"
 				alignItems="Center"

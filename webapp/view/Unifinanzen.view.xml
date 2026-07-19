@@ -1,3 +1,11 @@
+<!--
+  Unifinanzen.view.xml — Präsidiums-Seite (Route "unifinanzen")
+  - Höchste Zugriffsebene (Zugriffsrecht 3): Übersicht über die gesamte Universität
+  - Drei Reiter: "Finanzen" (Fakultäten-Übersichtstabelle), "Drittmittel" (Fakultäten-Tabelle,
+    Projekttabelle, gestapeltes Balkendiagramm) und "Personal" (Personalstruktur je Fakultät)
+  - Die meisten Zahlen in diesem View sind noch statische Platzhalterwerte (nicht modellgebunden);
+    nur das Drittmittel-Balkendiagramm ist an ein Modell (drittmittelChart) gebunden
+-->
 <mvc:View
 	controllerName="de.unigoettingen.dashboardapp.controller.Unifinanzen"
 	displayBlock="true"
@@ -29,6 +37,7 @@
     </HBox>
 </contentLeft>
 
+            <!-- Reiterleiste: steuert, welcher Inhaltsblock unten sichtbar ist (view>/selectedTab) -->
             <contentMiddle>
                 <IconTabHeader
                     id="navTabBar"
@@ -44,15 +53,10 @@
                 </IconTabHeader>
             </contentMiddle>
 <contentRight>
-            <Button
-                id="facultyMenuButton"
-                text="Fakultäten"
-                icon="sap-icon://building"
-                press="onFacultyMenuPress"
-                class="sapUiTinyMarginEnd"/>
-
+            <!-- Jahresauswahl: derzeit nicht an eine Handler-Logik im Controller gebunden -->
             <Select
                 change="onYearChange"
+                selectedKey="2026"
                 width="6rem">
 
                 <items>
@@ -69,6 +73,7 @@
 
 	<content>
     <!--- KPIs -->
+    <!-- 5 KPI-Kacheln mit statischen Beispielwerten (universitätsweite Gesamtkennzahlen) -->
 	  <HBox justifyContent="SpaceAround" class="sapUiSmallMargin">
 
       <GenericTile
@@ -80,63 +85,64 @@
 
               <NumericContent
                   value="487,3"
-                  scale="Mio. €"  
+                  scale="Mio. €"
                   valueColor="Good"/>
           </TileContent>
 
       </GenericTile>
 
-      <GenericTile 
-      header="Gesamtausgaben" 
+      <GenericTile
+      header="Gesamtausgaben"
       class="sapUiTinyMargin">
 
         <TileContent
             footer="86,8% verausgabt">
 
-            <NumericContent 
+            <NumericContent
               value="423,1"
-              scale="Mio. €"  
+              scale="Mio. €"
               valueColor="Error"/>
           </TileContent>
       </GenericTile>
 
-      <GenericTile 
-      header="Drittmittelvolumen" 
+      <GenericTile
+      header="Drittmittelvolumen"
       class="sapUiTinyMargin">
 
         <TileContent
           footer="+6,2% ggü. Vorjahr">
 
-          <NumericContent 
+          <NumericContent
             value="89,3"
-            scale="Mio. €"  
+            scale="Mio. €"
             valueColor="Neutral" />
         </TileContent>
       </GenericTile>
 
-      <GenericTile 
-      header="Personalbestand" 
+      <GenericTile
+      header="Personalbestand"
       class="sapUiTinyMargin">
 
         <TileContent
           footer="+31 Vollzeitäquivalente">
 
-          <NumericContent 
+          <NumericContent
             value="4.127"
-            scale="VZÄ"  
+            scale="VZÄ"
             valueColor="Neutral" />
         </TileContent>
       </GenericTile>
 
-      <GenericTile 
-      header="Drittmittelprojekte" 
+      <GenericTile
+      header="Drittmittelprojekte"
       class="sapUiTinyMargin">
 
         <TileContent
           footer="+18 laufende Projekte">
 
-          <NumericContent 
-            value="312" 
+          <NumericContent
+            value="312"
+            scale="Projekte"
             valueColor="Neutral" />
         </TileContent>
       </GenericTile>
@@ -147,6 +153,7 @@
 <VBox class="sapUiMediumMarginBegin sapUiMediumMarginEnd">
 
     <!-- Finanzen -->
+    <!-- Fakultäten-Übersicht (nur Reiter "Finanzen"): statische Beispieldaten für 4 Fakultäten -->
 <Table
     id="finanzenFacultyTable"
     visible="{= ${view>/selectedTab} === 'pr_fi' }"
@@ -321,11 +328,12 @@
 
 
 <!-- Drittmittel -->
-<!-- 
+<!--
     <- Detail-Page für Projektansicht erstellen.
     Navigation im Controller in onProjectSelect implementieren.
 -->
 <!-- Drittmittel nach Fakultät (Übersicht) -->
+<!-- Statische Beispieldaten für 2 Fakultäten (nur Reiter "Drittmittel") -->
 <Table
     id="drittmittelFacultyTable"
     visible="{= ${view>/selectedTab} === 'pr_dm' }"
@@ -434,6 +442,7 @@
 
 </Table>
 
+<!-- Drittmittelprojekte, seitenweises Nachladen (growing) mit 2 initialen Zeilen -->
 <Table
     id="projectTable"
     visible="{= ${view>/selectedTab} === 'pr_dm' }"
@@ -610,6 +619,13 @@
 </Table>
 
 <!-- Chart -->
+<!--
+  Gestapeltes Balkendiagramm: Drittmittelentwicklung 2022–2025 nach Mittelgeber
+  (DFG/BMBF/EU/Stiftungen/Industrie/Sonstige), gebunden an das Modell "drittmittelChart"
+  (Mock-Daten, siehe Controller onInit). Titel/Farbpalette werden zusätzlich in
+  onAfterRendering per setVizProperties gesetzt (Workaround, da hier deklarativ keine
+  vizProperties angegeben sind).
+-->
     <Panel
         visible="{= ${view>/selectedTab} === 'pr_dm' }"
         class="sapUiLargeMarginTop sapUiMediumMarginBottom">
@@ -709,6 +725,7 @@
 
 
     <!-- Personal -->
+    <!-- Personalstruktur je Fakultät (nur Reiter "Personal"): statische Beispieldaten für 2 Fakultäten -->
         <Table
             visible="{= ${view>/selectedTab} === 'pr_hr' }"
             width="100%"
@@ -724,7 +741,7 @@
                 icon="sap-icon://sort"
                 tooltip="Sortieren"
                 type="Transparent"/>
-                
+
                     <Button
                         icon="sap-icon://excel-attachment"
                         tooltip="Exportieren"

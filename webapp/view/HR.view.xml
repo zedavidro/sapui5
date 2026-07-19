@@ -1,3 +1,11 @@
+<!--
+  HR.view.xml — Personal-Seite auf Lehrstuhlebene (Route "hr")
+  - Zeigt Kennzahlen (Kopfzahl, VZÄ, Personalkosten) und mehrere Diagramme zur Personalstruktur
+  - Daten kommen aus /api/personal (echte SQLite-Tabelle) und werden im Controller
+    (HR.controller.js) aggregiert und in Diagramm-taugliche Datensätze umgewandelt
+  - Zwei Reiter: "Struktur & Befristung" (Verteilung, Geschlecht, Befristungsende, Alter)
+    und "Personalkosten-Controlling" (Kosten nach Dienstart/Struktureinheit)
+-->
 <mvc:View
   controllerName="de.unigoettingen.dashboardapp.controller.HR"
   displayBlock="true"
@@ -14,6 +22,7 @@
     showHeader="false">
 
     <content>
+      <!-- Jahresauswahl: löst onYearChange aus, das die komplette Aggregation neu berechnet -->
       <Toolbar design="Transparent" class="sapUiSmallMargin">
         <Title text="Analysejahr wählen:" class="sapUiTinyMarginEnd"/>
         <Select change="onYearChange" selectedKey="2025">
@@ -26,6 +35,7 @@
         </Select>
       </Toolbar>
 
+      <!-- KPI-Kacheln: gebunden an das Modell "dashboard" (siehe _updateAggregates im Controller) -->
       <HBox justifyContent="SpaceAround" class="sapUiSmallMargin sapUiLargeMarginBottom">
         <GenericTile header="Kopfzahl (Gesamt)" class="sapUiTinyMargin">
           <TileContent>
@@ -66,13 +76,20 @@
         </GenericTile>
       </HBox>
 
+      <!--
+        Zwei Reiter mit jeweils eigenen Diagrammen.
+        id="idHRIconTabBar" wird im Controller für den animierten Auswahl-Schieber
+        (_updateHRTabSlider) benötigt.
+      -->
       <IconTabBar id="idHRIconTabBar" select="onHRTabSelect" upperCase="true" class="sapUiResponsiveContentPadding">
         <items>
 
+          <!-- Reiter 1: Struktur & Befristung -->
           <IconTabFilter icon="sap-icon://employee" text="Struktur &amp; Befristung" key="structure">
             <content>
 
               <HBox justifyContent="SpaceBetween" width="100%">
+                <!-- Säulendiagramm: Anzahl Mitarbeitende je Dienstart -->
                 <VBox width="49%">
                   <viz:VizFrame
                     id="idPersonalPieChart"
@@ -100,6 +117,7 @@
                   </viz:VizFrame>
                 </VBox>
 
+                <!-- Gestapeltes Säulendiagramm: Dienstart x Geschlecht -->
                 <VBox width="49%">
                   <viz:VizFrame
                     id="idStackedBarChart"
@@ -127,6 +145,12 @@
                 </VBox>
               </HBox>
 
+              <!--
+                Balkendiagramm "Befristungs-Radar": ein Punkt pro Mitarbeiter*in, x-Achse =
+                Jahr des Vertragsendes. Die Farb-/Referenzlinien-Einstellungen (heutiges Datum,
+                Teilzeit/Vollzeit-Farben) werden zusätzlich im Controller (onInit) gesetzt,
+                da sie vom aktuellen Datum abhängen und nicht statisch in der XML stehen können.
+              -->
               <viz:VizFrame
                 id="idContractEndRadar"
                 vizType="bar"
@@ -185,6 +209,7 @@
                 </viz:feeds>
               </viz:VizFrame>
 
+              <!-- Gestapeltes Säulendiagramm: Altersstruktur nach Dienstart -->
               <viz:VizFrame
                 id="idAgeStructureChart"
                 vizType="stacked_column"
@@ -217,10 +242,12 @@
             </content>
           </IconTabFilter>
 
+          <!-- Reiter 2: Personalkosten-Controlling -->
           <IconTabFilter icon="sap-icon://lead" text="Personalkosten-Controlling" key="costs">
             <content>
 
               <HBox justifyContent="SpaceBetween" width="100%">
+                <!-- Kosten nach Personalgruppe (Dienstart) -->
                 <VBox width="49%">
                   <viz:VizFrame
                     id="idCostByFinArtChart"
@@ -250,6 +277,7 @@
                   </viz:VizFrame>
                 </VBox>
 
+                <!-- Kosten nach Struktureinheit / Institut -->
                 <VBox width="49%">
                   <viz:VizFrame
                     id="idCostByOrgChart"
@@ -289,4 +317,3 @@
     </content>
   </Page>
 </mvc:View>
-

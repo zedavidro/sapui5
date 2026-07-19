@@ -1,3 +1,10 @@
+/**
+ * PB.controller.js — Controller der Publikationsdaten-Seite (Route "pb")
+ * - Lädt die Publikationsliste von /api/publikationen (echte SQLite-Tabelle)
+ * - Zählt je gewähltem Jahr (oder "alle") die Publikationen nach Status
+ *   (published / underReview / inPreparation) und schreibt die Summen ins
+ *   Modell "dashboard" für die 3 KPI-Kacheln im View
+ */
 sap.ui.define([
   "./BaseController",
   "sap/ui/model/json/JSONModel"
@@ -12,6 +19,7 @@ sap.ui.define([
       this.getOwnerComponent().getRouter().getRoute("pb").attachPatternMatched(this._onRouteMatched, this);
     },
 
+    // Rollenprüfung (ab Zugriffsrecht 1) + initiales Laden der Publikationsdaten
     _onRouteMatched: function () {
       const oUserModel = this.getOwnerComponent().getModel("userModel");
       const iRole = oUserModel ? oUserModel.getProperty("/zugriffsrechte") : 0;
@@ -22,11 +30,16 @@ sap.ui.define([
       this._loadAndUpdate();
     },
 
+    // Jahr gewechselt → Aggregation neu berechnen
     onYearChange: function (oEvent) {
       this._selectedYear = oEvent.getSource().getSelectedKey();
       this._loadAndUpdate();
     },
 
+    /**
+     * Lädt die Rohdaten genau einmal (Cache in this._aPublikationenData) und ruft danach
+     * immer nur noch die Neu-Aggregation auf; verhindert außerdem parallele Doppel-Requests.
+     */
     _loadAndUpdate: function () {
       if (this._aPublikationenData) {
         this._updateAggregates();
@@ -50,6 +63,8 @@ sap.ui.define([
         });
     },
 
+    // Zählt die Publikationen nach Status (gefiltert auf das gewählte Jahr) und
+    // sammelt nebenbei alle im Datensatz vorkommenden Jahre (für eine mögliche Jahresliste)
     _updateAggregates: function () {
       const data = this._aPublikationenData || [];
 

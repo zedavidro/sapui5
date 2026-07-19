@@ -1,3 +1,13 @@
+<!--
+  Paquin1.view.xml — Fakultätsfinanzen-Seite (Route "fakultaetsfinanzen")
+  - Trotz des Dateinamens "Paquin1" ist dies die tatsächliche Fakultätsebene: laut
+    manifest.json ist die Route "fakultaetsfinanzen" auf DIESEN View gemappt
+    (der gleichnamige View "Fakultaetsfinanzen.view.xml" ist dagegen unbenutzt)
+  - Drei Reiter: "Finanzen" (Budget/Grundmittel/Drittmittel + Budgetaufstellung),
+    "Personal" (Kennzahlen der Fakultät) und "Kostenstellen" (Lehrstuhl- und Gebäudeübersicht)
+  - Alle Daten sind Platzhalter-Daten je Geschäftsjahr, die im Controller (Paquin1.controller.js)
+    aus fest hinterlegten Basiswerten proportional hoch-/runterskaliert werden
+-->
 <mvc:View
 	controllerName="de.unigoettingen.dashboardapp.controller.Paquin1"
 	displayBlock="true"
@@ -21,6 +31,7 @@
 					</HBox>
 				</contentLeft>
 
+				<!-- Reiterleiste: steuert, welcher Inhaltsblock unten sichtbar ist (view>/selectedTab) -->
 				<contentMiddle>
 					<IconTabHeader id="navTabBar" selectedKey="pr_fi" select="onTabSelect">
 						<items>
@@ -32,15 +43,8 @@
 				</contentMiddle>
 
 				<contentRight>
-					<Button
-						id="lehrstuhlMenuButton"
-						text="Lehrstuhl"
-						icon="sap-icon://education"
-						press="onLehrstuhlMenuPress"
-						class="sapUiTinyMarginEnd"/>
-
-					<!-- Jahresauswahl -->
-					<Select change="onYearChange" class="sapUiSmallMargin">
+					<!-- Jahresauswahl: löst onYearChange aus (skaliert alle Werte auf das gewählte Jahr um) -->
+					<Select change="onYearChange" selectedKey="2026" class="sapUiSmallMargin">
 						<items>
 							<core:Item key="2024" text="2024"/>
 							<core:Item key="2025" text="2025"/>
@@ -54,12 +58,14 @@
 		<content>
 
 			<!--- KPI-Karten: Kontoübersicht -->
+			<!-- Nur im Reiter "Finanzen" sichtbar: 6 Kacheln mit den wichtigsten Kennzahlen -->
 			<HBox justifyContent="SpaceAround" class="sapUiSmallMargin" wrap="Wrap" visible="{= ${view>/selectedTab} === 'pr_fi' }">
 
     <GenericTile
     header="Budget"
     class="sapUiTinyMargin">
 
+    <!-- Fußzeile zeigt die Veränderung ggü. Vorjahr (formatter.formatBudgetFooter, siehe formatter.js) -->
     <TileContent
         footer="{
             parts: [
@@ -110,6 +116,7 @@
     header="Obligo"
     class="sapUiTinyMargin">
 
+    <!-- Fußzeile: Anteil des Obligos am Budget (formatter.formatObligoFooter) -->
     <TileContent
         footer="{
 			parts: [
@@ -138,6 +145,7 @@
     header="Verfügbar"
     class="sapUiTinyMargin">
 
+    <!-- Fußzeile: verbleibender Budgetspielraum in % (formatter.formatRestFooter) -->
     <TileContent
         footer="{
 			parts: [
@@ -162,6 +170,11 @@
 </GenericTile>
 
 
+<!--
+  Grundmittel/Drittmittel: Überschuss (grün) oder Defizit (rot) je Budgetart, gebunden an
+  das Modell "budgetarten" (siehe _updateTableData im Controller). Farbe/Statustext werden
+  komplett aus dem Saldo-Vorzeichen berechnet (formatter.formatBudgetartStatus/-Color).
+-->
 <GenericTile
     header="Grundmittel"
     class="sapUiTinyMargin">
@@ -219,6 +232,7 @@
 
 </HBox>
 
+			<!-- Nur im Reiter "Personal" sichtbar: 4 Kennzahlen-Kacheln zur Personalsituation der Fakultät -->
 			<HBox justifyContent="SpaceAround" class="sapUiSmallMargin" wrap="Wrap" visible="{= ${view>/selectedTab} === 'pr_hr' }">
 
     <GenericTile
@@ -266,6 +280,7 @@
 </GenericTile>
 
 
+<!-- Statischer Platzhalterwert (nicht an ein Modell gebunden, da keine echte Berechnung dahinter steht) -->
 <GenericTile
     header="Ø Kosten pro VZÄ"
     class="sapUiTinyMargin">
@@ -285,6 +300,13 @@
 <VBox class="sapUiMediumMarginBegin sapUiMediumMarginEnd">
 
     <!-- Budgetaufstellung (Finanzen tab) – je Geschäftsjahr aus tableData>/budgetaufstellung -->
+    <!--
+      Zeigt Ausgaben (Sachmittel/Investitionen/Drittmittelprojekte) und Einnahmen
+      (Landesmittel/Drittmittel/Erlöse/Erträge/Zinsen) inkl. Summenzeilen in EINER Tabelle;
+      "rowType" (detail/total) steuert im Zeilen-Template die Fettschrift der Summenzeilen.
+      Der Lehrstuhl-Filter rechnet die komplette Tabelle anteilig auf einen einzelnen
+      Lehrstuhl herunter (siehe onLehrstuhlFilterChange/_updateTableData im Controller).
+    -->
     <Table
         id="budgetBreakdown"
         items="{tableData>/budgetaufstellung}"
@@ -299,6 +321,7 @@
 
             <ToolbarSpacer/>
 
+            <!-- Filtert die gesamte Tabelle auf einen einzelnen Lehrstuhl (Anteil am Gesamtbudget) -->
             <Select
                 id="lehrstuhlFilterSelect"
                 change="onLehrstuhlFilterChange"
@@ -343,11 +366,11 @@
             </Column>
 
             <Column hAlign="End">
-                <Text text="Obligo"/>
+                <Text text="Verausgabt"/>
             </Column>
 
             <Column hAlign="End">
-                <Text text="Verausgabt"/>
+                <Text text="Obligo"/>
             </Column>
 
             <Column hAlign="Center">
@@ -358,6 +381,7 @@
 
         <items>
 
+            <!-- Ein Template für Detail- UND Summenzeilen; Fettschrift nur bei rowType === 'total' -->
             <ColumnListItem>
                 <cells>
 
@@ -374,11 +398,11 @@
                         class="{= ${tableData>rowType} === 'total' ? 'sapUiStrong' : '' }"/>
 
                     <Text
-                        text="{path: 'tableData>obligo', formatter: 'formatter.formatEuroInt'}"
+                        text="{path: 'tableData>verausgabt', formatter: 'formatter.formatEuroInt'}"
                         class="{= ${tableData>rowType} === 'total' ? 'sapUiStrong' : '' }"/>
 
                     <Text
-                        text="{path: 'tableData>verausgabt', formatter: 'formatter.formatEuroInt'}"
+                        text="{path: 'tableData>obligo', formatter: 'formatter.formatEuroInt'}"
                         class="{= ${tableData>rowType} === 'total' ? 'sapUiStrong' : '' }"/>
 
                     <Text
@@ -392,7 +416,77 @@
 
     </Table>
 
+            <!-- WiWi-Fakultät allgemein (gleiche Stilistik wie Gebäude) -->
+            <!--
+              Nur im Reiter "Kostenstellen" sichtbar, oberhalb der Lehrstuhlübersicht.
+              Zeigt die zentralen Verwaltungs-/Fakultätskostenstellen (Fakultät allgemein,
+              Dekanat, Studiendekan, Forschungszentrum) inkl. Grundmittel-Übertragsregel
+              (Übertragbar max. 20% / Verfällt an Zentralhaushalt). Jahresunabhängig, wie Gebäude.
+            -->
+            <Table
+                id="wiwiAllgemeinBreakdown"
+                items="{tableData>/wiwiAllgemein}"
+                visible="{= ${view>/selectedTab} === 'pr_ks' }"
+                width="100%"
+                inset="true">
+
+                <headerToolbar>
+                    <Toolbar>
+                        <Title text="WiWi-Fakultät allgemein"/>
+                        <ToolbarSpacer/>
+
+                        <Button
+                            icon="sap-icon://excel-attachment"
+                            tooltip="Exportieren"
+                            type="Transparent"/>
+
+                        <Button
+                            icon="sap-icon://action-settings"
+                            tooltip="Tabelleneinstellungen"
+                            type="Transparent"/>
+                    </Toolbar>
+                </headerToolbar>
+
+                <columns>
+                    <Column><Text text="Bereich"/></Column>
+                    <Column><Text text="KostenstellenID"/></Column>
+                    <Column hAlign="End"><Text text="Budget"/></Column>
+                    <Column hAlign="End"><Text text="Verausgabt"/></Column>
+                    <Column hAlign="End"><Text text="Obligo"/></Column>
+                    <Column hAlign="End"><Text text="Verfügbar"/></Column>
+                    <Column hAlign="End"><Text text="Übertragbar (max. 20%)"/></Column>
+                    <Column hAlign="End"><Text text="Verfällt an Zentralhaushalt"/></Column>
+                    <Column hAlign="Center"><Text text="Status"/></Column>
+                </columns>
+
+                <items>
+                    <ColumnListItem>
+                        <cells>
+                            <Text text="{tableData>bereich}"/>
+                            <Text text="{tableData>kostenstelleId}"/>
+                            <Text text="{path: 'tableData>budget', formatter: 'formatter.formatEuroInt'}"/>
+                            <Text text="{path: 'tableData>verausgabt', formatter: 'formatter.formatEuroInt'}"/>
+                            <Text text="{path: 'tableData>obligo', formatter: 'formatter.formatEuroInt'}"/>
+                            <Text text="{path: 'tableData>verfuegbar', formatter: 'formatter.formatEuroInt'}"/>
+                            <Text text="{path: 'tableData>uebertragbar', formatter: 'formatter.formatEuroInt'}"/>
+                            <Text
+                                text="{path: 'tableData>verfaellt', formatter: 'formatter.formatEuroInt'}"
+                                class="{= ${tableData>verfaellt} > 0 ? 'sapUiStrong' : '' }"/>
+                            <Text text="{tableData>status}"/>
+                        </cells>
+                    </ColumnListItem>
+                </items>
+
+            </Table>
+
             <!-- Lehrstuhlübersicht / Kostenstellen (gleiche Stilistik wie Budgetaufstellung) -->
+            <!--
+              Nur im Reiter "Kostenstellen" sichtbar. Zeigt alle Lehrstühle inkl. der
+              Grundmittel-Übertragsregel (Übertragbar max. 20% / Verfällt an Zentralhaushalt).
+              Nur der Lehrstuhl mit gesetzter "route" (aktuell KI-Forschung) ist klickbar/navigierbar
+              (type="Navigation" vs. "Inactive" je nach ${tableData>route}).
+              Durchsuchbar über das Suchfeld (onKostenstellenSearch filtert per Lehrstuhl-Namen).
+            -->
             <Table
                 id="lehrstuhlBreakdown"
                 items="{tableData>/lehrstuehle}"
@@ -427,7 +521,7 @@
                 type="Transparent"/>
                     </Toolbar>
                 </headerToolbar>
-				
+
 
                 <columns>
                     <Column><Text text="Lehrstuhl"/></Column>
@@ -453,6 +547,7 @@
                             <Text text="{path: 'tableData>obligo', formatter: 'formatter.formatEuroInt'}"/>
                             <Text text="{path: 'tableData>verfuegbar', formatter: 'formatter.formatEuroInt'}"/>
                             <Text text="{path: 'tableData>uebertragbar', formatter: 'formatter.formatEuroInt'}"/>
+                            <!-- "Verfällt"-Betrag wird fett hervorgehoben, sobald er > 0 ist (Warnsignal) -->
                             <Text
                                 text="{path: 'tableData>verfaellt', formatter: 'formatter.formatEuroInt'}"
                                 class="{= ${tableData>verfaellt} > 0 ? 'sapUiStrong' : '' }"/>
@@ -464,7 +559,13 @@
 
             </Table>
 
-            <!-- Gebäude (Kostenstellen der Fakultät nach Gebäude) -->
+            <!-- Gebäudebewirtschaftung (Kostenstellen der Fakultät nach Gebäude) -->
+            <!--
+              Gleiche Struktur/Logik wie die Lehrstuhlübersicht, nur für Gebäude-Kostenstellen.
+              Titel bewusst "Gebäudebewirtschaftung" statt nur "Gebäude", um klarzustellen, dass
+              dies Bewirtschaftungskostenstellen sind (Bau/Betrieb), keine Fakultätsbudgets im
+              engeren Sinn.
+            -->
             <Table
                 id="gebaeudeBreakdown"
                 items="{tableData>/gebaeude}"
@@ -475,7 +576,7 @@
 
                 <headerToolbar>
                     <Toolbar>
-                        <Title text="Gebäude"/>
+                        <Title text="Gebäudebewirtschaftung"/>
                         <ToolbarSpacer/>
 
                         <Button
@@ -523,6 +624,7 @@
             </Table>
 
             <!-- Finanzbewegungen (gleiche Stilistik) -->
+            <!-- Einzelbuchungen je Geschäftsjahr (nur "Finanzen"-Reiter); Beträge mit Vorzeichen formatiert -->
             <Table
                 id="finanzbewegungen"
                 items="{tableData>/finanzbewegungen}"
@@ -589,6 +691,11 @@
 
             </Table>
 
+            <!--
+              Personalbindung & Einsatz (nur "Personal"-Reiter): vollständig statische
+              Beispieldaten (nicht an /api/personal gebunden), zeigt Name/Rolle/Finanzierungsart/
+              Zeitraum/VZÄ/Jahreskosten/Status je Person.
+            -->
             <Table
                 id="personalDetail"
                 visible="{= ${view>/selectedTab} === 'pr_hr' }"

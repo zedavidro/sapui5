@@ -1,3 +1,12 @@
+/**
+ * HR.controller.js — Controller der Personal-Seite auf Lehrstuhlebene (Route "hr")
+ * - Lädt die Personaldaten einmalig von /api/personal (echte SQLite-Tabelle "personal")
+ * - Wertet sie clientseitig aus (Kopfzahl, VZÄ, Kosten, Verteilung nach Dienstart/Geschlecht/
+ *   Alter, Vertragsenden, Kosten nach Struktureinheit) und bindet die Ergebnisse an die
+ *   Diagramme/Kacheln im View
+ * - Die Jahresauswahl filtert nur die meisten Auswertungen; einige (z. B. der Jahres-Trend)
+ *   laufen bewusst ungefiltert über alle Jahre
+ */
 sap.ui.define([
   "./BaseController",
   "sap/ui/model/json/JSONModel"
@@ -12,20 +21,26 @@ sap.ui.define([
       this.getOwnerComponent().getRouter().getRoute("hr").attachPatternMatched(this._onRouteMatched, this);
 
       // Attach window resize listener for the sliding tab indicator
+      // - Der animierte Schieber unter dem aktiven Reiter muss bei Fenstergrößenänderung neu positioniert werden
       window.addEventListener("resize", this._updateHRTabSlider.bind(this));
 
       // Set scale and reference line properties programmatically to ensure X-Axis starts at year 2015 and shows today's date
+      // - Diese Einstellungen hängen vom aktuellen Datum ab und können deshalb nicht
+      //   statisch in der View-XML stehen, sondern werden hier zur Laufzeit berechnet
       const oVizFrame = this.getView().byId("idContractEndRadar");
       if (oVizFrame) {
         const oToday = new Date();
         const iCurrentYear = oToday.getFullYear();
         const iCurrentMonth = oToday.getMonth();
         const iCurrentDay = oToday.getDate();
+        // Heutiges Datum als Dezimalzahl (z. B. Mitte 2026 ≈ 2026.5), damit es auf der
+        // kontinuierlichen Jahres-Achse des Diagramms als Referenzlinie platziert werden kann
         const fTodayFractional = iCurrentYear + (iCurrentMonth + iCurrentDay / 30) / 12;
         const sDateLabel = "Heute (" + oToday.toLocaleDateString("de-DE", { month: "long", year: "numeric" }) + ")";
 
         oVizFrame.setVizProperties({
           plotArea: {
+            // Punktfarben je nach Beschäftigungsumfang (VZÄ): Teilzeit rot, Vollzeit blau
             dataPointStyle: {
               rules: [
                 {
@@ -44,6 +59,7 @@ sap.ui.define([
                 }
               ]
             },
+            // Gestrichelte rote Linie markiert das heutige Datum auf der Zeitachse
             referenceLine: {
               line: {
                 valueAxis: [
@@ -62,6 +78,7 @@ sap.ui.define([
               }
             }
           },
+          // Feste Achsen-Skala 2015–2032, damit das Diagramm nicht bei jedem Datenwechsel "springt"
           valueAxis: {
             scale: {
               fixedRange: true,
@@ -76,6 +93,7 @@ sap.ui.define([
       }
     },
 
+    // Rollenprüfung + initiales Laden der Daten bei jedem Aufruf der Route "hr"
     _onRouteMatched: function () {
       const oUserModel = this.getOwnerComponent().getModel("userModel");
       const iRole = oUserModel ? oUserModel.getProperty("/zugriffsrechte") : 0;
@@ -85,17 +103,24 @@ sap.ui.define([
       }
       this._loadAndUpdate();
       // Update slider position after render
+      // - Zweimal verzögert, da das DOM nach dem Rendern noch nicht sofort seine finalen Maße hat
       setTimeout(this._updateHRTabSlider.bind(this), 50);
       setTimeout(this._updateHRTabSlider.bind(this), 200);
     },
 
     // --- Event-Handler für Dropdown ---
+    // Jahr gewechselt → komplette Aggregation neu berechnen
     onYearChange: function (oEvent) {
       this._selectedYear = oEvent.getSource().getSelectedKey();
       this._loadAndUpdate();
     },
 
     // --- Hauptlogik für Datenladung und Aggregation ---
+    /**
+     * Lädt die Rohdaten genau einmal (Cache in this._aPersonalData) und ruft danach
+     * immer nur noch die Neu-Aggregation auf; verhindert außerdem parallele Doppel-Requests
+     * über die Promise-Zwischenspeicherung (this._pLoadPromise).
+     */
     _loadAndUpdate: function () {
       if (this._aPersonalData) {
         this._updateAggregates();
@@ -123,6 +148,8 @@ sap.ui.define([
      * Converts an Excel serial date number (e.g. 44163 or "44163.0") to an ISO date string "YYYY-MM-DD".
      * Excel epoch starts at 1899-12-30.
      */
+    // - Die Rohdaten aus der Excel-basierten Quelle liefern Datumsangaben teils als
+    //   fortlaufende Seriennummer statt als echtes Datum; diese Funktion rechnet das um
     _excelSerialToISO: function (vValue) {
       var iSerial = parseInt(parseFloat(vValue), 10);
       if (isNaN(iSerial) || iSerial < 1) {
@@ -137,10 +164,16 @@ sap.ui.define([
       return sYear + "-" + sMonth + "-" + sDay;
     },
 
+    /**
+     * Zentrale Aggregationsfunktion: geht einmal über alle Personaldatensätze und befüllt
+     * mehrere unabhängige Zwischenspeicher (einer pro Diagramm/Kennzahl), die am Ende
+     * in zwei Modelle ("Default"-Modell für Diagramme, "dashboard" für KPI-Kacheln) geschrieben werden.
+     */
     _updateAggregates: function () {
       const data = this._aPersonalData || [];
 
       // Normalize VBEDAT: convert Excel serial numbers to ISO date strings
+      // - Datumsfeld "VBEDAT" (befristet bis) vereinheitlichen, falls noch als Excel-Zahl vorliegend
       data.forEach(item => {
         if (item.VBEDAT && String(item.VBEDAT).indexOf("-") === -1) {
           item.VBEDAT = this._excelSerialToISO(item.VBEDAT);
@@ -148,6 +181,7 @@ sap.ui.define([
       });
 
       // Pauschale universitäre Jahros-Personalkostensätze für 1.0 VZÄ
+      // - Vereinfachte Kostensätze pro Personalgruppe (da keine echten Gehaltsdaten vorliegen)
       const costRates = {
         "Hochschullehrergruppe": 110000,
         "wissenschaftlicher Dienst": 78000,
@@ -156,11 +190,13 @@ sap.ui.define([
       };
 
       // Globale Zähler für KPIs (Gefiltert)
+      // - Diese drei Summen landen direkt in den KPI-Kacheln oben im View
       let totalHeadcount = 0;
       let totalFTE = 0;
       let totalCost = 0;
 
       // Zwischenspeicher für Aggregationsobjekte
+      // - Je ein Objekt/Array pro Diagramm; werden unten in die finalen Datensätze umgewandelt
       const contractTimelineData = [];
       const aggregatedPie = {};
       const aggregatedTrend = {};
@@ -185,6 +221,8 @@ sap.ui.define([
           // ==========================================================
           // LOGIK (Ungefiltert - über alle Jahre hinweg)
           // ==========================================================
+          // - Trend- und Befristungs-Auswertung ignorieren bewusst die Jahresauswahl,
+          //   damit sie immer die komplette Historie zeigen
 
           // 1. Trend-Chart Aggregation
           if (!aggregatedTrend[yearStr]) {
@@ -272,6 +310,8 @@ sap.ui.define([
       // ==========================================================
       // DATEN-TRANSFORMATIONEN FÜR DIE GRAFIKEN
       // ==========================================================
+      // - Die Zwischenspeicher (Objekte mit Schlüsseln) werden hier in flache Arrays
+      //   umgewandelt, wie sie die viz-Diagramme als Datenquelle erwarten
 
       const employeeGroups = Object.keys(aggregatedPie).map(key => {
         return { name: key, value: aggregatedPie[key] };
@@ -317,6 +357,7 @@ sap.ui.define([
       // ==========================================================
 
       // Diagramme
+      // - Alle Diagramm-Datensätze landen im Default-Modell (ohne Namen) des Views
       let oViewModel = this.getView().getModel();
       if (!oViewModel) {
         oViewModel = new JSONModel();
@@ -334,6 +375,7 @@ sap.ui.define([
       });
 
       // KPIs im globalen dashboard-Modell binden
+      // - Separates benanntes Modell "dashboard" nur für die vier KPI-Kacheln oben im View
       let oDashboardModel = this.getView().getModel("dashboard");
       if (!oDashboardModel) {
         oDashboardModel = new JSONModel();
@@ -349,10 +391,16 @@ sap.ui.define([
       });
     },
 
+    // Reiterwechsel: Schieber-Position nach dem Rendern neu berechnen
     onHRTabSelect: function () {
       setTimeout(this._updateHRTabSlider.bind(this), 0);
     },
 
+    /**
+     * Positioniert einen selbst gezeichneten "Schieber" (div.tab-slider-indicator) unter dem
+     * gerade aktiven Reiter der IconTabBar. Wird bei Fenster-Resize, Reiterwechsel und nach
+     * dem ersten Rendern aufgerufen, da UI5 selbst keinen animierten Unterstrich mitbringt.
+     */
     _updateHRTabSlider: function () {
       const oTabBar = this.getView().byId("idHRIconTabBar");
       if (!oTabBar) {
@@ -393,6 +441,7 @@ sap.ui.define([
       }
     },
 
+    // Hilfsfunktion: berechnet den horizontalen Abstand eines Elements zu einem Vorfahren-Element
     _getOffsetLeft: function (oEl, oParent) {
       let nLeft = 0;
       while (oEl && oEl !== oParent) {
@@ -402,6 +451,7 @@ sap.ui.define([
       return nLeft;
     },
 
+    // Hilfsfunktion: berechnet den vertikalen Abstand eines Elements zu einem Vorfahren-Element
     _getOffsetTop: function (oEl, oParent) {
       let nTop = 0;
       while (oEl && oEl !== oParent) {

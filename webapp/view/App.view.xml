@@ -1,3 +1,11 @@
+<!--
+  App.view.xml — Wurzel-View der gesamten Anwendung (Shell)
+  - Wird als allererstes geladen und bleibt während der ganzen Session bestehen
+  - Enthält den Seitenrahmen (Kopfzeile + Seitenleiste + Hauptbereich), in den
+    alle anderen Views (Auth, Main, HR, Paquin1, Unifinanzen, ...) über den
+    Router eingehängt werden
+  - Steuerlogik dazu liegt im zugehörigen App.controller.js
+-->
 <mvc:View
     controllerName="de.unigoettingen.dashboardapp.controller.App"
     xmlns:mvc="sap.ui.core.mvc"
@@ -6,15 +14,21 @@
     xmlns:core="sap.ui.core"
     xmlns:tnt="sap.tnt">
 
+  <!-- ToolPage: Fiori-Standardlayout mit Kopfzeile oben + ausklappbarer Seitenleiste links -->
   <tnt:ToolPage id="toolPage" sideExpanded="{sidebar>/expanded}">
+
+    <!-- Kopfzeile (oben) -->
     <tnt:header>
       <tnt:ToolHeader visible="{sidebar>/visible}">
+        <!-- Burger-Menü-Button: klappt die Seitenleiste auf/zu -->
         <Button icon="sap-icon://menu" press="onToggleSidebar" type="Transparent"/>
         <ToolbarSpacer/>
             <!-- static for now -->
+        <!-- Titel/Untertitel sind aktuell statischer Text (kein Datenbinding) -->
         <Title text="Strategisches Dashboard"/>
     <Text text="Georg-August-Universität Göttingen" class="sapUiSmallMarginBegin"/>
         <ToolbarSpacer/>
+        <!-- Hell-/Dunkel-Modus umschalten; Icon wechselt abhängig vom aktuellen Theme-Status -->
         <Button
             icon="{= ${theme>/dark} ? 'sap-icon://light-mode' : 'sap-icon://dark-mode' }"
             type="Transparent"
@@ -23,14 +37,23 @@
       </tnt:ToolHeader>
     </tnt:header>
 
+    <!-- Seitenleiste (links): Navigation zwischen den Ebenen Lehrstuhl/Fakultät/Präsidium -->
     <tnt:sideContent>
       <tnt:SideNavigation id="sideNavigation" visible="{sidebar>/visible}"
                            selectedKey="{sidebar>/selectedKey}"
                            itemSelect="onSideNavItemSelect">
         <tnt:item>
           <tnt:NavigationList id="sideNavList">
-            <tnt:NavigationListItem text="Lehrstuhl" icon="sap-icon://curriculum" key="lehrstuhl">
             <!--
+              "Lehrstuhl" ist der einzige FEST in der XML stehende Menüpunkt.
+              Die Einträge "Fakultät" (ab Zugriffsrecht 2) und "Präsidium" (ab Zugriffsrecht 3)
+              werden je nach eingeloggter Rolle dynamisch im Controller (onRouteMatched)
+              per insertItem()/removeItem() ergänzt bzw. wieder entfernt.
+              Reihenfolge von oben nach unten: Präsidium, Fakultät, Lehrstuhl.
+            -->
+            <tnt:NavigationListItem id="lehrstuhlNavItem" text="Lehrstuhl" icon="sap-icon://curriculum" key="lehrstuhl">
+            <!--
+              Alte/unbenutzte Unterpunkte-Idee (auskommentiert gelassen, nicht aktiv):
               <tnt:NavigationListItem text="Finanzen" icon="sap-icon://line-chart" key="finanzen"/>
               <tnt:NavigationListItem text="Personal" icon="sap-icon://employee" key="hr"/>
               <tnt:NavigationListItem text="Publikationen" icon="sap-icon://course-book" key="pb"/>
@@ -38,6 +61,7 @@
             </tnt:NavigationListItem>
           </tnt:NavigationList>
         </tnt:item>
+        <!-- Fixierter Bereich unten in der Seitenleiste: Logout-Button -->
         <tnt:fixedItem>
           <tnt:NavigationList>
             <tnt:NavigationListItem text="Abmelden" icon="sap-icon://log" key="logout"/>
@@ -46,7 +70,13 @@
       </tnt:SideNavigation>
     </tnt:sideContent>
 
+    <!-- Hauptbereich (rechts): geteilte Reiterleiste für die Lehrstuhl-Seiten + der eigentliche Seiteninhalt -->
     <tnt:mainContents>
+      <!--
+        Gemeinsame Reiterleiste (Finanzen/Personal/Publikationen), nur sichtbar,
+        wenn die aktuelle Route eine der drei Lehrstuhl-Seiten ist (siehe showTabs im Controller).
+        Die Präsidiumsseite (Unifinanzen) hat ihre eigene Reiterleiste im jeweiligen View.
+      -->
       <IconTabBar
           id="navTabBar"
           visible="{sidebar>/showTabs}"
@@ -60,6 +90,7 @@
               <IconTabFilter text="Publikationen" key="pb" />
           </items>
       </IconTabBar>
+      <!-- Router-Zielbereich: hier wird die jeweils aktive Seite (Auth/Main/HR/...) eingehängt -->
       <App id="app"/>
     </tnt:mainContents>
   </tnt:ToolPage>

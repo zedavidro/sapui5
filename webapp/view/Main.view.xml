@@ -1,3 +1,11 @@
+<!--
+  Main.view.xml — Lehrstuhlfinanzen-Seite ("Finanzen"-Reiter, Route "finanzen")
+  - Zeigt die eigenen Finanzdaten des eingeloggten Lehrstuhls: KPI-Kacheln (Kosten/Erträge/
+    Ergebnis) sowie zwei Diagramme (Kostenaufteilung nach Kategorie, Trend über 3 Jahre)
+  - Daten kommen aus /api/finanzen (echte SQLite-Tabelle) und werden im Controller
+    (Main.controller.js) aggregiert
+  - Dies ist die Standard-Landing-Page für Nutzer mit Zugriffsrecht 0/1 (nur Lehrstuhlebene)
+-->
 <mvc:View
 
 
@@ -19,9 +27,10 @@
   showHeader="false">
 
 	<content>
+    <!-- Jahresauswahl: löst onYearChange aus, das die Aggregation neu berechnet -->
     <Toolbar design="Transparent" class="sapUiSmallMargin">
         <Title text="Analysejahr wählen:" class="sapUiTinyMarginEnd"/>
-	  <Select change="onYearChange" class="sapUiSmallMargin">
+	  <Select change="onYearChange" selectedKey="2026" class="sapUiSmallMargin">
   	  <items>
       <core:Item key="2024" text="2024"/>
       <core:Item key="2025" text="2025"/>
@@ -32,16 +41,17 @@
       </Toolbar>
 
 		<!--- KPIs -->
+    <!-- KPI-Kacheln, gebunden an das Modell "dashboard" (siehe _updateAggregates im Controller) -->
 	  <HBox justifyContent="SpaceAround" class="sapUiSmallMargin">
 
       <GenericTile header="Kosten" class="sapUiTinyMargin" frameType="TwoByOne">
         <TileContent
           footer="+3,8% ggü. Vorjahr">
-          <NumericContent 
+          <NumericContent
             value="{
               path: 'dashboard>/kpis/costs',
               formatter: 'formatter.formatNumber'
-            }" 
+            }"
             scale="{
         path: 'dashboard>/kpis/costs',
         formatter: 'formatter.formatScale'
@@ -53,11 +63,11 @@
       <GenericTile header="Erträge" class="sapUiTinyMargin" frameType="TwoByOne">
         <TileContent
           footer="-11,2% ggü. Vorjahr">
-          <NumericContent 
+          <NumericContent
             value="{
               path: 'dashboard>/kpis/revenue',
               formatter: 'formatter.formatNumber'
-            }" 
+            }"
             scale="{
         path: 'dashboard>/kpis/revenue',
         formatter: 'formatter.formatScale'
@@ -69,7 +79,7 @@
       <GenericTile header="Ergebnis" class="sapUiTinyMargin" frameType="TwoByOne">
         <TileContent
           footer="Vorjahr: +8,4 Mio. €">
-          <NumericContent 
+          <NumericContent
             value="{
               path: 'dashboard>/kpis/result',
               formatter: 'formatter.formatNumber'
@@ -84,6 +94,7 @@
 
     </HBox>
 
+      <!-- Säulendiagramm: Kostenaufteilung nach Kategorie (gebunden an /costGroups) -->
       <viz:VizFrame
         id="idPieChart"
         vizType="column"
@@ -127,6 +138,13 @@
       </viz:VizFrame>
 
       <!-- Yearly Trend Line Chart -->
+      <!--
+        Liniendiagramm: Kosten/Erträge/Ergebnis über 2024–2026 (gebunden an /yearlyTrend).
+        colorPalette legt die Linienfarben fest (rot/grün/dunkel, passend zu den KPI-Kacheln
+        Error/Good/Neutral). renderComplete="onTrendChartRenderComplete" färbt zusätzlich die
+        Datenpunkt-Beschriftungen ein und rückt sie auseinander (siehe Controller-Kommentar dort),
+        da sap.viz das nicht deklarativ pro Serie unterstützt.
+      -->
       <viz:VizFrame
         id="idLineChart"
         vizType="line"

@@ -1,18 +1,24 @@
+/**
+ * Paquin1.controller.js — Controller der Fakultätsfinanzen-Seite (Route "fakultaetsfinanzen")
+ * - Trotz Klassenname "Paquin1": laut manifest.json ist die Route "fakultaetsfinanzen" auf
+ *   diesen Controller/View gemappt (nicht auf Fakultaetsfinanzen.controller.js, das ist dead code)
+ * - Alle Zahlen sind Platzhalter-Basisdaten (kein echter Backend-Call!), die je nach gewähltem
+ *   Geschäftsjahr proportional zu den KPI-Verhältnissen hoch-/runterskaliert werden
+ * - Enthält die Grundmittel-Übertragsregel (max. 20% Budgetübertrag ins Folgejahr) sowie die
+ *   Lehrstuhl-Filterlogik für die Budgetaufstellungstabelle
+ */
 sap.ui.define([
   "./BaseController",
   "sap/ui/model/json/JSONModel",
   "sap/ui/model/Filter",
-  "sap/ui/model/FilterOperator",
-  "sap/m/Popover",
-  "sap/m/List",
-  "sap/m/StandardListItem"
-], function (BaseController, JSONModel, Filter, FilterOperator, Popover, List, StandardListItem) {
+  "sap/ui/model/FilterOperator"
+], function (BaseController, JSONModel, Filter, FilterOperator) {
   "use strict";
 
   return BaseController.extend("de.unigoettingen.dashboardapp.controller.Paquin1", {
 
     onInit: function () {
-      this._selectedYear = new Date().getFullYear().toString();
+      this._selectedYear = "2026";
       this._selectedLehrstuhl = "alle";
 
       // Platzhalter-Daten je Geschäftsjahr – hier später durch echte API-Daten ersetzen
@@ -69,6 +75,8 @@ sap.ui.define([
         { bereich: "", position: "Zinsen", betrag: 5000 }
       ];
 
+      // 6 Lehrstühle der Fakultät. "route" ist nur bei "Lehrstuhl KI-Forschung" gesetzt →
+      // nur dieser Lehrstuhl ist in der Tabelle klickbar/navigierbar (siehe onLehrstuhlSelect)
       this._aLehrstuehleBase = [
         { lehrstuhl: "Lehrstuhl Smart Services", kostenstelleId: "KST-4101", professor: "Prof. Adam", budget: 450000, obligo: 120000, verausgabt: 170000, route: null },
         { lehrstuhl: "Lehrstuhl für E-Business", kostenstelleId: "KST-4102", professor: "Prof. Schumann", budget: 500000, obligo: 140000, verausgabt: 190000, route: null },
@@ -83,10 +91,19 @@ sap.ui.define([
       this._aGebaeudeBase = [
         { gebaeude: "Oeconomicum", kostenstelleId: "KST-4901", budget: 850000, obligo: 210000, verausgabt: 540000, verfuegbar: 100000 },
         { gebaeude: "Blauer Turm", kostenstelleId: "KST-4902", budget: 620000, obligo: 150000, verausgabt: 400000, verfuegbar: 70000 },
-        { gebaeude: "Zentralmensa", kostenstelleId: "KST-4903", budget: 950000, obligo: 300000, verausgabt: 600000, verfuegbar: 50000 },
         { gebaeude: "Verfügungsgebäude", kostenstelleId: "KST-4904", budget: 430000, obligo: 90000, verausgabt: 300000, verfuegbar: 40000 }
       ];
 
+      // WiWi-Fakultät allgemein: zentrale Verwaltungs-/Fakultätskostenstellen (jahresunabhängig,
+      // gleiche Struktur wie Gebäude), werden oberhalb der Lehrstuhlübersicht dargestellt
+      this._aWiwiAllgemeinBase = [
+        { bereich: "Fakultät allgemein", kostenstelleId: "KST-4801", budget: 300000, obligo: 60000, verausgabt: 200000, verfuegbar: 40000 },
+        { bereich: "Dekanat", kostenstelleId: "KST-4802", budget: 180000, obligo: 30000, verausgabt: 120000, verfuegbar: 30000 },
+        { bereich: "Studiendekan", kostenstelleId: "KST-4803", budget: 90000, obligo: 15000, verausgabt: 60000, verfuegbar: 15000 },
+        { bereich: "Forschungszentrum", kostenstelleId: "KST-4804", budget: 220000, obligo: 50000, verausgabt: 140000, verfuegbar: 30000 }
+      ];
+
+      // Einzelbuchungen je Geschäftsjahr für die "Finanzbewegungen"-Tabelle
       this._oFinanzbewegungenByYear = {
         "2024": [
           { datum: "08.01.2024", lehrstuhl: "Prof. Adam", buchung: "Laborbedarf", kostenstelle: "Lehrstuhl Smart Services", typ: "Ausgabe", betrag: -4200 },
@@ -104,13 +121,14 @@ sap.ui.define([
         ]
       };
 
-      // view model for tab selection
+      // View-lokales Modell, steuert nur, welcher Reiter/Inhalt gerade sichtbar ist
       const oViewModel = new JSONModel({ selectedTab: "pr_fi" });
       this.getView().setModel(oViewModel, "view");
 
       this.getOwnerComponent().getRouter().getRoute("fakultaetsfinanzen").attachPatternMatched(this._onRouteMatched, this);
     },
 
+    // Reiterwechsel (Finanzen/Personal/Kostenstellen) → nur Sichtbarkeits-Flag im view-Modell umschalten
     onTabSelect: function (oEvent) {
       const sKey = oEvent.getParameter && oEvent.getParameter("key") ? oEvent.getParameter("key") : oEvent.getSource().getSelectedKey();
       this.getView().getModel("view").setProperty("/selectedTab", sKey);
@@ -127,16 +145,19 @@ sap.ui.define([
       this._updateAll();
     },
 
+    // Jahr gewechselt → KPIs und alle Tabellen neu berechnen
     onYearChange: function (oEvent) {
       this._selectedYear = oEvent.getSource().getSelectedKey();
       this._updateAll();
     },
 
+    // Lehrstuhl-Filter gewechselt → nur die Budgetaufstellungstabelle muss neu berechnet werden
     onLehrstuhlFilterChange: function (oEvent) {
       this._selectedLehrstuhl = oEvent.getSource().getSelectedKey();
       this._updateTableData();
     },
 
+    // Freitextsuche in der Lehrstuhlübersicht: clientseitiger Anwendungsfilter auf das Feld "lehrstuhl"
     onKostenstellenSearch: function (oEvent) {
       const sQuery = oEvent.getParameter("newValue") || "";
       const oBinding = this.byId("lehrstuhlBreakdown").getBinding("items");
@@ -146,6 +167,7 @@ sap.ui.define([
       oBinding.filter(aFilters, "Application");
     },
 
+    // Klick auf eine Lehrstuhl-Zeile: nur navigieren, wenn die Zeile eine Route hinterlegt hat
     onLehrstuhlSelect: function (oEvent) {
       const oContext = oEvent.getSource().getBindingContext("tableData");
       const sRoute = oContext ? oContext.getProperty("route") : null;
@@ -154,45 +176,13 @@ sap.ui.define([
       }
     },
 
-    onLehrstuhlMenuPress: function (oEvent) {
-      if (!this._oLehrstuhlPopover) {
-        this._oLehrstuhlList = new List({
-          mode: "None",
-          items: {
-            path: "tableData>/lehrstuehle",
-            template: new StandardListItem({
-              title: "{tableData>lehrstuhl}",
-              description: "{tableData>professor}",
-              icon: "sap-icon://education",
-              type: "{= ${tableData>route} ? 'Navigation' : 'Inactive' }"
-            })
-          }
-        });
-        this._oLehrstuhlList.setModel(this.getView().getModel("tableData"), "tableData");
-        this._oLehrstuhlList.attachItemPress((oEv) => {
-          const oContext = oEv.getParameter("listItem").getBindingContext("tableData");
-          const sRoute = oContext ? oContext.getProperty("route") : null;
-          if (sRoute) {
-            this._oLehrstuhlPopover.close();
-            this.navTo(sRoute);
-          }
-        });
-
-        this._oLehrstuhlPopover = new Popover({
-          placement: "Bottom",
-          showHeader: false,
-          content: [this._oLehrstuhlList]
-        });
-        this.getView().addDependent(this._oLehrstuhlPopover);
-      }
-      this._oLehrstuhlPopover.openBy(oEvent.getSource());
-    },
-
+    // Sammelaufruf: KPI-Kacheln und alle Tabellen für das aktuell gewählte Jahr neu befüllen
     _updateAll: function () {
       this._updateKPIs();
       this._updateTableData();
     },
 
+    // Skaliert einen Basiswert proportional (ratio) und rundet auf volle Tausender
     _scaleValue: function (value, ratio) {
       if (!value) {
         return 0;
@@ -214,6 +204,8 @@ sap.ui.define([
       };
     },
 
+    // Befüllt die KPI-Kacheln (Finanzen-Reiter: fakFinanzen; Personal-Reiter: fakPersonal)
+    // direkt aus den Jahresbasiswerten, ohne weitere Skalierung
     _updateKPIs: function () {
       const oYearData = this._oYearlyKpiData[this._selectedYear] || this._oYearlyKpiData["2026"];
       const oPrevYearData = this._oYearlyKpiData[(parseInt(this._selectedYear, 10) - 1).toString()];
@@ -244,6 +236,8 @@ sap.ui.define([
       });
     },
 
+    // Größte Funktion: berechnet alle 4 Tabellen (Budgetaufstellung, Lehrstuhlübersicht,
+    // Gebäude, Finanzbewegungen) sowie die Grundmittel-/Drittmittel-Salden für das gewählte Jahr
     _updateTableData: function () {
       const oYear = this._oYearlyKpiData[this._selectedYear] || this._oYearlyKpiData["2026"];
       const oBase2024 = this._oYearlyKpiData["2024"];
@@ -307,7 +301,7 @@ sap.ui.define([
           verfuegbar: verfuegbar,
           uebertragbar: oUebertrag.uebertragbar,
           verfaellt: oUebertrag.verfaellt,
-          status: oUebertrag.verfaellt > 0 ? "🟡" : "🟢",
+          status: oUebertrag.verfaellt > 0 ? "🟡 Kappung greift" : "🟢 Im Rahmen",
           route: r.route
         };
       });
@@ -385,12 +379,23 @@ sap.ui.define([
         verfuegbar: null
       }]);
 
+      // Gebäude sind jahresunabhängig – Übertragsregel wird direkt auf die Basiswerte angewendet
       const aGebaeude = this._aGebaeudeBase.map((r) => {
         const oUebertrag = this._computeGrundmittelUebertrag(r.budget, r.verfuegbar);
         return Object.assign({}, r, {
           uebertragbar: oUebertrag.uebertragbar,
           verfaellt: oUebertrag.verfaellt,
-          status: oUebertrag.verfaellt > 0 ? "🟡" : "🟢"
+          status: oUebertrag.verfaellt > 0 ? "🟡 Kappung greift" : "🟢 Im Rahmen"
+        });
+      });
+
+      // WiWi-Fakultät allgemein: ebenfalls jahresunabhängig, gleiche Übertragsregel wie Gebäude
+      const aWiwiAllgemein = this._aWiwiAllgemeinBase.map((r) => {
+        const oUebertrag = this._computeGrundmittelUebertrag(r.budget, r.verfuegbar);
+        return Object.assign({}, r, {
+          uebertragbar: oUebertrag.uebertragbar,
+          verfaellt: oUebertrag.verfaellt,
+          status: oUebertrag.verfaellt > 0 ? "🟡 Kappung greift" : "🟢 Im Rahmen"
         });
       });
 
@@ -403,6 +408,7 @@ sap.ui.define([
         budgetaufstellung: aBudgetaufstellung,
         lehrstuehle: aLehrstuehle,
         gebaeude: aGebaeude,
+        wiwiAllgemein: aWiwiAllgemein,
         finanzbewegungen: this._oFinanzbewegungenByYear[this._selectedYear] || []
       });
 
